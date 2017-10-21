@@ -1,0 +1,75 @@
+.text-input {
+  border: 1px solid #d3d3d3;
+  font-size: 16px;
+  padding: 5px;
+  width: 200px;
+}
+
+.app-button{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 100%;
+  margin-top: 10px;
+  min-width: 200px;
+  min-height: 50px;
+  margin-bottom: 10px;
+  background-color: #00acc1;
+  text-decoration: none;
+  padding: 15px 32px;
+  border: none;
+  display: inline-block;
+  color: #FFFFFF;
+}
+
+.app-button-def{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: #00acc1;
+  text-decoration: none;
+  padding: 15px 32px;
+  border: none;
+  display: inline-block;
+  color: #FFFFFF;
+}
+
+.light-text {
+  color: #656565;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.white-label-big {
+  font-size: 135%;
+  color: #FFFFFF;
+  font-style: bold;
+  font-family: "Arial Black", Gadget, sans-serif;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding: 5px 5px;
+}
+
+.white-label-medium {
+  font-size: 75%;
+  color: #FFFFFF;
+  font-style: bold;
+  font-family: "Arial Black", Gadget, sans-serif;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding: 10px 10px;
+}
+
+.white-label-small {
+  font-size: 45%;
+  color: #FFFFFF;
+  font-style: bold;
+  font-family: "Arial Black", Gadget, sans-serif;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding: 10px 10px;
+}
+
+.padded-container {
+  padding: 50px 50px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
