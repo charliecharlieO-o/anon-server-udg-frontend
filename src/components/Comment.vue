@@ -12,7 +12,9 @@
               src="/static/hydeegg.jpg" class="profile-thumbnail">
             <img v-else-if="comment.poster.anon"
               src="/static/incognito.jpg" class="profile-thumbnail">
-            <img v-else :src="comment.poster.poster_thumbnail" class="profile-thumbnail">
+            <router-link v-else :to="`/profile/${comment.poster.poster_id}`" style="textDecoration:none;">
+              <img :src="comment.poster.poster_thumbnail" class="profile-thumbnail">
+            </router-link>
           </v-flex>
           <!-- Comment Data -->
           <v-flex xs11>
@@ -21,7 +23,9 @@
               <span v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
                 class="username-span-easteregg">Mr.Hyde</span>
               <span v-else-if="comment.poster.anon" class="username-span-anon">{{ comment.poster.poster_name }} [anon]</span>
-              <span v-else class="username-span">{{ comment.poster.poster_name }}</span>
+              <router-link v-else :to="`/profile/${comment.poster.poster_id}`" style="textDecoration:none;">
+                <span class="username-span">{{ comment.poster.poster_name }}</span>
+              </router-link>
               <span class="replied-span">replied</span>
               <span class="white grey--text" style="margin-left:5px">{{ comment.created_at }}</span>
             </v-layout>

@@ -37,26 +37,29 @@ import {standardAuthGet} from '../../utils/maskmob-api'
 export default {
   name: 'contacts',
   created () {
-    this.loadConnections(true)
-    this.loadPetititons(true)
+    this.loadConnections()
+    this.loadPetititons(0)
   },
   methods: {
-    loadConnections (friendly) {
-      const url = (friendly === true) ? '/user/friends' : '/user/foes'
-      standardAuthGet(this.$session.get('JWTOKEN'), url).then((response) => {
+    async loadConnections () {
+      const response = await standardAuthGet(this.$session.get('JWTOKEN'), '/user/friends')
+      try {
         console.log(response.data.doc)
-      }).catch((err) => {
-        alert(err)
-      })
+      } catch (e) {
+        console.log(e)
+      }
     },
-    loadPetititons (received) {
+    loadMyRequests (received) {
       const url = (received === true) ? '/user/my-requests' : '/user/sent-requests'
       standardAuthGet(this.$session.get('JWTOKEN'), url).then((response) => {
         console.log(response.data.doc)
       }).catch((err) => {
         alert(err)
       })
-    }
+    },
+    loadSentRequests () {},
+    loadDeniedRequests () {},
+    searchUserByName () {}
   }
 }
 </script>

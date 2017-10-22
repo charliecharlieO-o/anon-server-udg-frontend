@@ -33,19 +33,19 @@
           </v-card-title>
           <v-list>
             <v-list-tile>
-              <img src="static/icon-zuckd.svg" class="social-icon" />Facebook Handle
+              <img src="../assets/icon-zuckd.svg" class="social-icon" />Facebook Handle
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile>
-              <img src="static/icon-instagram.svg" class="social-icon" />Instagram Handle
+              <img src="../assets/icon-instagram.svg" class="social-icon" />Instagram Handle
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile>
-              <img src="static/icon-snapchat.svg" class="social-icon" />Snapchat Handle
+              <img src="../assets/icon-snapchat.svg" class="social-icon" />Snapchat Handle
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile>
-              <img src="static/icon-twitter.svg" class="social-icon" />Twitter Handle
+              <img src="../assets/icon-twitter.svg" class="social-icon" />Twitter Handle
             </v-list-tile>
           </v-list>
         </v-card>

@@ -42,7 +42,9 @@
                       <v-avatar>
                         <img :src="thread.poster.thumbnail" style="background-color:grey;" alt="">
                       </v-avatar>
-                      {{ thread.poster.name }}
+                      <router-link :to="`/profile/${thread.poster.id}`" style="textDecoration:none;">
+                        <span class="username-span">{{ thread.poster.name }}</span>
+                      </router-link>
                     </v-chip>
                     <v-chip label outline class="hidden-md-and-up grey grey--text" style="float:right;">{{ thread.created_at }}</v-chip>
                   </div>
@@ -233,5 +235,9 @@ export default {
   font-size: 150%;
   color: green;
   padding-top: 0px;
+}
+.username-span {
+  color:DarkBlue;
+  margin-right:5px;
 }
 </style>
