@@ -6,7 +6,7 @@
       <v-flex xs10>
         <!-- Profile Picture -->
         <div style="text-align:center;margin-top:35px;">
-          <v-flex xs1 offset-xs6 style="text-align:center;">
+          <v-flex v-if="profileId === 'me'" xs1 offset-xs6 style="text-align:center;">
             <v-btn  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
           </v-flex>
           <v-list-tile-avatar>
@@ -20,18 +20,19 @@
             <i>No hay descripcion</i>
           </p>
         </div>
-        <br />
-        <div class="text-xs-center">
-          <v-btn round primary dark>agregar contacto<v-icon right>person_add</v-icon></v-btn>
-          <v-btn round error dark>eliminar contacto<v-icon right>remove_circle_outline</v-icon></v-btn>
+        <div v-if="profileId !== 'me'" class="text-xs-center">
+          <br />
+          <v-btn v-if="accessLevel === 'limited'" round primary dark>agregar contacto<v-icon right>person_add</v-icon></v-btn>
+          <v-btn v-else round error dark>eliminar contacto<v-icon right>remove_circle_outline</v-icon></v-btn>
         </div>
         <br />
         <!-- Social Networking -->
         <v-card>
           <v-card-title class="grey">
             <span class="headline white--text" style="font-size:25%;">Redes Sociales</span>
+            <v-chip v-if="accessLevel === 'limited'" outline class="white white--text">{{ networksCount }}</v-chip>
           </v-card-title>
-          <v-list>
+          <v-list v-if="accessLevel !== 'limited' || profileId === 'me'">
             <v-list-tile>
               <img src="../assets/icon-zuckd.svg" class="social-icon" />Facebook Handle
             </v-list-tile>
@@ -51,7 +52,7 @@
         </v-card>
         <br />
         <!-- Account Settings -->
-        <v-card>
+        <v-card v-if="profileId === 'me'">
           <v-card-title class="orange">
             <span class="headline white--text" style="font-size:25%;">Cuenta</span>
           </v-card-title>
@@ -82,7 +83,7 @@
         </v-card>
         <br />
         <!-- Account Settings -->
-        <v-card>
+        <v-card v-if="profileId === 'me'">
           <v-card-title class="red">
             <span class="headline white--text" style="font-size:25%;">Seguridad</span>
           </v-card-title>
@@ -125,6 +126,7 @@
 </template>
 
 <script>
+import {standardAuthGet} from '../../utils/maskmob-api'
 export default {
   name: 'profile',
   data () {
@@ -132,6 +134,8 @@ export default {
       profileId: null,
       profileData: null,
       userObj: null,
+      networksCount: 0,
+      accessLevel: 'limited', // Can be limited or full for outside viewers
       anonimityState: false
     }
   },
@@ -139,9 +143,17 @@ export default {
     this.profileId = this.$route.params.profileId
     this.loadProfileInfo()
   },
+  beforeRouteUpdate (to, from, next) {
+    if (to.params.profileId !== from.params.profileId) {
+      this.profileId = to.params.profileId
+      this.loadProfileInfo()
+    }
+    next()
+  },
   methods: {
-    loadProfileInfo () {
+    async loadProfileInfo () {
       if (this.profileId === 'me') {
+        this.accessLevel = 'full'
         // Get profile info from object in session if not load from server
         if (this.$session.get('USER')) {
           this.userObj = this.$session.get('USER')
@@ -150,6 +162,18 @@ export default {
         }
       } else {
         // Request profile info from server
+        try {
+          const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/user/${this.profileId}/profile`)
+          if (response.data.success) {
+            this.accessLevel = (response.data.limited) ? 'limited' : 'full'
+            this.networksCount = (response.data.limited) ? response.data.networks : 0
+            this.userObj = response.data.doc
+          } else {
+            console.log('error')
+          }
+        } catch (e) {
+          console.log(e)
+        }
       }
     }
   }
