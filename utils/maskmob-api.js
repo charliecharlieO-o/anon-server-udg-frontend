@@ -4,7 +4,7 @@ import {validateEmail} from './validation'
 const moment = require('moment')
 
 const BASE_URL = 'http://192.168.100.11:3000'
-const DEV_URL = 'http://192.168.100.11:8080'
+const DEV_URL = 'http://192.168.100.5:8080'
 
 export {
   getBaseUrl, standardLogin, standardUnauthPost, standardAuthPut, standardAuthPost, standardAuthGet, getDevUrl,

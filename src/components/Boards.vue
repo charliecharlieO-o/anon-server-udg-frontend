@@ -29,7 +29,7 @@
       </div>
       <!-- Groups Container -->
       <v-container fluid grid-list-md>
-        <v-layout row wrap align-center column-lg child-flex-sm>
+        <v-layout row wrap align-center child-flex-sm>
           <v-flex xs4-12 v-for="board in boards" :key="board._id">
             <v-card :id="board.slug" style="margin:5px;min-width:250px;max-width:300px;height:auto;">
               <router-link style="text-decoration:none;" :to="{ name: 'board', params: {slug:board.slug} }">

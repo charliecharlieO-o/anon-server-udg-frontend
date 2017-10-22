@@ -30,7 +30,7 @@
         </div>
         <!-- content -->
         <v-container fluid grid-list-md>
-          <v-layout row wrap align-center column-lg child-flex-sm>
+          <v-layout row wrap align-center child-flex-sm>
             <v-flex xs4-12 v-for="thread in hotThreads" :key="thread._id">
               <router-link style="text-decoration:none;" :to="{ name: 'thread', params: {id:thread._id} }">
                 <v-card :id="thread._id"
@@ -115,7 +115,7 @@
         </div>
         <!-- content -->
         <v-container fluid grid-list-md>
-          <v-layout row wrap align-center column-lg child-flex-sm>
+          <v-layout row wrap align-center child-flex-sm>
             <v-flex xs4-12 v-for="thread in newThreads" :key="thread._id">
               <v-card :id="thread._id"
               style="margin:5px;min-width:250px;max-width:300px;height:auto;">
