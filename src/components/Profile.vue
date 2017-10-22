@@ -87,8 +87,11 @@ export default {
   name: 'profile',
   data () {
     return {
+      // Component Data
       profileId: null,
-      profileData: null
+      profileData: null,
+      // Component State
+      loading: true
     }
   },
   created () {
