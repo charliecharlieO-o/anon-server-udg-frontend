@@ -9,8 +9,12 @@ var chalk = require('chalk')
 var webpack = require('webpack')
 var config = require('../config')
 var webpackConfig = require('./webpack.prod.conf')
-
+var loadConfig = require('../load-config')
 var spinner = ora('building for production...')
+
+loadConfig(process.env.NODE_ENV)
+console.log('Environment configs copied')
+
 spinner.start()
 
 rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {

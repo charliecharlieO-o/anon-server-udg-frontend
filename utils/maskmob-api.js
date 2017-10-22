@@ -1,10 +1,10 @@
 import axios from 'axios'
-import {validateEmail} from './validation'
-
+import { validateEmail } from './validation'
+import envConfig from '@/env-config'
 const moment = require('moment')
 
-const BASE_URL = 'http://192.168.100.11:3000'
-const DEV_URL = 'http://192.168.100.5:8080'
+const BASE_URL = envConfig.API_URL
+const DEV_URL = envConfig.LOCAL
 
 export {
   getBaseUrl, standardLogin, standardUnauthPost, standardAuthPut, standardAuthPost, standardAuthGet, getDevUrl,

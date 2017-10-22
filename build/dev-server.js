@@ -13,6 +13,11 @@ var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = process.env.NODE_ENV === 'testing'
   ? require('./webpack.prod.conf')
   : require('./webpack.dev.conf')
+var loadConfig = require('../load-config.js')
+
+// Load configuration files to the before build project
+loadConfig(process.env.NODE_ENV)
+console.log('Environment configs copied')
 
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
