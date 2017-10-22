@@ -86,6 +86,7 @@ export default {
             // Start new session with new token
             this.$session.start()
             this.$session.set('JWTOKEN', response.data.token)
+            this.$session.set('USER', response.data.user)
             // Take to main application
             // window.location.href = `${getBaseUrl()}/`
             this.$eventHub.$emit('logged-in')

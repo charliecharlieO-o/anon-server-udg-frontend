@@ -4,19 +4,21 @@
         <v-navigation-drawer v-if="loggedIn" persistent light :mini-variant.sync="mini" v-model="drawer" overflow>
           <v-toolbar flat class="transparent">
             <v-list class="pa-0">
-              <v-list-tile avatar tag="div">
-                <v-list-tile-avatar>
-                  <img src="https://randomuser.me/api/portraits/men/85.jpg" />
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title>Tu Perfil</v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-btn icon @click.native.stop="mini = !mini">
-                    <v-icon>chevron_left</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-              </v-list-tile>
+              <router-link to="/profile/me" style="textDecoration:none;">
+                <v-list-tile avatar tag="div">
+                  <v-list-tile-avatar>
+                    <img :src="(this.$session.get('USER')).profile_pic.thumbnail" class="profile-picture" />
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ (this.$session.get('USER')).username }}</v-list-tile-title>
+                  </v-list-tile-content>
+                  <v-list-tile-action>
+                    <v-btn icon @click.native.stop="mini = !mini">
+                      <v-icon>chevron_left</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                </v-list-tile>
+              </router-link>
             </v-list>
           </v-toolbar>
           <v-list class="pt-0" dense>
@@ -177,4 +179,7 @@ export default {
 <style scoped>
 @import '/static/materialicons.css';
 @import '/static/vuetify.min.css';
+.profile-picture {
+  background-color:grey;
+}
 </style>
