@@ -48,7 +48,7 @@
           <!-- HOT thread container -->
           <div style="margin-left:4%;margin-right:3%">
             <v-container fluid grid-list-md>
-              <v-layout row wrap align-center column-lg child-flex-sm>
+              <v-layout row wrap align-center child-flex-sm>
                 <v-flex xs4-12 v-for="thread in hotOnDisplay" :key="thread._id">
                   <router-link style="text-decoration:none;" :to="{ name: 'thread', params: {id:thread._id} }">
                     <v-card :id="thread._id"
