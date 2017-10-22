@@ -116,7 +116,7 @@
             <!-- END Credits tile -->
             <v-divider></v-divider>
             <!-- Logout tile -->
-            <v-list-tile>
+            <v-list-tile v-on:click="logOut" >
               <v-list-tile-action>
                 <v-icon class="red--text red--darken-2">exit_to_app</v-icon>
               </v-list-tile-action>
@@ -151,8 +151,6 @@ export default {
     if (!this.isLoggedIn()) {
       // window.location.href = `${getBaseUrl()}/login`
       window.location.href = `${getDevUrl()}/#/login`
-    } else {
-      // Save user state data here
     }
   },
   beforeDestroy () {
@@ -171,6 +169,15 @@ export default {
     isLoggedIn () {
       this.$data.loggedIn = this.$session.exists()
       return this.$data.loggedIn
+    },
+    logOut () {
+      // Destroy session if it already exists
+      if (this.$session.exists()) {
+        this.$session.destroy()
+      }
+      // window.location.href = `${getBaseUrl()}/`
+      window.location.href = `${getDevUrl()}/#/login`
+      location.reload()
     }
   }
 }
