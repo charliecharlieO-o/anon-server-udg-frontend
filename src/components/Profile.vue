@@ -22,8 +22,11 @@
         </div>
         <div v-if="profileId !== 'me'" class="text-xs-center">
           <br />
-          <v-btn v-if="accessLevel === 'limited'" round primary dark>agregar contacto<v-icon right>person_add</v-icon></v-btn>
-          <v-btn v-else round error dark>eliminar contacto<v-icon right>remove_circle_outline</v-icon></v-btn>
+          <v-btn v-if="requestStatus === 'befriend'" v-on:click="sendRequest" round primary dark>agregar contacto<v-icon right>person_add</v-icon></v-btn>
+          <v-btn v-if="requestStatus === 'deny' || requestStatus === 'candelete'" round error dark>eliminar contacto<v-icon right>remove_circle_outline</v-icon></v-btn>
+          <v-btn v-if="requestStatus === 'accept' || requestStatus === 'select'" round success dark>aceptar peticion<v-icon right>check</v-icon></v-btn>
+          <v-btn v-if="requestStatus === 'deny' || requestStatus === 'select'" round warning dark>negar peticion<v-icon right>not_interested</v-icon></v-btn>
+          <v-chip v-if="requestStatus === 'await'" class="secondary white--text">Peticion enviada...</v-chip>
         </div>
         <br />
         <!-- Social Networking -->
@@ -126,7 +129,7 @@
 </template>
 
 <script>
-import {standardAuthGet} from '../../utils/maskmob-api'
+import {standardAuthGet, standardAuthPost} from '../../utils/maskmob-api'
 export default {
   name: 'profile',
   data () {
@@ -136,6 +139,8 @@ export default {
       userObj: null,
       networksCount: 0,
       accessLevel: 'limited', // Can be limited or full for outside viewers
+      requestObj: null,
+      requestStatus: 'befriend', // Can be 'befriend', 'candelete', 'await', 'select', 'accept' or 'deny'
       anonimityState: false
     }
   },
@@ -161,6 +166,25 @@ export default {
           // Load user from server
         }
       } else {
+        // Check contact related status
+        try {
+          const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/user/is-friend/${this.profileId}`)
+          // If there is no Request
+          if (response.data && response.data.success === false) {
+            this.requestStatus = 'befriend'
+          } else {
+            const user = this.$session.get('USER')
+            // If I sent it
+            if (response.data.doc.requested_by === user._id) {
+              this.requestStatus = (response.data.doc.has_access) ? 'candelete' : 'await'
+            } else {
+              // can acept or decline
+              this.requestStatus = (!response.data.doc.responded) ? 'select' : (response.data.has_access) ? 'accept' : 'deny'
+            }
+          }
+        } catch (e) {
+          console.log(e)
+        }
         // Request profile info from server
         try {
           const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/user/${this.profileId}/profile`)
@@ -175,7 +199,18 @@ export default {
           console.log(e)
         }
       }
-    }
+    },
+    async sendRequest () {
+      try {
+        const response = await standardAuthPost({ 'to_userid': this.profileId }, this.$session.get('JWTOKEN'), '/user/request')
+        this.requestStatus = (response.data.success) ? 'await' : 'befriend'
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    async denyRequest () {},
+    async acceptRequest () {},
+    async removeRelationship () {}
   }
 }
 </script>
