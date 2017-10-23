@@ -5,7 +5,7 @@
       <v-flex xs1></v-flex>
       <v-flex xs10>
         <!-- Profile Picture -->
-        <div style="text-align:center;margin-top:35px;">
+        <div class="profile-box">
           <v-flex v-if="profileId === 'me'" xs1 offset-xs6 style="text-align:center;">
             <v-btn  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
           </v-flex>
@@ -241,5 +241,9 @@ export default {
 }
 .button-wrapper {
   margin-top:15px;
+}
+.profile-box {
+  text-align:center;
+  margin-top:35px;
 }
 </style>
