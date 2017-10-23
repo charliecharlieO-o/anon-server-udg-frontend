@@ -20,6 +20,7 @@
             <i>No hay descripcion</i>
           </p>
         </div>
+        <!-- Action Buttons -->
         <div v-if="profileId !== 'me'" class="text-xs-center">
           <br />
           <v-btn v-if="requestStatus === 'befriend'" v-on:click="sendRequest" round primary dark>agregar contacto<v-icon right>person_add</v-icon></v-btn>
@@ -37,19 +38,23 @@
           </v-card-title>
           <v-list v-if="accessLevel !== 'limited' || profileId === 'me'">
             <v-list-tile>
-              <img src="../assets/icon-zuckd.svg" class="social-icon" />Facebook Handle
+              <img src="../assets/icon-zuckd.svg" class="social-icon" />
+              <span>perfil de facebook (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile>
-              <img src="../assets/icon-instagram.svg" class="social-icon" />Instagram Handle
+              <img src="../assets/icon-instagram.svg" class="social-icon" />
+              <span>cuenta de instagram (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile>
-              <img src="../assets/icon-snapchat.svg" class="social-icon" />Snapchat Handle
+              <img src="../assets/icon-snapchat.svg" class="social-icon" />
+              <span>snapchat handle (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile>
-              <img src="../assets/icon-twitter.svg" class="social-icon" />Twitter Handle
+              <img src="../assets/icon-twitter.svg" class="social-icon" />
+              <span>@ de twitter (click para editar)</span>
             </v-list-tile>
           </v-list>
         </v-card>
@@ -65,12 +70,12 @@
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs6>
                   <span class="label-desc">Estatus:</span>
-                  <v-chip class="red white--text">Banneado</v-chip>
-                  <v-chip class="green white--text">Activo</v-chip>
+                  <v-chip v-if="userObj.banned.is_banned" class="red white--text">Banneado</v-chip>
+                  <v-chip v-else class="green white--text">Activo</v-chip>
                 </v-flex>
                 <v-flex xs6>
                   <span class="label-desc">Ultimo login:</span>
-                  <v-chip class="secondary white--text">2017-10-22T03:45:04.226Z</v-chip>
+                  <v-chip class="secondary white--text">{{ userObj.last_log }}</v-chip>
                 </v-flex>
               </v-layout>
               <br />
@@ -97,7 +102,7 @@
                 <v-flex xs10-12>
                   <v-text-field
                   name="input-1"
-                  label="email@email.com"
+                  :label="`cambiar: ${userObj.email}`"
                   id="testing"
                   ></v-text-field>
                 </v-flex>
@@ -157,14 +162,10 @@ export default {
   },
   methods: {
     async loadProfileInfo () {
-      if (this.profileId === 'me') {
-        this.accessLevel = 'full'
-        // Get profile info from object in session if not load from server
-        if (this.$session.get('USER')) {
-          this.userObj = this.$session.get('USER')
-        } else {
-          // Load user from server
-        }
+      const user = this.$session.get('USER')
+      if (this.profileId === 'me' || (user && user._id === this.profileId)) {
+        this.profileId = 'me'
+        this.userObj = user
       } else {
         // Check contact related status
         try {
@@ -173,7 +174,6 @@ export default {
           if (response.data && response.data.success === false) {
             this.requestStatus = 'befriend'
           } else {
-            const user = this.$session.get('USER')
             // If I sent it
             if (response.data.doc.requested_by === user._id) {
               this.requestStatus = (response.data.doc.has_access) ? 'candelete' : 'await'
