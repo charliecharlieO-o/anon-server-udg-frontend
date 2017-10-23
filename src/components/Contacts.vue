@@ -12,13 +12,21 @@
       <!-- Contacts -->
       <v-tabs-content id="contacts">
         <v-card flat>
-          <v-card-text>Contacts List</v-card-text>
+          <contact isfriend="true"></contact>
+          <v-divider></v-divider>
+          <contact isfriend="true"></contact>
+          <v-divider></v-divider>
+          <contact isfriend="true"></contact>
         </v-card>
       </v-tabs-content>
       <!-- Requests -->
       <v-tabs-content id="requests">
         <v-card flat>
-          <v-card-text>Requests List</v-card-text>
+          <contact></contact>
+          <v-divider></v-divider>
+          <contact></contact>
+          <v-divider></v-divider>
+          <contact></contact>
         </v-card>
       </v-tabs-content>
       <!-- Search -->
@@ -34,11 +42,14 @@
 
 <script>
 import {standardAuthGet} from '../../utils/maskmob-api'
+import contactComponent from './Contact'
 export default {
   name: 'contacts',
   created () {
     this.loadConnections()
-    this.loadPetititons(0)
+  },
+  components: {
+    contact: contactComponent
   },
   methods: {
     async loadConnections () {
