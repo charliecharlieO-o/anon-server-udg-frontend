@@ -225,51 +225,51 @@ export default {
       let result = validateUserName(val)
       switch (result.err) {
         case 'empty':
-          this.$data.usernameError = 'El nombre de usuario no debe estar vacio'
+          this.usernameError = 'El nombre de usuario no debe estar vacio'
           return false
         case 'length':
-          this.$data.usernameError = 'Debe de contener mas de 2 caracteres'
+          this.usernameError = 'Debe de contener mas de 2 caracteres'
           return false
         case 'badchars':
-          this.$data.usernameError = 'No debe de contener los caracteres: \' " < > &'
+          this.usernameError = 'No debe de contener los caracteres: \' " < > &'
           return false
         default:
-          this.$data.usernameError = null
+          this.usernameError = null
           return true
       }
     },
     checkPwd (val) {
-      if (!this.$data.pwd1 || !this.$data.pwd2) {
-        this.$data.pwdMatchError = 'Es necesario que escribas el password dos veces'
+      if (!this.pwd1 || !this.pwd2) {
+        this.pwdMatchError = 'Es necesario que escribas el password dos veces'
         return false
-      } else if (this.$data.pwd1 !== val) {
-        this.$data.pwdMatchError = 'El password no es el mismo'
+      } else if (this.pwd1 !== val) {
+        this.pwdMatchError = 'El password no es el mismo'
         return false
       } else {
-        this.$data.pwdMatchError = ''
+        this.pwdMatchError = ''
         return true
       }
     },
     checkEmail (val) {
-      if (!validateEmail(this.$data.email)) {
-        this.$data.emailError = 'Email Invalido'
+      if (!validateEmail(this.email)) {
+        this.emailError = 'Email Invalido'
         return false
       } else {
-        this.$data.emailError = ''
+        this.emailError = ''
         return true
       }
     },
     checkUdeGCreds (nip, pwd) {
       if (nip !== '' && pwd !== '') {
-        this.$data.nipError = ''
-        this.$data.udgPwdError = ''
+        this.nipError = ''
+        this.udgPwdError = ''
         return true
       } else {
         if (nip === '') {
-          this.$data.nipError = 'Este campo es necesario'
+          this.nipError = 'Este campo es necesario'
         }
         if (pwd === '') {
-          this.$data.udgPwdError = 'Este campo es necesario'
+          this.udgPwdError = 'Este campo es necesario'
         }
         return false
       }
@@ -277,18 +277,18 @@ export default {
     displayValidationErrors (errors) {
       for (let key in errors) {
         if (key === 'username') {
-          this.$data.usernameError = 'Nombre de usuario invalido'
+          this.usernameError = 'Nombre de usuario invalido'
         }
         if (key === 'email') {
-          this.$data.emailError = 'Email invalido'
+          this.emailError = 'Email invalido'
         }
         if (key === 'password') {
-          this.$data.pwdMatchError = 'Necesitas incluir un password'
+          this.pwdMatchError = 'Necesitas incluir un password'
         }
       }
     },
     login () {
-      standardLogin(this.$data.username, this.$data.pwd1).then((response) => {
+      standardLogin(this.username, this.pwd1).then((response) => {
         if (response.status === 200 && 'token' in response.data) {
           if (response.data.success) {
             // Destroy session if it already exists
@@ -307,20 +307,20 @@ export default {
       })
     },
     submitAccountDetails (e) {
-      let namePass = this.checkUserName(this.$data.username)
-      let pwdPass = this.checkPwd(this.$data.pwd2)
-      let emlPass = this.checkEmail(this.$data.email)
-      let udgCred = this.checkUdeGCreds(this.$data.nip, this.$data.udgpwd)
+      let namePass = this.checkUserName(this.username)
+      let pwdPass = this.checkPwd(this.pwd2)
+      let emlPass = this.checkEmail(this.email)
+      let udgCred = this.checkUdeGCreds(this.nip, this.udgpwd)
       if (namePass && pwdPass && emlPass && udgCred) {
         // Prepare JSON
         const userAccount = {
-          'username': this.$data.username.trim(),
-          'password': this.$data.pwd1,
-          'email': this.$data.email.trim(),
-          'nip': this.$data.nip,
-          'udgpwd': this.$data.udgpwd
+          'username': this.username.trim(),
+          'password': this.pwd1,
+          'email': this.email.trim(),
+          'nip': this.nip,
+          'udgpwd': this.udgpwd
         }
-        this.$data.creatingAccount = true
+        this.creatingAccount = true
         // Try AJAX account post
         standardUnauthPost(userAccount, '/user/register').then((response) => {
           // Process response
@@ -329,7 +329,7 @@ export default {
             if (obj.success === true) {
               // if it's successfull login user
               this.login()
-              this.$data.stage = 2
+              this.stage = 2
             } else {
               // If it's validation Error
               if (obj.valerr) {
@@ -338,13 +338,13 @@ export default {
                 obj.dberr = String(obj.dberr.trim())
                 // Process mongoose post save errors
                 if (obj.dberr === 'username already exists') {
-                  this.$data.usernameError = 'El nombre de usuario ya existe'
+                  this.usernameError = 'El nombre de usuario ya existe'
                 }
                 if (obj.dberr === 'nipCode already exists') {
-                  this.$data.nipError = 'El NIP ya ha sido usado'
+                  this.nipError = 'El NIP ya ha sido usado'
                 }
                 if (obj.dberr === 'email already exists') {
-                  this.$data.emailError = 'El email ya ha sido usado'
+                  this.emailError = 'El email ya ha sido usado'
                 }
                 alert('Hay errores en algunos campos')
               } else {
@@ -361,28 +361,28 @@ export default {
             alert(`Error al registrarse, revisa tu conexion. ${err.code}`)
           }
         })
-        this.$data.creatingAccount = false
+        this.creatingAccount = false
       } else {
         alert('Hay errores en algunos campos')
       }
     },
     changeAccountAlias (e) {
-      this.$data.settingAlias = true
+      this.settingAlias = true
       // Welp change logged in user's alias
-      standardAuthPut({'alias': this.$data.alias}, this.$session.get('JWTOKEN'), '/user/alias').then((response) => {
+      standardAuthPut({'alias': this.alias}, this.$session.get('JWTOKEN'), '/user/alias').then((response) => {
         console.log(response)
         if (response.status === 200 && response.data) {
           // Notify through event hub
           this.$eventHub.$emit('logged-in')
           // warm welcome
-          this.$data.stage = 3
+          this.stage = 3
         } else {
           alert('Error: verifica que el campo sea valido')
         }
-        this.$data.settingAlias = false
+        this.settingAlias = false
       }).catch((err) => {
         alert(err)
-        this.$data.settingAlias = false
+        this.settingAlias = false
       })
     }
   },
@@ -397,10 +397,10 @@ export default {
       this.checkEmail(val)
     },
     nip (val, oldVal) {
-      this.checkUdeGCreds(this.$data.nip, this.$data.udgpwd)
+      this.checkUdeGCreds(this.nip, this.udgpwd)
     },
     udgpwd (val, oldVal) {
-      this.checkUdeGCreds(this.$data.nip, this.$data.udgpwd)
+      this.checkUdeGCreds(this.nip, this.udgpwd)
     }
   }
 }
