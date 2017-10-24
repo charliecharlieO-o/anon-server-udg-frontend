@@ -12,11 +12,6 @@
                   <v-list-tile-content>
                     <v-list-tile-title>{{ (this.$session.get('USER')).username }}</v-list-tile-title>
                   </v-list-tile-content>
-                  <v-list-tile-action>
-                    <v-btn icon @click.native.stop="mini = !mini">
-                      <v-icon>chevron_left</v-icon>
-                    </v-btn>
-                  </v-list-tile-action>
                 </v-list-tile>
               </router-link>
             </v-list>
