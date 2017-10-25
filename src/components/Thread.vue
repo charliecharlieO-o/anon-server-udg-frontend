@@ -90,7 +90,7 @@
                     </v-container>
                   </v-card-media>
                   <v-card-media v-else :src="thread.media.location" height="200px"
-                    style="margin:auto;width:50%;display:block;" v-on:click="showMediaModal = true">
+                    class="media-thumbnail-big" v-on:click="showMediaModal = true">
                     <v-container fluid style="padding:10px;">
                       <v-layout fill-height>
                         <v-flex xs12 align-end flexbox>
@@ -279,6 +279,14 @@ export default {
   margin-right: 5px;
   cursor: pointer;
 }
+
+.media-thumbnail-big {
+  margin:auto;
+  width:50%;
+  display:block;
+  cursor: pointer;
+}
+
 .mimetype {
   background: rgba(0,0,0,0.6);
   padding: 5px;
