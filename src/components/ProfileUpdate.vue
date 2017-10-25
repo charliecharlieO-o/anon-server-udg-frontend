@@ -16,7 +16,7 @@
           <div class="modal-body" style="margin-top:0px;margin-bottom:0px;">
             <v-text-field
               v-model="text"
-              label="Descripcion"
+              label="Descripcion/Bio"
               textarea
               counter
               max="300"
@@ -128,36 +128,6 @@ export default {
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     transition: all .3s ease;
     font-family: Helvetica, Arial, sans-serif;
-}
-
-.modal-header h3 {
-    margin-top: 0;
-    color: #42b983;
-}
-
-.modal-body {
-    margin: 20px 0;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.form-label {
-    display: block;
-    margin-bottom: 1em;
-}
-
-.form-label > .form-control {
-    margin-top: 0.5em;
-}
-
-.form-control {
-    display: block;
-    width: 100%;
-    padding: 0.5em 1em;
-    line-height: 1.5;
-    border: 1px solid #ddd;
 }
 
 /*

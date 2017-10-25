@@ -39,22 +39,23 @@
             <v-chip v-if="accessLevel === 'limited'" outline class="white white--text">{{ networksCount }}</v-chip>
           </v-card-title>
           <v-list v-if="accessLevel !== 'limited' || profileId === 'me'">
-            <v-list-tile>
+            <updateNetwork :show="showNetworkEdt" :networkName="networkName" :networkLabel="networkLabel" @close="showNetworkEdt = false"></updateNetwork>
+            <v-list-tile v-on:click="showNetworkEdt=true;networkName='facebook';networkLabel='nombre de usuario'">
               <img src="../assets/icon-zuckd.svg" class="social-icon" />
               <span>perfil de facebook (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile>
+            <v-list-tile v-on:click="showNetworkEdt=true;networkName='instagram';networkLabel='nombre de usuario'">
               <img src="../assets/icon-instagram.svg" class="social-icon" />
               <span>cuenta de instagram (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile>
+            <v-list-tile v-on:click="showNetworkEdt=true;networkName='snapchat';networkLabel='snapchat handle'">
               <img src="../assets/icon-snapchat.svg" class="social-icon" />
               <span>snapchat handle (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile>
+            <v-list-tile v-on:click="showNetworkEdt=true;networkName='twitter';networkLabel='@tu nombre'">
               <img src="../assets/icon-twitter.svg" class="social-icon" />
               <span>@ de twitter (click para editar)</span>
             </v-list-tile>
@@ -137,6 +138,7 @@
 
 <script>
 import profileUpdate from './ProfileUpdate.vue'
+import networkUpdate from './UpdateNetwork'
 import {standardAuthGet, standardAuthPost} from '../../utils/maskmob-api'
 export default {
   name: 'profile',
@@ -150,11 +152,15 @@ export default {
       requestObj: null,
       requestStatus: 'befriend', // Can be 'befriend', 'candelete', 'await', 'select', 'accept' or 'deny'
       anonimityState: false,
-      showUpdate: false
+      showUpdate: false,
+      showNetworkEdt: false,
+      networkName: '',
+      networkLabel: ''
     }
   },
   components: {
-    updateProfile: profileUpdate
+    updateProfile: profileUpdate,
+    updateNetwork: networkUpdate
   },
   created () {
     this.profileId = this.$route.params.profileId
