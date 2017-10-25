@@ -57,7 +57,6 @@
 <script>
 import {standardAuthUpload} from '../../utils/maskmob-api'
 export default {
-  name: 'commentPostModal',
   template: '#commentPostModal',
   props: ['show', 'thread', 'reply'],
   data () {
