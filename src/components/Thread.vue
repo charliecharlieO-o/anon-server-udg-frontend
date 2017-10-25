@@ -1,7 +1,7 @@
 <template>
   <div id="threadView">
     <!-- Comment Modal -->
-    <commentPostModal :show="showModal" @close="showModal = false" :thread="threadId" ></commentPostModal>
+    <commentPostModal :show="showCommentModal" @close="showCommentModal = false" :thread="threadId" ></commentPostModal>
     <!-- Loading Div -->
     <div v-if="loading" style="text-align:center;margin-top:30px;width:100%;">
       <v-progress-circular indeterminate v-bind:size="100" class="cyan--text"></v-progress-circular>
@@ -69,18 +69,40 @@
               <v-layout row-sm column child-flex-sm>
                 <!-- No media thread -->
                 <v-flex v-if="!thread.media" xs12>
-                  <p class="text-xs-left"style="font-size:115%;margin:5px;white-space: pre-wrap;">{{ thread.text }}</p>
+                  <p class="text-xs-left thread-text">{{ thread.text }}</p>
                 </v-flex>
                 <!-- If image media thread -->
                 <v-flex v-else-if="thread.media && thread.media.mimetype.match(/image/g)" xs12>
-                  <div>
-                    <imageModal></imageModal>
-                    <img v-if="!thread.text" class="text-sm-left" style="margin:auto;width:50%;display:block;"
-                    :src="thread.media.location" />
-                    <img v-else class="text-sm-left" style="float:left;width:inherit;max-width:300px;display:block;margin:5px;"
-                    :src="thread.media.location" />
-                  </div>
-                  <p class="text-xs-left"style="font-size:115%;margin:5px;white-space: pre-wrap;">{{ thread.text }}</p>
+                  <!-- Media Modal -->
+                  <imageModal :show="showMediaModal" @close="showMediaModal = false" :source="thread.media.location"></imageModal>
+                  <!-- Media Thumbnail -->
+                  <v-card-media v-if="thread.text" :src="thread.media.thumbnail" height="200px"
+                    class="media-thumbnail" v-on:click="showMediaModal = true">
+                    <v-container fluid style="padding:10px;">
+                      <v-layout fill-height>
+                        <v-flex xs12 align-end flexbox>
+                          <v-spacer></v-spacer>
+                          <span class="white--text mimetype">
+                            <b>{{ thread.media.mimetype }}</b>
+                          </span>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card-media>
+                  <v-card-media v-else :src="thread.media.location" height="200px"
+                    style="margin:auto;width:50%;display:block;" v-on:click="showMediaModal = true">
+                    <v-container fluid style="padding:10px;">
+                      <v-layout fill-height>
+                        <v-flex xs12 align-end flexbox>
+                          <v-spacer></v-spacer>
+                          <span class="white--text mimetype">
+                            <b>click -> expandir</b>
+                          </span>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card-media>
+                  <p class="text-xs-left thread-text">{{ thread.text }}</p>
                 </v-flex>
                 <!-- If video media thread -->
                 <v-flex v-else-if="thread.media && thread.media.mimetype.match(/video/g)" xs12>
@@ -92,7 +114,7 @@
                       <source :src="thread.media.location" :type="thread.media.mimetype" />
                     </video>
                   </div>
-                  <p class="text-xs-left" style="font-size:115%;margin:5px;white-space: pre-wrap;">{{ thread.text }}</p>
+                  <p class="text-xs-left thread-text" >{{ thread.text }}</p>
                 </v-flex>
 
               </v-layout>
@@ -120,12 +142,13 @@
             <v-btn v-if="commentsOnDisplay.length !== comments.length" block class="grey white--text">cargar 50+</v-btn>
 
           </v-container>
+
         </v-flex>
         <v-flex class="hidden-sm-and-down" xs1-2></v-flex>
       </v-layout>
     </v-container>
     <v-btn
-    v-on:click="showModal = true"
+    v-on:click="showCommentModal = true"
     style="textDecoration:none;border:0;outline:none;"
     v-tooltip:top="{ html: 'Comentar' }"
     class="orange"
@@ -156,7 +179,8 @@ export default {
       error: '',
       thread: null,
       threadId: '',
-      showModal: false,
+      showCommentModal: false,
+      showMediaModal: false,
       // Comments
       commentsOnDisplay: [],
       comments: []
@@ -227,7 +251,8 @@ export default {
         this.error = e
         this.loading = false
       }
-    }
+    },
+    async showNewComment () {}
   }
 }
 </script>
@@ -241,5 +266,26 @@ export default {
 .username-span {
   color:DarkBlue;
   margin-right:5px;
+}
+.media-thumbnail {
+  float: left;
+  width: inherit;
+  max-width: 300px;
+  display: block;
+  margin-left:0px;
+  margin-bottom: 5px;
+  width: 100%;
+  display: block;
+  margin-right: 5px;
+  cursor: pointer;
+}
+.mimetype {
+  background: rgba(0,0,0,0.6);
+  padding: 5px;
+}
+.thread-text {
+  font-size: 115%;
+  margin: 5px;
+  white-space: pre-wrap;
 }
 </style>
