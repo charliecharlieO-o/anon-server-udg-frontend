@@ -58,19 +58,17 @@
             </router-link>
             <!-- END Networking tile -->
             <!-- Notifications tile -->
-            <router-link to="/notifications" style="textDecoration:none;">
-              <v-list-tile>
-                <v-list-tile-action>
-                  <v-icon>notifications</v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title>Notificaciones</v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-content>
-                  <v-chip label outline class="grey grey--text">0</v-chip>
-                </v-list-tile-content>
-              </v-list-tile>
-            </router-link>
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-icon>notifications</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>Notificaciones</v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-content>
+                <v-chip label outline class="grey grey--text">0</v-chip>
+              </v-list-tile-content>
+            </v-list-tile>
             <!-- END notificatilns tile -->
             <v-divider></v-divider>
             <!-- FAQ tile -->
