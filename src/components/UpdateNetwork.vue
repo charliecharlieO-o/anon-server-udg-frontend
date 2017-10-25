@@ -19,7 +19,6 @@
               v-model="networkText"
               :label="networkLabel"
               style="margin-bottom:0px;margin-top:0px;padding-bottom:0px;"
-              required
               counter
               max="250"
               maxlength="250"
