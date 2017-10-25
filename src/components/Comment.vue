@@ -103,7 +103,6 @@
 import {parseComment} from '../../utils/maskmob-api'
 import commentPostModal from './CommentModal'
 export default {
-  name: 'commentComponent',
   template: '#commentComponent',
   props: ['commentObj'],
   components: {
