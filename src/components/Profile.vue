@@ -86,7 +86,7 @@
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs12>
                   <span class="label-desc">Anonimidad:</span>
-                  <v-switch class="switch-wrapper" label="Estado: Activo" ></v-switch>
+                  <v-switch class="switch-wrapper" label="Estado: Activo" v-model="anonimity"></v-switch>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -155,7 +155,8 @@ export default {
       showUpdate: false,
       showNetworkEdt: false,
       networkName: '',
-      networkLabel: ''
+      networkLabel: '',
+      anonimity: false
     }
   },
   components: {
