@@ -139,6 +139,7 @@
     </v-btn>
   </div>
 </template>
+
 <script>
 import {standardAuthGet, getBaseUrl} from '../../utils/maskmob-api'
 import commentPostModal from './CommentModal'
@@ -230,6 +231,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 .user-name {
   font-size: 150%;
