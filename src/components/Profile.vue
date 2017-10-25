@@ -1,5 +1,7 @@
 <template>
   <div id="profileView">
+    <!-- Profile Update Modal -->
+    <updateProfile :show="showUpdate" @close="showUpdate = false"></updateProfile>
     <!-- Data -->
     <v-layout row wrap>
       <v-flex xs1></v-flex>
@@ -7,7 +9,7 @@
         <!-- Profile Picture -->
         <div class="profile-box">
           <v-flex v-if="profileId === 'me'" xs1 offset-xs6 style="text-align:center;">
-            <v-btn  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
+            <v-btn v-on:click="showUpdate = true"  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
           </v-flex>
           <v-list-tile-avatar>
             <img :src="userObj.profile_pic.thumbnail" class="profile-picture" />
@@ -134,6 +136,7 @@
 </template>
 
 <script>
+import profileUpdate from './ProfileUpdate.vue'
 import {standardAuthGet, standardAuthPost} from '../../utils/maskmob-api'
 export default {
   name: 'profile',
@@ -146,8 +149,12 @@ export default {
       accessLevel: 'limited', // Can be limited or full for outside viewers
       requestObj: null,
       requestStatus: 'befriend', // Can be 'befriend', 'candelete', 'await', 'select', 'accept' or 'deny'
-      anonimityState: false
+      anonimityState: false,
+      showUpdate: false
     }
+  },
+  components: {
+    updateProfile: profileUpdate
   },
   created () {
     this.profileId = this.$route.params.profileId
