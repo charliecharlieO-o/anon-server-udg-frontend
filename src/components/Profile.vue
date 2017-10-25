@@ -175,7 +175,7 @@ export default {
             this.requestStatus = 'befriend'
           } else {
             // If I sent it
-            if (response.data.doc.requested_by === user._id) {
+            if (response.data.doc.requested_by.id === user._id) {
               this.requestStatus = (response.data.doc.has_access) ? 'candelete' : 'await'
             } else {
               // can acept or decline
