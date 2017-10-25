@@ -55,7 +55,7 @@
             <v-toolbar class="white" dense>
               <v-text-field v-model="usernameQuery" placeholder="nombre de usuario" @keyup.enter="searchUser"
               hide-details single-line></v-text-field>
-              <v-btn v-on:click="searchThread" icon>
+              <v-btn v-on:click="searchUserByName" icon>
                 <v-icon>search</v-icon>
               </v-btn>
             </v-toolbar>
