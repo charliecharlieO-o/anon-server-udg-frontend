@@ -1,7 +1,7 @@
 <template>
   <v-container fluid id="commentComponent" style="margin:0px;padding:0px;">
     <!-- Comment Modal -->
-    <commentPostModal :thread="comment.thread" :reply="comment._id"></commentPostModal>
+    <commentPostModal :show="showModal" @close="showModal = false" :thread="comment.thread" :reply="comment._id"></commentPostModal>
     <!-- Commnent -->
     <v-card flat>
       <v-container fluid style="padding:0px;margin:0px;padding-top:10px;">
@@ -42,7 +42,7 @@
           </v-flex>
           <!-- Reply Button -->
           <v-flex xs1-2>
-            <v-btn icon v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
+            <v-btn icon v-on:click="showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
               <v-icon>reply</v-icon>
             </v-btn>
           </v-flex>
@@ -51,7 +51,7 @@
       </v-container>
     </v-card>
     <!-- Reply Box -->
-    <div style="background-color:#FFFFFF;margin-bottom:5px;">
+    <div class="reply-box">
       <v-layout v-for="comment in repliesOnDisplay" :key="comment._id" :id="comment._id" row style="padding-top:10px;">
         <v-flex xs1></v-flex><!-- Spacer -->
         <!-- User Defined Space -->
@@ -113,7 +113,8 @@ export default {
     return {
       comment: null,
       repliesOnDisplay: [],
-      toReply: null
+      toReply: null,
+      showModal: false
     }
   },
   created () {
@@ -164,5 +165,9 @@ export default {
   line-height: 110%;
   font-size:115%;
   white-space: pre-wrap;
+}
+.reply-box {
+  background-color:#FFFFFF;
+  margin-bottom:5px;
 }
 </style>
