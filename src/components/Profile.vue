@@ -85,7 +85,8 @@
               <!-- Anonimity Status -->
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs12>
-                  <span class="label-desc">Anonimidad:</span>
+                  <updateAnonimity :show="setupAnon" @close="setupAnon = false"></updateAnonimity>
+                  <span class="label-desc">Incognito:</span>
                   <v-switch class="switch-wrapper" label="Estado: Activo" v-model="anonimity"></v-switch>
                 </v-flex>
               </v-layout>
@@ -137,8 +138,9 @@
 </template>
 
 <script>
-import profileUpdate from './ProfileUpdate.vue'
+import profileUpdate from './ProfileUpdate'
 import networkUpdate from './UpdateNetwork'
+import anonUpdate from './AnonimitySetup'
 import {standardAuthGet, standardAuthPost} from '../../utils/maskmob-api'
 export default {
   name: 'profile',
@@ -161,7 +163,8 @@ export default {
   },
   components: {
     updateProfile: profileUpdate,
-    updateNetwork: networkUpdate
+    updateNetwork: networkUpdate,
+    updateAnonimity: anonUpdate
   },
   created () {
     this.profileId = this.$route.params.profileId
@@ -173,6 +176,11 @@ export default {
       this.loadProfileInfo()
     }
     next()
+  },
+  computed: {
+    setupAnon: function () {
+      return this.anonimity
+    }
   },
   methods: {
     async loadProfileInfo () {
@@ -224,7 +232,8 @@ export default {
     },
     async denyRequest () {},
     async acceptRequest () {},
-    async removeRelationship () {}
+    async removeRelationship () {},
+    async changeAnonymousStatus () {}
   }
 }
 </script>
