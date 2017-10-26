@@ -58,7 +58,7 @@
             </router-link>
             <!-- END Networking tile -->
             <!-- Notifications tile -->
-            <v-list-tile>
+            <v-list-tile v-on:click="showNotifications = !showNotifications">
               <v-list-tile-action>
                 <v-icon>notifications</v-icon>
               </v-list-tile-action>
@@ -68,6 +68,9 @@
               <v-list-tile-content>
                 <v-chip label outline class="grey grey--text">0</v-chip>
               </v-list-tile-content>
+              <v-dialog v-model="showNotifications">
+                <notifications-picker />
+              </v-dialog>
             </v-list-tile>
             <!-- END notificatilns tile -->
             <v-divider></v-divider>
@@ -135,6 +138,8 @@
 
 <script>
 import {getDevUrl} from '../utils/maskmob-api'
+import NotificationsPicker from '@/components/NotificationsPicker'
+
 export default {
   name: 'app',
   created () {
@@ -155,7 +160,8 @@ export default {
       mini: false,
       right: null,
       loggedIn: false,
-      profile: null
+      profile: null,
+      showNotifications: false
     }
   },
   methods: {
@@ -172,6 +178,9 @@ export default {
       window.location.href = `${getDevUrl()}/#/login`
       location.reload()
     }
+  },
+  components: {
+    NotificationsPicker
   }
 }
 </script>

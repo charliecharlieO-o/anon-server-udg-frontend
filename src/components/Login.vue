@@ -85,6 +85,7 @@ export default {
             }
             // Start new session with new token
             this.$session.start()
+            this.$store.commit('setJWT', response.data.token)
             this.$session.set('JWTOKEN', response.data.token)
             this.$session.set('USER', response.data.user)
             // Take to main application
