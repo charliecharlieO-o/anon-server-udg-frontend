@@ -8,7 +8,7 @@ const DEV_URL = envConfig.LOCAL
 
 export {
   getBaseUrl, standardLogin, standardUnauthPost, standardAuthPut, standardAuthPost, standardAuthGet, getDevUrl,
-  parseThreads, standardAuthUpload, parseComment, parseBoards
+  parseThreads, standardAuthUpload, parseComment, parseBoards, standardAuthPutUpload
 }
 
 function getBaseUrl() {
@@ -81,6 +81,16 @@ function standardAuthGet(jwtToken, objectUrlPath) {
 function standardAuthUpload(jwtToken, objectUrlPath, formData) {
   const url = `${BASE_URL}${objectUrlPath}`
   return axios.post(url, formData, {
+    'headers': {
+      'Content-Type': 'multipart/form-data',
+      'authorization': jwtToken
+    }
+  })
+}
+
+function standardAuthPutUpload(jwtToken, objectUrlPath, formData) {
+  const url = `${BASE_URL}${objectUrlPath}`
+  return axios.put(url, formData, {
     'headers': {
       'Content-Type': 'multipart/form-data',
       'authorization': jwtToken
