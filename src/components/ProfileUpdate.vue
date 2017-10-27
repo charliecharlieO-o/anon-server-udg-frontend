@@ -3,19 +3,19 @@
     <div class="modal-mask" v-on:click="close" v-show="show">
       <div class="modal-container" @click.stop>
         <!-- Updating -->
-        <div v-if="uploading" style="text-align:center;width:inherit;display:block;margin:auto;">
+        <div v-if="updating" style="text-align:center;width:inherit;display:block;margin:auto;">
           <v-progress-circular indeterminate v-bind:size="100" class="cyan--text"></v-progress-circular>
           <h4>Actualizando...</h4>
         </div>
         <!-- Error -->
-        <div v-if="!uploading && errorCode" style="text-align:center;width:inherit;display:block;margin:auto;">
+        <div v-if="!updating && errorCode" style="text-align:center;width:inherit;display:block;margin:auto;">
           <h4>ERROR {{ errorCode }} - {{ error }}</h4>
         </div>
         <!-- Update Form -->
-        <div v-if="!uploading && !errorCode">
+        <div v-if="!updating && !errorCode">
           <div class="modal-body" style="margin-top:0px;margin-bottom:0px;">
             <v-text-field
-              v-model="text"
+              v-model="bio"
               label="Descripcion/Bio"
               textarea
               counter
@@ -29,7 +29,7 @@
             <v-layout row wrap align-center>
               <v-flex xs12 style="text-align:left;margin-bottom:5px;">
                 <span style="font-size:130%;">Imagen de Perfil: </span>
-                <input type="file" name="postFile" accept="audio/*|video/*|image/*"
+                <input type="file" name="postFile" accept="image/*"
                 @change="filesChange($event.target.name, $event.target.files)" />
               </v-flex>
             </v-layout>
@@ -59,25 +59,31 @@
 </template>
 
 <script>
+import {standardAuthPutUpload} from '../../utils/maskmob-api'
 export default {
   props: ['show', 'user'],
   data () {
     return {
       title: '',
-      text: '',
-      uploading: false,
+      bio: '',
+      updating: false,
       errorCode: '',
       error: '',
-      form: null
+      form: null,
+      changed: false
     }
   },
   methods: {
     close () {
-      this.$emit('close')
-      this.text = ''
-      this.uploading = false
-      this.errorCode = ''
-      this.error = ''
+      if (this.updating) {
+        return
+      } else {
+        this.$emit('close')
+        this.text = ''
+        this.updating = false
+        this.errorCode = ''
+        this.error = ''
+      }
     },
     filesChange (fieldName, fileList) {
       // Create new form data
@@ -89,7 +95,31 @@ export default {
       formData.append('mfile', fileList[0])
       this.form = formData
     },
-    updateProfile () {}
+    async updateProfile () {
+      // Check if form has been created
+      if (!this.form) {
+        this.form = new FormData()
+      }
+      this.updating = true
+      // Prepare data
+      this.bio.trim()
+      this.form.append('bio', this.bio)
+      standardAuthPutUpload(this.$session.get('JWTOKEN'), '/user/update-profile', this.form).then((response) => {
+        if (response.status === 200 && response.data.success === true) {
+          // Redirect
+          this.$router.push(`/thread/${response.data.doc._id}`)
+        } else {
+          // Show error
+          this.errorCode = response.status
+        }
+        this.updating = false
+        this.close()
+      }).catch((err) => {
+        this.error = err
+        this.updating = false
+        this.close()
+      })
+    }
   },
   mounted () {
     document.addEventListener('keydown', (e) => {
