@@ -42,22 +42,22 @@
             <updateNetwork :show="showNetworkEdt" :networkName="networkName" :networkLabel="networkLabel" @close="showNetworkEdt = false"></updateNetwork>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='facebook';networkLabel='nombre de usuario'">
               <img src="../assets/icon-zuckd.svg" class="social-icon" />
-              <span>perfil de facebook (click para editar)</span>
+              <span>perfil de facebook: {{ socialNetworkInfo('facebook') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='instagram';networkLabel='nombre de usuario'">
               <img src="../assets/icon-instagram.svg" class="social-icon" />
-              <span>cuenta de instagram (click para editar)</span>
+              <span>cuenta de instagram: {{ socialNetworkInfo('instagram') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='snapchat';networkLabel='snapchat handle'">
               <img src="../assets/icon-snapchat.svg" class="social-icon" />
-              <span>snapchat handle (click para editar)</span>
+              <span>snapchat handle: {{ socialNetworkInfo('snapchat') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='twitter';networkLabel='@tu nombre'">
               <img src="../assets/icon-twitter.svg" class="social-icon" />
-              <span>@ de twitter (click para editar)</span>
+              <span>@ de twitter: {{ socialNetworkInfo('twitter') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
           </v-list>
         </v-card>
@@ -233,7 +233,19 @@ export default {
     async denyRequest () {},
     async acceptRequest () {},
     async removeRelationship () {},
-    async changeAnonymousStatus () {}
+    async changeAnonymousStatus () {},
+    socialNetworkInfo (name) {
+      if (!this.userObj || !this.userObj.contact_info) {
+        return undefined
+      } else {
+        const networkIdx = this.userObj.contact_info.findIndex(x => x.network_name === name)
+        if (networkIdx < 0) {
+          return undefined
+        } else {
+          return this.userObj.contact_info[networkIdx].network_contact
+        }
+      }
+    }
   }
 }
 </script>
