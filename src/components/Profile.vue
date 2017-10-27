@@ -36,10 +36,10 @@
         <v-card>
           <v-card-title class="grey">
             <span class="headline white--text" style="font-size:25%;">Redes Sociales</span>
-            <v-chip v-if="accessLevel === 'limited'" outline class="white white--text">{{ networksCount }}</v-chip>
           </v-card-title>
           <v-list v-if="accessLevel !== 'limited' || profileId === 'me'">
-            <updateNetwork :show="showNetworkEdt" :networkName="networkName" :networkLabel="networkLabel" @close="showNetworkEdt = false"></updateNetwork>
+            <updateNetwork :show="showNetworkEdt" :networkName="networkName" :networkLabel="networkLabel"
+              @close="showNetworkEdt = false" @updated="refreshUserProfile"></updateNetwork>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='facebook';networkLabel='nombre de usuario'">
               <img src="../assets/icon-zuckd.svg" class="social-icon" />
               <span>perfil de facebook: {{ socialNetworkInfo('facebook') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
@@ -234,6 +234,20 @@ export default {
     async acceptRequest () {},
     async removeRelationship () {},
     async changeAnonymousStatus () {},
+    async refreshUserProfile () {
+      try {
+        const userId = (this.$session.get('USER'))._id
+        const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/user/${userId}/profile`)
+        if (response.status === 200 && response.data.success) {
+          this.$session.set('USER', response.data.doc)
+          this.userObj = response.data.doc
+        } else {
+          console.log('refreshing error')
+        }
+      } catch (error) {
+        console.log('refreshing error')
+      }
+    },
     socialNetworkInfo (name) {
       if (!this.userObj || !this.userObj.contact_info) {
         return undefined

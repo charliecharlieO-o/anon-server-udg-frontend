@@ -78,12 +78,15 @@ export default {
       try {
         const response = await standardAuthPut({'network_name': this.networkName, 'contact': this.networkText}, this.$session.get('JWTOKEN'), '/user/update/networks')
         if (response.status === 200) {
-          console.log(response)
+          this.updating = false
+          this.$emit('updated')
+          this.close()
         } else {
-          console.log('error')
+          this.errorCode = response.status
+          this.error = 'error'
         }
       } catch (err) {
-        console.log(err)
+        this.error = 'error'
       }
       this.updating = false
     }
