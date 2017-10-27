@@ -1,7 +1,7 @@
 <template>
   <div id="profileView">
     <!-- Profile Update Modal -->
-    <updateProfile :show="showUpdate" @close="showUpdate = false"></updateProfile>
+    <updateProfile :show="showUpdate" @close="showUpdate = false" @updated="refreshUserProfile"></updateProfile>
     <!-- Data -->
     <v-layout row wrap>
       <v-flex xs1></v-flex>
@@ -42,22 +42,22 @@
               @close="showNetworkEdt = false" @updated="refreshUserProfile"></updateNetwork>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='facebook';networkLabel='nombre de usuario'">
               <img src="../assets/icon-zuckd.svg" class="social-icon" />
-              <span>perfil de facebook: {{ socialNetworkInfo('facebook') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
+              <span><b>perfil de facebook:</b> {{ socialNetworkInfo('facebook') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='instagram';networkLabel='nombre de usuario'">
               <img src="../assets/icon-instagram.svg" class="social-icon" />
-              <span>cuenta de instagram: {{ socialNetworkInfo('instagram') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
+              <span><b>cuenta de instagram:</b> {{ socialNetworkInfo('instagram') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='snapchat';networkLabel='snapchat handle'">
               <img src="../assets/icon-snapchat.svg" class="social-icon" />
-              <span>snapchat handle: {{ socialNetworkInfo('snapchat') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
+              <span><b>snapchat handle:</b> {{ socialNetworkInfo('snapchat') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='twitter';networkLabel='@tu nombre'">
               <img src="../assets/icon-twitter.svg" class="social-icon" />
-              <span>@ de twitter: {{ socialNetworkInfo('twitter') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
+              <span><b>@ de twitter:</b> {{ socialNetworkInfo('twitter') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
           </v-list>
         </v-card>

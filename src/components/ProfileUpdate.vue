@@ -96,6 +96,7 @@ export default {
       this.form = formData
     },
     async updateProfile () {
+      this.updating = true
       // Check if form has been created
       if (!this.form) {
         this.form = new FormData()
@@ -104,21 +105,21 @@ export default {
       // Prepare data
       this.bio.trim()
       this.form.append('bio', this.bio)
-      standardAuthPutUpload(this.$session.get('JWTOKEN'), '/user/update-profile', this.form).then((response) => {
+      // Send shit
+      try {
+        const response = standardAuthPutUpload(this.$session.get('JWTOKEN'), '/user/update-profile', this.form)
         if (response.status === 200 && response.data.success === true) {
-          // Redirect
-          this.$router.push(`/thread/${response.data.doc._id}`)
+          this.updating = false
+          this.$emit('updated')
+          this.close()
         } else {
-          // Show error
           this.errorCode = response.status
+          this.error = 'error'
         }
-        this.updating = false
-        this.close()
-      }).catch((err) => {
-        this.error = err
-        this.updating = false
-        this.close()
-      })
+      } catch (error) {
+        this.error = 'error'
+      }
+      this.updating = false
     }
   },
   mounted () {
