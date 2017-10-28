@@ -1,7 +1,7 @@
 <template>
   <div id="threadView">
     <!-- Comment Modal -->
-    <commentPostModal :show="showCommentModal" @close="showCommentModal = false" :thread="threadId" ></commentPostModal>
+    <commentPostModal :show="showCommentModal" @close="showCommentModal = false" :thread="threadId" @posted="addComment" ></commentPostModal>
     <!-- Loading Div -->
     <div v-if="loading" style="text-align:center;margin-top:30px;width:100%;">
       <v-progress-circular indeterminate v-bind:size="100" class="cyan--text"></v-progress-circular>
@@ -139,7 +139,8 @@
 
             <!-- Comment List -->
             <commentComponent v-for="comment in commentsOnDisplay" :key="comment._id" :id="comment._id" :commentObj="comment"></commentComponent>
-            <v-btn v-if="commentsOnDisplay.length !== comments.length" block class="grey white--text">cargar 50+</v-btn>
+            <v-btn block class="grey white--text">cargar 50+</v-btn>
+            <commentComponent v-for="comment in newComments" :key="comment._id" :id="comment._id" :commentObj="comment"></commentComponent>
 
           </v-container>
 
@@ -183,7 +184,8 @@ export default {
       showMediaModal: false,
       // Comments
       commentsOnDisplay: [],
-      comments: []
+      comments: [],
+      newComments: []
     }
   },
   components: {
@@ -252,7 +254,9 @@ export default {
         this.loading = false
       }
     },
-    async showNewComment () {}
+    addComment (comment) {
+      this.newComments.push(comment)
+    }
   }
 }
 </script>
