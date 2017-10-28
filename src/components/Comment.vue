@@ -117,13 +117,12 @@ export default {
     }
   },
   created () {
-    this.comment = this.$props['commentObj']
     this.loadCommentContent()
   },
   methods: {
     loadCommentContent () {
       // Parse comment
-      this.comment = parseComment(this.comment)
+      this.comment = parseComment(this.$props['commentObj'])
       // Load first 2 subreplies
       this.repliesOnDisplay = this.comment.replies.slice(0, 1)
       for (let x in this.repliesOnDisplay) {
