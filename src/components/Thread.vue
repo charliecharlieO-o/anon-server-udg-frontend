@@ -122,7 +122,7 @@
           </v-card>
 
           <!-- Comment Section -->
-          <v-container fluid style="height:auto;background-color:#F0F0F0;padding:5px;">
+          <v-container id="commentSection" fluid class="comment-section">
             <v-layout row style="padding:0px;margin:0px;">
               <v-flex xs12 style="padding:0px;margin:0px;">
                 <h6 class="text-xs-left" style="margin-bottom:2px;">
@@ -138,9 +138,9 @@
             </div>
 
             <!-- Comment List -->
-            <commentComponent v-for="comment in commentsOnDisplay" :key="comment._id" :id="comment._id" :commentObj="comment"></commentComponent>
+            <commentComponent v-for="comment in commentsOnDisplay" :key="comment._id" :id="`c${comment._id}`" :commentObj="comment"></commentComponent>
             <v-btn block class="grey white--text">cargar 50+</v-btn>
-            <commentComponent v-for="comment in newComments" :key="comment._id" :id="comment._id" :commentObj="comment"></commentComponent>
+            <commentComponent v-for="comment in newComments" :key="comment._id" :id="`c${comment._id}`" :commentObj="comment"></commentComponent>
 
           </v-container>
 
@@ -255,7 +255,10 @@ export default {
       }
     },
     addComment (comment) {
+      // Add comment to newComments array
       this.newComments.push(comment)
+      // Scroll to comment asynchronously
+      this.$nextTick(() => document.getElementById(`c${comment._id}`).scrollIntoView())
     }
   }
 }
@@ -299,5 +302,10 @@ export default {
   font-size: 115%;
   margin: 5px;
   white-space: pre-wrap;
+}
+.comment-section {
+  height:auto;
+  background-color:#F0F0F0;
+  padding:5px;
 }
 </style>
