@@ -16,10 +16,10 @@
               label="Texto"
               textarea
               counter
-              max="1000"
+              max="750"
               rows="5"
               style="margin-top:0px;margin-bottom:0px;"
-              maxlength="1000"
+              maxlength="750"
             ></v-text-field>
           </div>
           <div container fluid style="margin-top:0px;margin-bottom:0px;">
@@ -74,6 +74,7 @@ export default {
       this.$emit('close')
       this.text = ''
       this.uploading = false
+      this.form = null
       this.errorCode = ''
       this.error = ''
     },
