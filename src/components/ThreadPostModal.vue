@@ -85,6 +85,7 @@ export default {
       this.title = ''
       this.text = ''
       this.uploading = false
+      this.form = null
       this.errorCode = ''
       this.error = ''
     },
