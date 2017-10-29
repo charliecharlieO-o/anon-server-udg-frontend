@@ -7,7 +7,7 @@
       <v-container fluid style="padding:0px;margin:0px;padding-top:10px;">
         <v-layout row>
           <!-- User Defined Space -->
-          <v-flex xs1-2 style="text-align:left;">
+          <v-flex xs1-2 style="text-align:left;margin-right:0px;padding-right:0px;">
             <img v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
               src="/static/hydeegg.jpg" class="profile-thumbnail">
             <img v-else-if="comment.poster.anon"
@@ -17,7 +17,7 @@
             </router-link>
           </v-flex>
           <!-- Comment Data -->
-          <v-flex xs11>
+          <v-flex xs10 style="margin-left:0px;padding-left:0px;">
             <!-- Header Info -->
             <v-layout row style="margin-bottom:3px;">
               <span v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
@@ -30,14 +30,7 @@
               <span class="white grey--text" style="margin-left:5px">{{ comment.created_at }}</span>
             </v-layout>
             <!-- Comment text content -->
-            <v-layout v-if="comment.text" row>
-              <div v-if="comment.text.length <= 240">
-                <p :id="`p${comment._id}`" class="text-xs-left default-p">{{ comment.text }}</p>
-              </div>
-              <div v-else>
-                <p :id="`p${comment._id}`" class="text-xs-left default-p">{{ comment.text.slice(0,240) }}...<a style="cursor:pointer">mostrar mas</a></p>
-              </div>
-            </v-layout>
+            <p :id="`p${comment._id}`" class="text-xs-left default-p">{{ comment.text }}</p>
             <!-- Comment thumbnail content -->
           </v-flex>
           <!-- Reply Button -->
@@ -163,6 +156,7 @@ export default {
   line-height: 110%;
   font-size:115%;
   white-space: pre-wrap;
+  word-wrap: break-word;
 }
 .reply-box {
   background-color:#FFFFFF;
