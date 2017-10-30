@@ -1,13 +1,17 @@
 <template>
   <div id="profileView">
+    <!-- Error Div -->
+    <div v-if="error" style="text-align:center;margin-top:30px;">
+      <h4>{{ error }}</h4>
+    </div>
     <!-- Profile Update Modal -->
     <updateProfile :show="showUpdate" @close="showUpdate = false" @updated="refreshUserProfile"></updateProfile>
     <!-- Data -->
-    <v-layout row wrap>
+    <v-layout v-if="!error" row wrap>
       <v-flex xs1></v-flex>
       <v-flex xs10>
         <!-- Profile Picture -->
-        <div class="profile-box">
+        <div v-if="userObj" class="profile-box">
           <v-flex v-if="profileId === 'me'" xs1 offset-xs6 style="text-align:center;">
             <v-btn v-on:click="showUpdate = true"  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
           </v-flex>
@@ -158,7 +162,8 @@ export default {
       showNetworkEdt: false,
       networkName: '',
       networkLabel: '',
-      anonimity: false
+      anonimity: false,
+      error: ''
     }
   },
   components: {
@@ -215,7 +220,7 @@ export default {
             this.networksCount = (response.data.limited) ? response.data.networks : 0
             this.userObj = response.data.doc
           } else {
-            console.log('error')
+            this.error = 'NO EXISTE EL USUARIO'
           }
         } catch (e) {
           console.log(e)
