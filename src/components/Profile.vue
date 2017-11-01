@@ -1,5 +1,7 @@
 <template>
   <div id="profileView">
+    <!-- Profile Update Modal -->
+    <updateProfile :show="showUpdate" @close="showUpdate = false"></updateProfile>
     <!-- Data -->
     <v-layout row wrap>
       <v-flex xs1></v-flex>
@@ -7,7 +9,7 @@
         <!-- Profile Picture -->
         <div class="profile-box">
           <v-flex v-if="profileId === 'me'" xs1 offset-xs6 style="text-align:center;">
-            <v-btn  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
+            <v-btn v-on:click="showUpdate = true"  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
           </v-flex>
           <v-list-tile-avatar>
             <img :src="userObj.profile_pic.thumbnail" class="profile-picture" />
@@ -37,22 +39,23 @@
             <v-chip v-if="accessLevel === 'limited'" outline class="white white--text">{{ networksCount }}</v-chip>
           </v-card-title>
           <v-list v-if="accessLevel !== 'limited' || profileId === 'me'">
-            <v-list-tile>
+            <updateNetwork :show="showNetworkEdt" :networkName="networkName" :networkLabel="networkLabel" @close="showNetworkEdt = false"></updateNetwork>
+            <v-list-tile v-on:click="showNetworkEdt=true;networkName='facebook';networkLabel='nombre de usuario'">
               <img src="../assets/icon-zuckd.svg" class="social-icon" />
               <span>perfil de facebook (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile>
+            <v-list-tile v-on:click="showNetworkEdt=true;networkName='instagram';networkLabel='nombre de usuario'">
               <img src="../assets/icon-instagram.svg" class="social-icon" />
               <span>cuenta de instagram (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile>
+            <v-list-tile v-on:click="showNetworkEdt=true;networkName='snapchat';networkLabel='snapchat handle'">
               <img src="../assets/icon-snapchat.svg" class="social-icon" />
               <span>snapchat handle (click para editar)</span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile>
+            <v-list-tile v-on:click="showNetworkEdt=true;networkName='twitter';networkLabel='@tu nombre'">
               <img src="../assets/icon-twitter.svg" class="social-icon" />
               <span>@ de twitter (click para editar)</span>
             </v-list-tile>
@@ -82,8 +85,9 @@
               <!-- Anonimity Status -->
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs12>
-                  <span class="label-desc">Anonimidad:</span>
-                  <v-switch class="switch-wrapper" label="Estado: Activo" ></v-switch>
+                  <updateAnonimity :show="setupAnon" @close="setupAnon = false"></updateAnonimity>
+                  <span class="label-desc">Incognito:</span>
+                  <v-switch class="switch-wrapper" label="Estado: Activo" v-model="anonimity"></v-switch>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -134,6 +138,9 @@
 </template>
 
 <script>
+import profileUpdate from './ProfileUpdate'
+import networkUpdate from './UpdateNetwork'
+import anonUpdate from './AnonimitySetup'
 import {standardAuthGet, standardAuthPost} from '../../utils/maskmob-api'
 export default {
   name: 'profile',
@@ -146,8 +153,18 @@ export default {
       accessLevel: 'limited', // Can be limited or full for outside viewers
       requestObj: null,
       requestStatus: 'befriend', // Can be 'befriend', 'candelete', 'await', 'select', 'accept' or 'deny'
-      anonimityState: false
+      anonimityState: false,
+      showUpdate: false,
+      showNetworkEdt: false,
+      networkName: '',
+      networkLabel: '',
+      anonimity: false
     }
+  },
+  components: {
+    updateProfile: profileUpdate,
+    updateNetwork: networkUpdate,
+    updateAnonimity: anonUpdate
   },
   created () {
     this.profileId = this.$route.params.profileId
@@ -159,6 +176,11 @@ export default {
       this.loadProfileInfo()
     }
     next()
+  },
+  computed: {
+    setupAnon: function () {
+      return this.anonimity
+    }
   },
   methods: {
     async loadProfileInfo () {
@@ -210,7 +232,8 @@ export default {
     },
     async denyRequest () {},
     async acceptRequest () {},
-    async removeRelationship () {}
+    async removeRelationship () {},
+    async changeAnonymousStatus () {}
   }
 }
 </script>

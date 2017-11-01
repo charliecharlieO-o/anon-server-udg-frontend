@@ -8,7 +8,7 @@ const DEV_URL = envConfig.LOCAL
 
 export {
   getBaseUrl, standardLogin, standardUnauthPost, standardAuthPut, standardAuthPost, standardAuthGet, getDevUrl,
-  parseThreads, standardAuthUpload, parseComment
+  parseThreads, standardAuthUpload, parseComment, parseBoards
 }
 
 function getBaseUrl() {
@@ -113,6 +113,20 @@ function parseThreads(threads) {
     }
   }
   return threads
+}
+
+function parseBoards(boards) {
+  for (let i in boards) {
+    // Parse thumbnail route
+    let str = boards[i].image.thumbnail
+    str = str.substr(str.lastIndexOf('/') + 1)
+    // threads[i].media.thumbnail = `/media/${str}` on production
+    boards[i].image.thumbnail = `${getBaseUrl()}/media/${str}` // for testing
+    // Capitalize
+    boards[i].short_name = boards[i].short_name.toUpperCase()
+    boards[i].name = boards[i].name.toUpperCase()
+  }
+  return boards
 }
 
 function parseComment(comment) {

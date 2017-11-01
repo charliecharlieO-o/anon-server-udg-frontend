@@ -2,33 +2,33 @@
   <transition name="modal">
     <div class="modal-mask" v-on:click="close" v-show="show">
       <div class="modal-container" @click.stop>
-        <div v-if="uploading" style="text-align:center;width:inherit;display:block;margin:auto;">
+        <!-- Updating -->
+        <div v-if="loading" style="text-align:center;width:inherit;display:block;margin:auto;">
           <v-progress-circular indeterminate v-bind:size="100" class="cyan--text"></v-progress-circular>
-          <h4>Enviando...</h4>
+          <h4>Ocultando...</h4>
         </div>
-        <div v-if="!uploading && errorCode" style="text-align:center;width:inherit;display:block;margin:auto;">
+        <!-- Error -->
+        <div v-if="!loading && errorCode" style="text-align:center;width:inherit;display:block;margin:auto;">
           <h4>ERROR {{ errorCode }} - {{ error }}</h4>
         </div>
-        <div v-if="!uploading && !errorCode">
+        <!-- Update Form -->
+        <div v-if="!loading && !errorCode">
           <div class="modal-body" style="margin-top:0px;margin-bottom:0px;">
+            <h4 class="network-title">Modo Incognito</h4>
+            <p class="text-box">
+              <b>Modo incognito</b> crea un perfil temporal que puede ser destruido despues de <i>24 horas</i>.
+              Todo post o comentario realizado <b>durante y hasta</b> que modo incognito sea desativado,
+              <i><b>NO estara</b></i> relacionado a tu perfil original. Este modo puede ser desactivado en cualquier
+              momento. Para mas informacion  visita la seccion FAQ.
+            </p>
             <v-text-field
-              v-model="text"
-              label="Texto"
-              textarea
+              v-model="networkText"
+              label="Nombre de usuario incognito"
+              style="margin-bottom:0px;margin-top:0px;padding-bottom:0px;"
               counter
-              max="1000"
-              rows="5"
-              style="margin-top:0px;margin-bottom:0px;"
-              maxlength="1000"
+              max="130"
+              maxlength="130"
             ></v-text-field>
-          </div>
-          <div container fluid style="margin-top:0px;margin-bottom:0px;">
-            <v-layout row wrap align-center>
-              <v-flex xs12 style="text-align:left;margin-bottom:5px;">
-                <input type="file" name="postFile" accept="audio/*|video/*|image/*"
-                @change="filesChange($event.target.name, $event.target.files)" />
-              </v-flex>
-            </v-layout>
           </div>
           <div class="modal-footer text-right" style="margin-top:0px;padding-bottoom:0px;">
             <div container fluid>
@@ -40,9 +40,9 @@
                   </v-btn>
                 </v-flex>
                 <v-flex xs6 style="text-align:right;">
-                  <v-btn v-tooltip:top="{ html: 'Enviar' }"
-                  medium class="primary white--text" style="margin-right:0px;" v-on:click="submitReply">
-                    <v-icon medium dark>send</v-icon>
+                  <v-btn v-tooltip:top="{ html: 'Actualizar' }"
+                  medium class="primary white--text" style="margin-right:0px;" v-on:click="updateProfile">
+                    <v-icon medium dark>autorenew</v-icon>
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -55,25 +55,22 @@
 </template>
 
 <script>
-import {standardAuthUpload} from '../../utils/maskmob-api'
 export default {
-  template: '#commentPostModal',
-  props: ['show', 'thread', 'reply'],
+  props: ['show', 'user', 'networkName', 'networkLabel'],
   data () {
     return {
-      title: '',
-      text: '',
-      uploading: false,
+      networkText: '',
+      loading: false,
       errorCode: '',
       error: '',
-      form: null
+      networkLabel: ''
     }
   },
   methods: {
     close () {
       this.$emit('close')
       this.text = ''
-      this.uploading = false
+      this.loading = false
       this.errorCode = ''
       this.error = ''
     },
@@ -87,31 +84,7 @@ export default {
       formData.append('mfile', fileList[0])
       this.form = formData
     },
-    submitReply () {
-      this.uploading = true
-      // Check if form has been created
-      if (!this.form) {
-        this.form = new FormData()
-      }
-      // Prepare data
-      this.text.trim()
-      this.form.append('text', this.text)
-      const replyURL = (this.reply) ? `/thread/${this.$props['thread']}/replies/${this.$props['reply']}/reply` : `/thread/${this.$props['thread']}/reply`
-      standardAuthUpload(this.$session.get('JWTOKEN'), replyURL, this.form).then((response) => {
-        if (response.status === 200 && response.data.success) {
-          // Show comment
-          console.log(response)
-        } else {
-          // Show error
-        }
-        this.uploading = false
-        this.close()
-      }).catch((err) => {
-        console.log(err)
-        this.uploading = false
-        this.close()
-      })
-    }
+    updateNetwork () {}
   },
   mounted () {
     document.addEventListener('keydown', (e) => {
@@ -152,34 +125,18 @@ export default {
     font-family: Helvetica, Arial, sans-serif;
 }
 
-.modal-header h3 {
-    margin-top: 0;
-    color: #42b983;
+.text-box {
+  font-size:120%;
+  margin-bottom:0px;
+  margin-top:10px;
 }
 
-.modal-body {
-    margin: 20px 0;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.form-label {
-    display: block;
-    margin-bottom: 1em;
-}
-
-.form-label > .form-control {
-    margin-top: 0.5em;
-}
-
-.form-control {
-    display: block;
-    width: 100%;
-    padding: 0.5em 1em;
-    line-height: 1.5;
-    border: 1px solid #ddd;
+.network-title {
+  padding-top:15px;
+  margin-bottom:0px;
+  padding-bottom:0px;
+  margin-left:0px;
+  padding-left:0px;
 }
 
 /*

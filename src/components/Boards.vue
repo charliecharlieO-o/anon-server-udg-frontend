@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import {standardAuthGet, getBaseUrl} from '../../utils/maskmob-api'
+import {standardAuthGet, standardAuthPost, parseBoards} from '../../utils/maskmob-api'
 export default {
   name: 'boards',
   data () {
@@ -71,7 +71,10 @@ export default {
       loadingError: false,
       loadingBoards: true,
       errorCode: null,
-      boards: []
+      boards: [],
+      searchQuery: '',
+      errorSearch: '',
+      searchedBoards: []
     }
   },
   created () {
@@ -83,17 +86,7 @@ export default {
       this.$data.errorCode = null
       standardAuthGet(this.$session.get('JWTOKEN'), '/board/list/short').then((response) => {
         if (response.status === 200) {
-          let boards = response.data.doc
-          for (let i in boards) {
-            // Parse thumbnail route
-            let str = boards[i].image.thumbnail
-            str = str.substr(str.lastIndexOf('/') + 1)
-            // threads[i].media.thumbnail = `/media/${str}` on production
-            boards[i].image.thumbnail = `${getBaseUrl()}/media/${str}` // for testing
-            // Capitalize
-            boards[i].short_name = boards[i].short_name.toUpperCase()
-            boards[i].name = boards[i].name.toUpperCase()
-          }
+          const boards = parseBoards(response.data.doc)
           this.$data.loadingBoards = false
           this.$data.boards = boards
         } else {
@@ -103,6 +96,22 @@ export default {
       }).catch((err) => {
         this.$data.loadingError = true
         console.log(err)
+      })
+    },
+    searchBoards (query) {
+      standardAuthPost({'query': this.searchQuery}, this.$session.get('JWTOKEN'), '/board/search').then((response) => {
+        if (response.status === 200 && response.data.success) {
+          if (response.data.doc instanceof Array && response.data.doc.length > 0) {
+            const boards = parseBoards(response.data.doc)
+            console.log(boards)
+          } else {
+            this.errorSearch = '0 RESULTADOS'
+          }
+        } else {
+          this.errorSearch = `${String(response.status)} ${response.data.error}`
+        }
+      }).catch((err) => {
+        this.errorSearch = err
       })
     }
   }

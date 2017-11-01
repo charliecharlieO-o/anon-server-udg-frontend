@@ -11,7 +11,7 @@
       <div class="row">
         <div class="col-md-12" style="text-align:center;">
           <input class="text-input" v-model="user" style="margin-top:10px;" type="text" placeholder="Usuario o Email"/>
-          <input class="text-input" v-model="pwd" style="margin-top:10px;" type="password" placeholder="Password" />
+          <input class="text-input" @keyup.enter="login" v-model="pwd" style="margin-top:10px;" type="password" placeholder="Password" />
         </div>
       </div>
       <div class="row" style="text-align:center;margin-top:20px;">
