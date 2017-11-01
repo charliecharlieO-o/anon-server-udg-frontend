@@ -77,8 +77,8 @@
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs6>
                   <span class="label-desc">Estatus:</span>
-                  <v-chip v-if="userObj.banned.is_banned" class="red white--text">Banneado</v-chip>
-                  <v-chip v-else class="green white--text">Activo</v-chip>
+                  <v-chip v-if="userObj.banned.is_banned" class="red white--text">Cuenta Banneada</v-chip>
+                  <v-chip v-else class="green white--text">Cuenta Activa</v-chip>
                 </v-flex>
                 <v-flex xs6>
                   <span class="label-desc">Ultimo login:</span>
@@ -89,9 +89,15 @@
               <!-- Anonimity Status -->
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs12>
-                  <updateAnonimity :show="setupAnon" @close="setupAnon = false"></updateAnonimity>
+                  <updateAnonimity :show="setupAnon" @close="setupAnon = false" @updated="refreshUserProfile"></updateAnonimity>
                   <span class="label-desc">Incognito:</span>
-                  <v-switch class="switch-wrapper" label="Estado: Activo" v-model="anonimity"></v-switch>
+                  <span v-if="userObj.alias.handle" id="activeAnon">
+                    <b style="color:purple;">{{ userObj.alias.handle }}</b>
+                    <v-btn round error v-on:click="removeAnonimity">desactivar</v-btn>
+                  </span>
+                  <span v-else id="inactiveAnon">
+                    <v-btn round primary v-on:click="setupAnon = true">activar</v-btn>
+                  </span>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -145,7 +151,7 @@
 import profileUpdate from './ProfileUpdate'
 import networkUpdate from './UpdateNetwork'
 import anonUpdate from './AnonimitySetup'
-import {standardAuthGet, standardAuthPost} from '../../utils/maskmob-api'
+import {standardAuthGet, standardAuthPost, standardAuthPut} from '../../utils/maskmob-api'
 export default {
   name: 'profile',
   data () {
@@ -162,7 +168,7 @@ export default {
       showNetworkEdt: false,
       networkName: '',
       networkLabel: '',
-      anonimity: false,
+      setupAnon: false,
       error: ''
     }
   },
@@ -178,14 +184,10 @@ export default {
   beforeRouteUpdate (to, from, next) {
     if (to.params.profileId !== from.params.profileId) {
       this.profileId = to.params.profileId
+      this.refreshUserProfile()
       this.loadProfileInfo()
     }
     next()
-  },
-  computed: {
-    setupAnon: function () {
-      return this.anonimity
-    }
   },
   methods: {
     async loadProfileInfo () {
@@ -231,14 +233,31 @@ export default {
       try {
         const response = await standardAuthPost({ 'to_userid': this.profileId }, this.$session.get('JWTOKEN'), '/user/request')
         this.requestStatus = (response.data.success) ? 'await' : 'befriend'
-      } catch (e) {
-        console.log(e)
+      } catch (err) {
+        console.log(err)
       }
     },
-    async denyRequest () {},
-    async acceptRequest () {},
-    async removeRelationship () {},
-    async changeAnonymousStatus () {},
+    async denyRequest () {
+      try {
+        // deny request
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async acceptRequest () {
+      try {
+        // accept requqest
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async removeRelationship () {
+      try {
+        // remove friendship
+      } catch (err) {
+        console.log(err)
+      }
+    },
     async refreshUserProfile () {
       try {
         const userId = (this.$session.get('USER'))._id
@@ -247,10 +266,23 @@ export default {
           this.$session.set('USER', response.data.doc)
           this.userObj = response.data.doc
         } else {
-          console.log('refreshing error')
+          this.error = 'refreshing error'
         }
       } catch (error) {
-        console.log('refreshing error')
+        this.error = 'refreshing error'
+      }
+    },
+    async removeAnonimity () {
+      try {
+        const response = await standardAuthPut({}, this.$session.get('JWTOKEN'), '/user/alias')
+        if (response.status === 200 && response.data.success) {
+          this.userObj.alias = null
+          this.refreshUserProfile()
+        } else {
+          console.log(`error ${response.data}`)
+        }
+      } catch (err) {
+        console.log(err)
       }
     },
     socialNetworkInfo (name) {

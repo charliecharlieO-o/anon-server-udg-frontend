@@ -22,7 +22,7 @@
               momento. Para mas informacion  visita la seccion FAQ.
             </p>
             <v-text-field
-              v-model="networkText"
+              v-model="alias"
               label="Nombre de usuario incognito"
               style="margin-bottom:0px;margin-top:0px;padding-bottom:0px;"
               counter
@@ -41,7 +41,7 @@
                 </v-flex>
                 <v-flex xs6 style="text-align:right;">
                   <v-btn v-tooltip:top="{ html: 'Actualizar' }"
-                  medium class="primary white--text" style="margin-right:0px;" v-on:click="updateProfile">
+                  medium class="primary white--text" style="margin-right:0px;" v-on:click="updateAlias">
                     <v-icon medium dark>autorenew</v-icon>
                   </v-btn>
                 </v-flex>
@@ -55,11 +55,12 @@
 </template>
 
 <script>
+import {standardAuthPut} from '../../utils/maskmob-api'
 export default {
   props: ['show', 'user', 'networkName', 'networkLabel'],
   data () {
     return {
-      networkText: '',
+      alias: '',
       loading: false,
       errorCode: '',
       error: '',
@@ -74,17 +75,19 @@ export default {
       this.errorCode = ''
       this.error = ''
     },
-    filesChange (fieldName, fileList) {
-      // Create new form data
-      const formData = new FormData()
-      // Check if there is an actual file selected
-      if (!fileList.length) return
-      // Check if valid file type
-      // Append file
-      formData.append('mfile', fileList[0])
-      this.form = formData
-    },
-    updateNetwork () {}
+    async updateAlias () {
+      try {
+        const response = await standardAuthPut({ 'alias': this.alias }, this.$session.get('JWTOKEN'), '/user/alias')
+        if (response.status === 200 && response.data.success) {
+          this.$emit('updated')
+          this.close()
+        } else {
+          console.log('error')
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
   },
   mounted () {
     document.addEventListener('keydown', (e) => {
