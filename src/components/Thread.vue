@@ -1,7 +1,7 @@
 <template>
   <div id="threadView">
     <!-- Comment Modal -->
-    <commentPostModal :show="showCommentModal" @close="showCommentModal = false" :thread="threadId" ></commentPostModal>
+    <commentPostModal :show="showCommentModal" @close="showCommentModal = false" :thread="threadId" @posted="addComment" ></commentPostModal>
     <!-- Loading Div -->
     <div v-if="loading" style="text-align:center;margin-top:30px;width:100%;">
       <v-progress-circular indeterminate v-bind:size="100" class="cyan--text"></v-progress-circular>
@@ -122,7 +122,7 @@
           </v-card>
 
           <!-- Comment Section -->
-          <v-container fluid style="height:auto;background-color:#F0F0F0;padding:5px;">
+          <v-container id="commentSection" fluid class="comment-section">
             <v-layout row style="padding:0px;margin:0px;">
               <v-flex xs12 style="padding:0px;margin:0px;">
                 <h6 class="text-xs-left" style="margin-bottom:2px;">
@@ -133,13 +133,21 @@
             <v-divider style="margin-top:3px;margin-bottom:5px;"></v-divider>
 
             <!-- No comments message -->
-            <div v-if="commentsOnDisplay.length === 0" style="text-align:center;margin-top:30px;">
+            <div v-if="commentsOnDisplay.length === 0 && newComments.length === 0" style="text-align:center;margin-top:30px;">
               <h4>NO HAY COMENTARIOS</h4>
             </div>
 
             <!-- Comment List -->
-            <commentComponent v-for="comment in commentsOnDisplay" :key="comment._id" :id="comment._id" :commentObj="comment"></commentComponent>
-            <v-btn v-if="commentsOnDisplay.length !== comments.length" block class="grey white--text">cargar 50+</v-btn>
+            <commentComponent v-for="comment in commentsOnDisplay" :key="comment._id" :id="`c${comment._id}`" :commentObj="comment"></commentComponent>
+            <v-layout v-if="comments.length !== commentsOnDisplay.length" row class="nopadding-nomargin">
+              <v-flex v-if="showAll" xs6-12 class="nopadding-nomargin" style="margin-right:5px;">
+                <v-btn block class="grey white--text" v-on:click="loadMoreComments">cargar mas ({{ commentsOnDisplay.length }}/{{ comments.length }})</v-btn>
+              </v-flex>
+              <v-flex v-if="showAll" xs6-12 class="nopadding-nomargin" style="margin-left:5px;">
+                <v-btn block class="grey white--text" v-on:click="loadMoreComments('all')">cargar todos</v-btn>
+              </v-flex>
+            </v-layout>
+            <commentComponent v-for="comment in newComments" :key="comment._id" :id="`c${comment._id}`" :commentObj="comment"></commentComponent>
 
           </v-container>
 
@@ -181,9 +189,12 @@ export default {
       threadId: '',
       showCommentModal: false,
       showMediaModal: false,
+      commentsToAdd: 5,
+      showAll: true,
       // Comments
       commentsOnDisplay: [],
-      comments: []
+      comments: [],
+      newComments: []
     }
   },
   components: {
@@ -240,7 +251,7 @@ export default {
           if (commentsResponse.length > 0) {
             // Display first n comments
             this.comments = commentsResponse
-            this.commentsOnDisplay = commentsResponse.slice(0, 50)
+            this.commentsOnDisplay = this.comments.slice(0, this.commentsToAdd)
           }
         } else {
           this.errorCode = String(response.status)
@@ -252,7 +263,31 @@ export default {
         this.loading = false
       }
     },
-    async showNewComment () {}
+    async loadMoreComments (all) {
+      const idx = this.commentsOnDisplay.length
+      // 50,100,todos
+      if (all === 'all') {
+        const idxEnd = this.comments.length
+        this.commentsOnDisplay.push.apply(this.commentsOnDisplay, this.comments.slice(idx, idxEnd))
+        this.showAll = !this.showAll
+      } else {
+        if (this.comments.length < 50) {
+          this.commentsToAdd = 20
+        } else if (this.comments.length < 200) {
+          this.commentsToAdd = 50
+        } else {
+          this.commentsToAdd = 100
+        }
+        this.commentsOnDisplay.push.apply(this.commentsOnDisplay, this.comments.slice(idx, idx + this.commentsToAdd))
+      }
+    },
+    addComment (comment) {
+      // Add comment to newComments array
+      this.newComments.push(comment)
+      this.thread.reply_count += 1
+      // Scroll to comment asynchronously
+      this.$nextTick(() => document.getElementById(`c${comment._id}`).scrollIntoView())
+    }
   }
 }
 </script>
@@ -295,5 +330,14 @@ export default {
   font-size: 115%;
   margin: 5px;
   white-space: pre-wrap;
+}
+.comment-section {
+  height:auto;
+  background-color:#F0F0F0;
+  padding:5px;
+}
+.nopadding-nomargin {
+  margin:0px;
+  padding:0px;
 }
 </style>

@@ -16,10 +16,10 @@
               label="Texto"
               textarea
               counter
-              max="1000"
+              max="750"
               rows="5"
               style="margin-top:0px;margin-bottom:0px;"
-              maxlength="1000"
+              maxlength="750"
             ></v-text-field>
           </div>
           <div container fluid style="margin-top:0px;margin-bottom:0px;">
@@ -74,6 +74,7 @@ export default {
       this.$emit('close')
       this.text = ''
       this.uploading = false
+      this.form = null
       this.errorCode = ''
       this.error = ''
     },
@@ -87,30 +88,32 @@ export default {
       formData.append('mfile', fileList[0])
       this.form = formData
     },
-    submitReply () {
+    async submitReply () {
       this.uploading = true
-      // Check if form has been created
-      if (!this.form) {
-        this.form = new FormData()
-      }
-      // Prepare data
-      this.text.trim()
-      this.form.append('text', this.text)
-      const replyURL = (this.reply) ? `/thread/${this.$props['thread']}/replies/${this.$props['reply']}/reply` : `/thread/${this.$props['thread']}/reply`
-      standardAuthUpload(this.$session.get('JWTOKEN'), replyURL, this.form).then((response) => {
-        if (response.status === 200 && response.data.success) {
-          // Show comment
-          console.log(response)
-        } else {
-          // Show error
+      try {
+        // Check if form has been created
+        if (!this.form) {
+          this.form = new FormData()
         }
+        // Prepare data
+        this.text.trim()
+        this.form.append('text', this.text)
+        const replyURL = (this.reply) ? `/thread/${this.$props['thread']}/replies/${this.$props['reply']}/reply` : `/thread/${this.$props['thread']}/reply`
+        const response = await standardAuthUpload(this.$session.get('JWTOKEN'), replyURL, this.form)
+        if (response.status === 200 && response.data.success) {
+          this.uploading = false
+          this.$emit('posted', response.data.doc)
+          this.close()
+        } else {
+          this.uploading = false
+          this.errorCode = response.status
+          this.error = 'error'
+        }
+      } catch (error) {
         this.uploading = false
-        this.close()
-      }).catch((err) => {
-        console.log(err)
-        this.uploading = false
-        this.close()
-      })
+        this.error = 'error'
+      }
+      this.uploading = false
     }
   },
   mounted () {

@@ -1,13 +1,17 @@
 <template>
   <div id="profileView">
+    <!-- Error Div -->
+    <div v-if="error" style="text-align:center;margin-top:30px;">
+      <h4>{{ error }}</h4>
+    </div>
     <!-- Profile Update Modal -->
-    <updateProfile :show="showUpdate" @close="showUpdate = false"></updateProfile>
+    <updateProfile :show="showUpdate" @close="showUpdate = false" @updated="refreshUserProfile"></updateProfile>
     <!-- Data -->
-    <v-layout row wrap>
+    <v-layout v-if="!error" row wrap>
       <v-flex xs1></v-flex>
       <v-flex xs10>
         <!-- Profile Picture -->
-        <div class="profile-box">
+        <div v-if="userObj" class="profile-box">
           <v-flex v-if="profileId === 'me'" xs1 offset-xs6 style="text-align:center;">
             <v-btn v-on:click="showUpdate = true"  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
           </v-flex>
@@ -36,28 +40,28 @@
         <v-card>
           <v-card-title class="grey">
             <span class="headline white--text" style="font-size:25%;">Redes Sociales</span>
-            <v-chip v-if="accessLevel === 'limited'" outline class="white white--text">{{ networksCount }}</v-chip>
           </v-card-title>
           <v-list v-if="accessLevel !== 'limited' || profileId === 'me'">
-            <updateNetwork :show="showNetworkEdt" :networkName="networkName" :networkLabel="networkLabel" @close="showNetworkEdt = false"></updateNetwork>
+            <updateNetwork :show="showNetworkEdt" :networkName="networkName" :networkLabel="networkLabel"
+              @close="showNetworkEdt = false" @updated="refreshUserProfile"></updateNetwork>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='facebook';networkLabel='nombre de usuario'">
               <img src="../assets/icon-zuckd.svg" class="social-icon" />
-              <span>perfil de facebook (click para editar)</span>
+              <span><b>perfil de facebook:</b> {{ socialNetworkInfo('facebook') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='instagram';networkLabel='nombre de usuario'">
               <img src="../assets/icon-instagram.svg" class="social-icon" />
-              <span>cuenta de instagram (click para editar)</span>
+              <span><b>cuenta de instagram:</b> {{ socialNetworkInfo('instagram') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='snapchat';networkLabel='snapchat handle'">
               <img src="../assets/icon-snapchat.svg" class="social-icon" />
-              <span>snapchat handle (click para editar)</span>
+              <span><b>snapchat handle:</b> {{ socialNetworkInfo('snapchat') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="showNetworkEdt=true;networkName='twitter';networkLabel='@tu nombre'">
               <img src="../assets/icon-twitter.svg" class="social-icon" />
-              <span>@ de twitter (click para editar)</span>
+              <span><b>@ de twitter:</b> {{ socialNetworkInfo('twitter') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
           </v-list>
         </v-card>
@@ -158,7 +162,8 @@ export default {
       showNetworkEdt: false,
       networkName: '',
       networkLabel: '',
-      anonimity: false
+      anonimity: false,
+      error: ''
     }
   },
   components: {
@@ -215,7 +220,7 @@ export default {
             this.networksCount = (response.data.limited) ? response.data.networks : 0
             this.userObj = response.data.doc
           } else {
-            console.log('error')
+            this.error = 'NO EXISTE EL USUARIO'
           }
         } catch (e) {
           console.log(e)
@@ -233,7 +238,33 @@ export default {
     async denyRequest () {},
     async acceptRequest () {},
     async removeRelationship () {},
-    async changeAnonymousStatus () {}
+    async changeAnonymousStatus () {},
+    async refreshUserProfile () {
+      try {
+        const userId = (this.$session.get('USER'))._id
+        const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/user/${userId}/profile`)
+        if (response.status === 200 && response.data.success) {
+          this.$session.set('USER', response.data.doc)
+          this.userObj = response.data.doc
+        } else {
+          console.log('refreshing error')
+        }
+      } catch (error) {
+        console.log('refreshing error')
+      }
+    },
+    socialNetworkInfo (name) {
+      if (!this.userObj || !this.userObj.contact_info) {
+        return undefined
+      } else {
+        const networkIdx = this.userObj.contact_info.findIndex(x => x.network_name === name)
+        if (networkIdx < 0) {
+          return undefined
+        } else {
+          return this.userObj.contact_info[networkIdx].network_contact
+        }
+      }
+    }
   }
 }
 </script>

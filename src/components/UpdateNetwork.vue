@@ -3,16 +3,16 @@
     <div class="modal-mask" v-on:click="close" v-show="show">
       <div class="modal-container" @click.stop>
         <!-- Updating -->
-        <div v-if="uploading" style="text-align:center;width:inherit;display:block;margin:auto;">
+        <div v-if="updating" style="text-align:center;width:inherit;display:block;margin:auto;">
           <v-progress-circular indeterminate v-bind:size="100" class="cyan--text"></v-progress-circular>
           <h4>Actualizando...</h4>
         </div>
         <!-- Error -->
-        <div v-if="!uploading && errorCode" style="text-align:center;width:inherit;display:block;margin:auto;">
+        <div v-if="!updating && errorCode" style="text-align:center;width:inherit;display:block;margin:auto;">
           <h4>ERROR {{ errorCode }} - {{ error }}</h4>
         </div>
         <!-- Update Form -->
-        <div v-if="!uploading && !errorCode">
+        <div v-if="!updating && !errorCode">
           <div class="modal-body" style="margin-top:0px;margin-bottom:0px;">
             <h4 class="network-title">{{ networkName }}</h4>
             <v-text-field
@@ -35,7 +35,7 @@
                 </v-flex>
                 <v-flex xs6 style="text-align:right;">
                   <v-btn v-tooltip:top="{ html: 'Actualizar' }"
-                  medium class="primary white--text" style="margin-right:0px;" v-on:click="updateProfile">
+                  medium class="primary white--text" style="margin-right:0px;" v-on:click="updateNetwork">
                     <v-icon medium dark>autorenew</v-icon>
                   </v-btn>
                 </v-flex>
@@ -49,12 +49,13 @@
 </template>
 
 <script>
+import {standardAuthPut} from '../../utils/maskmob-api'
 export default {
   props: ['show', 'user', 'networkName', 'networkLabel'],
   data () {
     return {
       networkText: '',
-      uploading: false,
+      updating: false,
       errorCode: '',
       error: '',
       networkLabel: ''
@@ -62,23 +63,33 @@ export default {
   },
   methods: {
     close () {
-      this.$emit('close')
-      this.text = ''
-      this.uploading = false
-      this.errorCode = ''
-      this.error = ''
+      if (this.updating) {
+        return
+      } else {
+        this.$emit('close')
+        this.networkText = ''
+        this.updating = false
+        this.errorCode = ''
+        this.error = ''
+      }
     },
-    filesChange (fieldName, fileList) {
-      // Create new form data
-      const formData = new FormData()
-      // Check if there is an actual file selected
-      if (!fileList.length) return
-      // Check if valid file type
-      // Append file
-      formData.append('mfile', fileList[0])
-      this.form = formData
-    },
-    updateNetwork () {}
+    async updateNetwork () {
+      this.updating = true
+      try {
+        const response = await standardAuthPut({'network_name': this.networkName, 'contact': this.networkText}, this.$session.get('JWTOKEN'), '/user/update/networks')
+        if (response.status === 200) {
+          this.updating = false
+          this.$emit('updated')
+          this.close()
+        } else {
+          this.errorCode = response.status
+          this.error = 'error'
+        }
+      } catch (err) {
+        this.error = 'error'
+      }
+      this.updating = false
+    }
   },
   mounted () {
     document.addEventListener('keydown', (e) => {
