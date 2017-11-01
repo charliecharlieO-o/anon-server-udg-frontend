@@ -69,7 +69,7 @@
                 <v-chip label outline class="grey grey--text">{{ notificationsCount }}</v-chip>
               </v-list-tile-content>
               <v-dialog v-model="showNotifications">
-                <notifications-picker />
+                <notifications-picker :hide="hideNotifications"/>
               </v-dialog>
             </v-list-tile>
             <!-- END notificatilns tile -->
@@ -179,6 +179,9 @@ export default {
       // window.location.href = `${getBaseUrl()}/`
       this.$router.push({ name: 'login' })
       location.reload()
+    },
+    hideNotifications () {
+      this.showNotifications = false
     }
   },
   computed: {

@@ -20,6 +20,7 @@
 
 <script type="text/javascript">
 export default {
+  props: ['hide'],
   computed: {
     notifications () {
       return this.$store.state.notifications
@@ -39,6 +40,7 @@ export default {
   },
   methods: {
     openNotification (notification) {
+      this.hide()
       this.$router.push({ name: 'home' })
     }
   }
