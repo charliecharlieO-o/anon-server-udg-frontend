@@ -75,6 +75,7 @@ export default {
   },
   methods: {
     login () {
+      console.log('login button pressed')
       this.loading = true
       standardLogin(this.$data.user, this.$data.pwd).then((response) => {
         if (response.status === 200 && 'token' in response.data) {
@@ -91,8 +92,7 @@ export default {
             // Take to main application
             // window.location.href = `${getBaseUrl()}/`
             this.$eventHub.$emit('logged-in')
-            window.location.href = `${getDevUrl()}/#/`
-            location.reload()
+            this.$router.push({ name: 'home' })
           } else {
             alert('usuario o password incorrecto')
           }

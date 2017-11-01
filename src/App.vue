@@ -66,7 +66,7 @@
                 <v-list-tile-title>Notificaciones</v-list-tile-title>
               </v-list-tile-content>
               <v-list-tile-content>
-                <v-chip label outline class="grey grey--text">0</v-chip>
+                <v-chip label outline class="grey grey--text">{{ notificationsCount }}</v-chip>
               </v-list-tile-content>
               <v-dialog v-model="showNotifications">
                 <notifications-picker />
@@ -137,7 +137,6 @@
 </template>
 
 <script>
-import {getDevUrl} from '../utils/maskmob-api'
 import NotificationsPicker from '@/components/NotificationsPicker'
 
 export default {
@@ -148,7 +147,10 @@ export default {
     // If user isn't logged in, take to login
     if (!this.isLoggedIn()) {
       // window.location.href = `${getBaseUrl()}/login`
-      window.location.href = `${getDevUrl()}/#/login`
+      this.$router.push({ name: 'login' })
+    } else {
+      const jwt = this.$session.get('JWTOKEN')
+      this.$store.commit('setJWT', jwt)
     }
   },
   beforeDestroy () {
@@ -175,8 +177,13 @@ export default {
         this.$session.destroy()
       }
       // window.location.href = `${getBaseUrl()}/`
-      window.location.href = `${getDevUrl()}/#/login`
+      this.$router.push({ name: 'login' })
       location.reload()
+    }
+  },
+  computed: {
+    notificationsCount () {
+      return this.$store.state.notifications.length
     }
   },
   components: {
@@ -186,8 +193,10 @@ export default {
 </script>
 
 <style scoped>
-@import '/static/materialicons.css';
 @import '/static/vuetify.min.css';
+/* @import '/static/materialicons.css';
+*/
+
 .profile-picture {
   background-color:grey;
 }

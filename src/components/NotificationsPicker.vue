@@ -1,18 +1,16 @@
 <template>
   <div>
-    <v-card class="">
+    <v-card>
       <v-toolbar class="teal white--text">
         <v-toolbar-title>
-          Notifications
-
+          Notifications {{ notifications.length }}
         </v-toolbar-title>
       </v-toolbar>
       <v-list two-line>
-        <v-list-tile>
+        <v-list-tile v-for="n in notifications" v-on:click="openNotification(n)">
           <v-list-tile-content>
-            <p v-for="n in notifications">{{ n.title }}</p>
-            <v-list-tile-title>New Networking Request</v-list-tile-title>
-            <v-list-tile-sub-title>vicdiaz  sent you a request</v-list-tile-sub-title>
+            <v-list-tile-title>{{ n.title }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ n.description }}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -27,11 +25,21 @@ export default {
       return this.$store.state.notifications
     }
   },
+  watch: {
+    notifications (val) {
+      console.log('notifications changed: ', val)
+    }
+  },
   async created () {
     try {
       await this.$store.dispatch('getNotifications')
     } catch (err) {
       console.error(err)
+    }
+  },
+  methods: {
+    openNotification (notification) {
+      this.$router.push({ name: 'home' })
     }
   }
 }

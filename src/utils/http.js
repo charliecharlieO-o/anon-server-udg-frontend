@@ -6,12 +6,13 @@ const http = Axios.create({
 })
 
 const setAuthToken = (token) => {
-  http.defaults.headers.authorization = token
+  console.log('set authorization')
+  http.defaults.headers.common['authorization'] = token
 }
 
 const methods = {
   getLatestNotifications () {
-    console.log(http.defaults.headers)
+    console.log('headers: ', http.defaults.headers)
     return http.get('/user/notifications/latest')
   }
 }

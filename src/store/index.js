@@ -9,7 +9,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     notifications: [],
-    jwt: null
+    jwt: null,
+    showNotification: false
   },
   mutations: {
     setNotifications (state, notifications) {
@@ -18,14 +19,17 @@ const store = new Vuex.Store({
     setJWT (state, jwt) {
       Http.setAuthToken(jwt)
       state.jwt = jwt
+    },
+    showNotification (state, show) {
+      state.showNotification = show
     }
   },
   actions: {
     async getNotifications (self) {
       const response = await methods.getLatestNotifications()
-      console.log('notifications request', response)
-      if (response.success) {
-        self.commit('setNotifications', response.doc)
+      console.log('notifications response data:', response.data.doc)
+      if (response.data.success) {
+        self.commit('setNotifications', response.data.doc)
       }
     }
   }
