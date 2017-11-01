@@ -75,6 +75,7 @@ export default {
   },
   methods: {
     login () {
+      console.log('login button pressed')
       this.loading = true
       standardLogin(this.$data.user, this.$data.pwd).then((response) => {
         if (response.status === 200 && 'token' in response.data) {
@@ -85,13 +86,13 @@ export default {
             }
             // Start new session with new token
             this.$session.start()
+            this.$store.commit('setJWT', response.data.token)
             this.$session.set('JWTOKEN', response.data.token)
             this.$session.set('USER', response.data.user)
             // Take to main application
             // window.location.href = `${getBaseUrl()}/`
             this.$eventHub.$emit('logged-in')
-            window.location.href = `${getDevUrl()}/#/`
-            location.reload()
+            this.$router.push({ name: 'home' })
           } else {
             alert('usuario o password incorrecto')
           }

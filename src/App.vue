@@ -58,7 +58,7 @@
             </router-link>
             <!-- END Networking tile -->
             <!-- Notifications tile -->
-            <v-list-tile>
+            <v-list-tile v-on:click="showNotifications = !showNotifications">
               <v-list-tile-action>
                 <v-icon>notifications</v-icon>
               </v-list-tile-action>
@@ -66,8 +66,11 @@
                 <v-list-tile-title>Notificaciones</v-list-tile-title>
               </v-list-tile-content>
               <v-list-tile-content>
-                <v-chip label outline class="grey grey--text">0</v-chip>
+                <v-chip label outline class="grey grey--text">{{ notificationsCount }}</v-chip>
               </v-list-tile-content>
+              <v-dialog v-model="showNotifications">
+                <notifications-picker :hide="hideNotifications"/>
+              </v-dialog>
             </v-list-tile>
             <!-- END notificatilns tile -->
             <v-divider></v-divider>
@@ -134,7 +137,8 @@
 </template>
 
 <script>
-import {getDevUrl} from '../utils/maskmob-api'
+import NotificationsPicker from '@/components/NotificationsPicker'
+
 export default {
   name: 'app',
   created () {
@@ -143,7 +147,10 @@ export default {
     // If user isn't logged in, take to login
     if (!this.isLoggedIn()) {
       // window.location.href = `${getBaseUrl()}/login`
-      window.location.href = `${getDevUrl()}/#/login`
+      this.$router.push({ name: 'login' })
+    } else {
+      const jwt = this.$session.get('JWTOKEN')
+      this.$store.commit('setJWT', jwt)
     }
   },
   beforeDestroy () {
@@ -155,7 +162,8 @@ export default {
       mini: false,
       right: null,
       loggedIn: false,
-      profile: null
+      profile: null,
+      showNotifications: false
     }
   },
   methods: {
@@ -169,16 +177,29 @@ export default {
         this.$session.destroy()
       }
       // window.location.href = `${getBaseUrl()}/`
-      window.location.href = `${getDevUrl()}/#/login`
+      this.$router.push({ name: 'login' })
       location.reload()
+    },
+    hideNotifications () {
+      this.showNotifications = false
     }
+  },
+  computed: {
+    notificationsCount () {
+      return this.$store.state.notifications.length
+    }
+  },
+  components: {
+    NotificationsPicker
   }
 }
 </script>
 
 <style scoped>
-@import '/static/materialicons.css';
 @import '/static/vuetify.min.css';
+/* @import '/static/materialicons.css';
+*/
+
 .profile-picture {
   background-color:grey;
 }
