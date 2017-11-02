@@ -79,10 +79,11 @@ export default {
         return
       } else {
         this.$emit('close')
-        this.text = ''
+        this.bio = ''
         this.updating = false
         this.errorCode = ''
         this.error = ''
+        this.form = null
       }
     },
     filesChange (fieldName, fileList) {
@@ -95,13 +96,14 @@ export default {
       formData.append('mfile', fileList[0])
       this.form = formData
     },
+    async changeProfilePic () {},
+    async chengeBio () {},
     async updateProfile () {
       this.updating = true
       // Check if form has been created
       if (!this.form) {
         this.form = new FormData()
       }
-      this.updating = true
       // Prepare data
       this.bio.trim()
       this.form.append('bio', this.bio)

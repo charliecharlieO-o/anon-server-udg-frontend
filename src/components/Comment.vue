@@ -1,13 +1,14 @@
 <template>
   <v-container fluid id="commentComponent" style="margin:0px;padding:0px;">
     <!-- Comment Modal -->
-    <commentPostModal :show="showModal" @close="showModal = false" :thread="comment.thread" :reply="comment._id"></commentPostModal>
+    <commentPostModal :show="showModal" @close="showModal = false" :thread="comment.thread" :reply="comment._id"
+      @posted="addComment"></commentPostModal>
     <!-- Commnent -->
     <v-card flat>
-      <v-container fluid style="padding:0px;margin:0px;padding-top:10px;">
+      <v-container fluid class="comment-container">
         <v-layout row>
           <!-- User Defined Space -->
-          <v-flex xs1-2 style="text-align:left;margin-right:0px;padding-right:0px;">
+          <v-flex xs1-2 class="thumbnail-container">
             <img v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
               src="/static/hydeegg.jpg" class="profile-thumbnail">
             <img v-else-if="comment.poster.anon"
@@ -17,9 +18,9 @@
             </router-link>
           </v-flex>
           <!-- Comment Data -->
-          <v-flex xs10 style="margin-left:0px;padding-left:0px;">
+          <v-flex xs10 class="comment-data-dontainer">
             <!-- Header Info -->
-            <v-layout row style="margin-bottom:3px;">
+            <v-layout row class="user-header">
               <span v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
                 class="username-span-easteregg">Mr.Hyde</span>
               <span v-else-if="comment.poster.anon" class="username-span-anon">{{ comment.poster.poster_name }} [anon]</span>
@@ -45,8 +46,9 @@
     </v-card>
     <!-- Reply Box -->
     <div class="reply-box">
-      <v-layout v-for="comment in repliesOnDisplay" :key="comment._id" :id="comment._id" row style="padding-top:10px;">
-        <v-flex xs1></v-flex><!-- Spacer -->
+      <v-layout v-for="comment in repliesOnDisplay" :key="comment._id" :id="`s${comment._id}`" row class="subreply-row">
+        <!-- Spacer -->
+        <v-flex xs1></v-flex>
         <!-- User Defined Space -->
         <v-flex xs1-2 style="text-align:left;">
           <img v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
@@ -58,7 +60,7 @@
         <!-- Comment Data -->
         <v-flex xs11>
           <!-- Header Info -->
-          <v-layout row style="margin-bottom:3px;">
+          <v-layout row class="user-header">
             <span v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
               class="username-span-easteregg">Mr.Hyde</span>
             <span v-else-if="comment.poster.anon" class="username-span-anon">{{ comment.poster.poster_name }} [anon]</span>
@@ -122,7 +124,12 @@ export default {
         this.repliesOnDisplay[x] = parseComment(this.repliesOnDisplay[x])
       }
     },
-    loadSubReplies () {}
+    addComment (comment) {
+      // Add comment to newComments array
+      this.repliesOnDisplay.push(comment)
+      // Scroll to comment asynchronously
+      this.$nextTick(() => document.getElementById(`s${comment._id}`).scrollIntoView())
+    }
   }
 }
 </script>
@@ -161,5 +168,25 @@ export default {
 .reply-box {
   background-color:#FFFFFF;
   margin-bottom:5px;
+}
+.comment-container {
+  padding:0px;
+  margin:0px;
+  padding-top:10px;
+}
+.thumbnail-container {
+  text-align:left;
+  margin-right:0px;
+  padding-right:0px;
+}
+.comment-data-dontainer {
+  margin-left:0px;
+  padding-left:0px;
+}
+.user-header {
+  margin-bottom:3px;
+}
+.subreply-row {
+  padding-top:10px;
 }
 </style>
