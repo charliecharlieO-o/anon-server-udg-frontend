@@ -36,9 +36,11 @@
           </v-flex>
           <!-- Reply Button -->
           <v-flex xs1-2>
-            <v-btn icon v-on:click="showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
-              <v-icon>reply</v-icon>
-            </v-btn>
+            <div v-if="userObj._id !== comment.poster.poster_id && userObj.alias.anonId !== comment.poster.poster_id">
+              <v-btn icon v-on:click="showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
+                <v-icon>reply</v-icon>
+              </v-btn>
+            </div>
           </v-flex>
         </v-layout>
         <v-divider></v-divider>
@@ -76,17 +78,22 @@
         </v-flex>
         <!-- Reply Button -->
         <v-flex xs1-2>
-          <v-btn icon v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
-            <v-icon>reply</v-icon>
-          </v-btn>
+          <div v-if="userObj._id !== comment.poster.poster_id && userObj.alias.anonId !== comment.poster.poster_id">
+            <v-btn icon v-on:click="showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
+              <v-icon>reply</v-icon>
+            </v-btn>
+          </div>
         </v-flex>
       </v-layout>
 
       <div v-if="comment.replies.length > 2" name="seeMore">
         <v-divider></v-divider>
         <v-layout row style="padding:5px;">
-          <v-flex xs12 style="text-align:left;">
-            <a style="margin:2%;">VER MAS (5)</a>
+          <v-flex v-if="!onWatch" xs12 style="text-align:left;">
+            <span class="link-sim" v-on:click="loadMissingComments">+ COMENTARIOS ({{ comment.replies.length - repliesOnDisplay.length }})</span>
+          </v-flex>
+          <v-flex v-else xs12 style="text-align:left;">
+            <span class="link-sim" v-on:click="stopWatching">CERRAR (x)</span><i class="awaiting">esperando comentarios...</i>
           </v-flex>
         </v-layout>
       </div>
@@ -97,6 +104,7 @@
 <script>
 import {parseComment} from '../../utils/maskmob-api'
 import commentPostModal from './CommentModal'
+import * as moment from 'moment'
 export default {
   template: '#commentComponent',
   props: ['commentObj'],
@@ -108,10 +116,13 @@ export default {
       comment: null,
       repliesOnDisplay: [],
       toReply: null,
-      showModal: false
+      showModal: false,
+      userObj: null,
+      onWatch: false
     }
   },
   created () {
+    this.userObj = this.$session.get('USER')
     this.loadCommentContent()
   },
   methods: {
@@ -126,9 +137,24 @@ export default {
     },
     addComment (comment) {
       // Add comment to newComments array
-      this.repliesOnDisplay.push(comment)
+      comment.created_at = moment().toISOString()
+      this.repliesOnDisplay.push(parseComment(comment))
       // Scroll to comment asynchronously
       this.$nextTick(() => document.getElementById(`s${comment._id}`).scrollIntoView())
+    },
+    loadMissingComments () {
+      const idx = this.repliesOnDisplay.length
+      const end = this.comment.replies.length
+      let missingReplies = this.comment.replies.slice(idx, end)
+      for (let x in missingReplies) {
+        missingReplies[x] = parseComment(missingReplies[x])
+      }
+      this.repliesOnDisplay.push.apply(this.repliesOnDisplay, missingReplies)
+      this.onWatch = true
+    },
+    stopWatching () {
+      this.onWatch = false
+      this.repliesOnDisplay.length = 2
     }
   }
 }
@@ -188,5 +214,16 @@ export default {
 }
 .subreply-row {
   padding-top:10px;
+}
+
+.link-sim {
+  color: #0645AD;
+  margin:2%;
+  cursor: pointer;
+}
+
+.awaiting {
+  margin:2px;
+  margin-left:0px;
 }
 </style>
