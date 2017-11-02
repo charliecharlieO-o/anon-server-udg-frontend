@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { validateEmail } from './validation'
 import envConfig from '@/env-config'
-const moment = require('moment')
+import * as moment from 'moment'
 
 const BASE_URL = envConfig.API_URL
 const DEV_URL = envConfig.LOCAL
@@ -157,10 +157,6 @@ function parseComment(comment) {
     // comment.media.thumbnail = `/media/${str}` on production
     comment.media.thumbnail = `${getBaseUrl()}/media/${str}` // for testing
   }
-  // Remove this if on PRODUCTION
-  if (comment.created_at)
-    comment.created_at = moment(comment.created_at).fromNow()
-  else if (comment.createdAt)
-    comment.createdAt = moment(comment.createdAt).fromNow()
+  comment.created_at = moment(comment.created_at).fromNow()
   return comment
 }
