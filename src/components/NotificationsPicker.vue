@@ -7,7 +7,7 @@
         </v-toolbar-title>
       </v-toolbar>
       <v-list two-line>
-        <v-list-tile v-for="n in notifications" v-on:click="openNotification(n)">
+        <v-list-tile v-for="n in notifications" :key="n._id" v-on:click="openNotification(n)">
           <v-list-tile-content>
             <v-list-tile-title>{{ n.title }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ n.description }}</v-list-tile-sub-title>
@@ -15,7 +15,7 @@
         </v-list-tile>
       </v-list>
     </v-card>
-  </div>	
+  </div>
 </template>
 
 <script type="text/javascript">
@@ -48,5 +48,5 @@ export default {
 </script>
 
 <style type="css" required>
-	
+
 </style>
