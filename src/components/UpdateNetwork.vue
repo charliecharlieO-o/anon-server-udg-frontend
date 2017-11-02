@@ -57,8 +57,7 @@ export default {
       networkText: '',
       updating: false,
       errorCode: '',
-      error: '',
-      networkLabel: ''
+      error: ''
     }
   },
   methods: {

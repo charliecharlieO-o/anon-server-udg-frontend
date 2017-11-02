@@ -57,14 +57,13 @@
 <script>
 import {standardAuthPut} from '../../utils/maskmob-api'
 export default {
-  props: ['show', 'user', 'networkName', 'networkLabel'],
+  props: ['show', 'user', 'networkName'],
   data () {
     return {
       alias: '',
       loading: false,
       errorCode: '',
-      error: '',
-      networkLabel: ''
+      error: ''
     }
   },
   methods: {
