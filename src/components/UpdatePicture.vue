@@ -92,12 +92,9 @@ export default {
       if (!this.form) {
         this.form = new FormData()
       }
-      // Prepare data
-      this.bio.trim()
-      this.form.append('bio', this.bio)
       // Send shit
       try {
-        const response = standardAuthPutUpload(this.$session.get('JWTOKEN'), '/user/update-profile', this.form)
+        const response = standardAuthPutUpload(this.$session.get('JWTOKEN'), '/user/update/profile-pic', this.form)
         if (response.status === 200 && response.data.success === true) {
           this.updating = false
           this.$emit('updated')
