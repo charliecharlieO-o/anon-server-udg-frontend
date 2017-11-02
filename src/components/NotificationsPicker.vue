@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar class="teal white--text">
         <v-toolbar-title>
-          Notifications {{ notifications.length }}
+          Notifications [{{ notifications.length }}]
         </v-toolbar-title>
       </v-toolbar>
       <v-list two-line>
