@@ -13,39 +13,33 @@
         </div>
         <!-- Update Form -->
         <div v-if="!updating && !errorCode">
-          <div class="modal-body" style="margin-top:0px;margin-bottom:0px;">
-            <v-text-field
-              v-model="bio"
-              label="Descripcion/Bio"
-              textarea
-              counter
-              max="300"
-              rows="3"
-              style="margin-top:0px;margin-bottom:0px;"
-              maxlength="300"
-            ></v-text-field>
+          <!-- PROFILE PIC VIEW -->
+          <div class="profile-box">
+            <v-list-tile-avatar>
+              <img :src="picture" class="profile-picture" />
+            </v-list-tile-avatar>
           </div>
+          <!-- PROFILE PIC EDITED -->
           <div container fluid style="margin-top:0px;margin-bottom:0px;">
             <v-layout row wrap align-center>
-              <v-flex xs12 style="text-align:left;margin-bottom:5px;">
-                <span style="font-size:130%;">Imagen de Perfil: </span>
+              <v-flex xs12 style="text-align:center;margin-bottom:5px;">
                 <input type="file" name="postFile" accept="image/*"
                 @change="filesChange($event.target.name, $event.target.files)" />
               </v-flex>
             </v-layout>
           </div>
-          <div class="modal-footer text-right" style="margin-top:0px;padding-bottoom:0px;">
+          <div class="modal-footer text-right" style="margin-top:5px;padding-bottoom:0px;">
             <div container fluid>
               <v-layout row wrap>
-                <v-flex xs6 style="text-align:left;">
+                <v-flex xs4 offset-xs2 style="text-align:left;">
                   <v-btn v-tooltip:top="{ html: 'Cancelar' }"
-                  medium class="red white--text" style="margin-left:0px;" @click="close">
+                  large class="red white--text" style="margin-left:0px;" @click="close">
                     <v-icon medium dark>cancel</v-icon>
                   </v-btn>
                 </v-flex>
-                <v-flex xs6 style="text-align:right;">
+                <v-flex xs4 style="text-align:right;">
                   <v-btn v-tooltip:top="{ html: 'Actualizar' }"
-                  medium class="primary white--text" style="margin-right:0px;" v-on:click="updateProfile">
+                  large class="primary white--text" style="margin-right:0px;" v-on:click="updateProfile">
                     <v-icon medium dark>autorenew</v-icon>
                   </v-btn>
                 </v-flex>
@@ -61,16 +55,13 @@
 <script>
 import {standardAuthPutUpload} from '../../utils/maskmob-api'
 export default {
-  props: ['show', 'user'],
+  props: ['show', 'picture'],
   data () {
     return {
-      title: '',
-      bio: '',
       updating: false,
       errorCode: '',
       error: '',
-      form: null,
-      changed: false
+      form: null
     }
   },
   methods: {
@@ -79,7 +70,6 @@ export default {
         return
       } else {
         this.$emit('close')
-        this.bio = ''
         this.updating = false
         this.errorCode = ''
         this.error = ''
@@ -96,8 +86,6 @@ export default {
       formData.append('mfile', fileList[0])
       this.form = formData
     },
-    async changeProfilePic () {},
-    async chengeBio () {},
     async updateProfile () {
       this.updating = true
       // Check if form has been created
@@ -151,10 +139,10 @@ export default {
 }
 
 .modal-container {
-    max-width:45%;
+    max-width:35%;
     min-width:300px;
     margin: 40px auto 0;
-    padding:0px 30px;
+    padding:0px 15px;
     padding-bottom:20px;
     background-color: #fff;
     border-radius: 2px;
@@ -184,5 +172,17 @@ export default {
 .modal-leave-active .modal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
+}
+
+.profile-box {
+  text-align:center;
+  padding: 20px;
+  margin-bottom: 10px;
+}
+
+.profile-picture {
+  height:125px;
+  width:125px;
+  background-color:grey;
 }
 </style>
