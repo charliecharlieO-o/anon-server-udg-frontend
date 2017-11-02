@@ -4,26 +4,34 @@
     <div v-if="error" style="text-align:center;margin-top:30px;">
       <h4>{{ error }}</h4>
     </div>
-    <!-- Profile Update Modal -->
-    <updateProfile :show="showUpdate" @close="showUpdate = false" @updated="refreshUserProfile"></updateProfile>
     <!-- Data -->
     <v-layout v-if="!error" row wrap>
       <v-flex xs1></v-flex>
       <v-flex xs10>
         <!-- Profile Picture -->
         <div v-if="userObj" class="profile-box">
+          <!-- Profile Picture Update Modal -->
+          <updatePicture :show="showUpdatePic" @close="showUpdatePic = false" @updated="refreshUserProfile" :bio="userObj.bio"></updatePicture>
+          <!-- Profile Bio Update Modal -->
+          <updateBiog :show="showUpdateBio" @close="showUpdateBio = false" @updated="refreshUserProfile" :picture="userObj.profile_pic.thumbnail"></updateBiog>
+          <!-- PICTURE -->
           <v-flex v-if="profileId === 'me'" xs1 offset-xs6 style="text-align:center;">
-            <v-btn v-on:click="showUpdate = true"  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
+            <v-btn v-on:click="showUpdatePic = true"  absolute dark fab small class="grey"><v-icon>edit</v-icon></v-btn>
           </v-flex>
           <v-list-tile-avatar>
             <img :src="userObj.profile_pic.thumbnail" class="profile-picture" />
           </v-list-tile-avatar>
+          <!-- USERNAME -->
           <h4 class="username">{{ userObj.username }}</h4>
-          <p v-if="userObj.bio" class="grey6-text">
-            {{ userObj.bio }}
-          </p>
-          <p v-else class="grey6-text">
-            <i>No hay descripcion</i>
+          <!-- BIOGRAPHY -->
+          <p>
+            <span v-if="userObj.bio">
+              {{ userObj.bio }}
+            </span>
+            <span v-else>
+              <i>No hay descripcion</i>
+            </span>
+            <span class="link-style" v-if="profileId === 'me'" v-on:click="showUpdateBio = true">[editar]</span>
           </p>
         </div>
         <!-- Action Buttons -->
@@ -148,7 +156,8 @@
 </template>
 
 <script>
-import profileUpdate from './ProfileUpdate'
+import updatePic from './UpdatePicture'
+import updateBio from './UpdateBio'
 import networkUpdate from './UpdateNetwork'
 import anonUpdate from './AnonimitySetup'
 import {standardAuthGet, standardAuthPost, standardAuthPut} from '../../utils/maskmob-api'
@@ -164,7 +173,8 @@ export default {
       requestObj: null,
       requestStatus: 'befriend', // Can be 'befriend', 'candelete', 'await', 'select', 'accept' or 'deny'
       anonimityState: false,
-      showUpdate: false,
+      showUpdatePic: false,
+      showUpdateBio: false,
       showNetworkEdt: false,
       networkName: '',
       networkLabel: '',
@@ -173,7 +183,8 @@ export default {
     }
   },
   components: {
-    updateProfile: profileUpdate,
+    updatePicture: updatePic,
+    updateBiog: updateBio,
     updateNetwork: networkUpdate,
     updateAnonimity: anonUpdate
   },
@@ -331,5 +342,10 @@ export default {
 .profile-box {
   text-align:center;
   margin-top:35px;
+}
+
+.link-style {
+  color: #0645AD;
+  cursor: pointer;
 }
 </style>
