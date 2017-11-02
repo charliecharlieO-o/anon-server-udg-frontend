@@ -36,11 +36,9 @@
           </v-flex>
           <!-- Reply Button -->
           <v-flex xs1-2>
-            <div v-if="userObj._id !== comment.poster.poster_id && userObj.alias.anonId !== comment.poster.poster_id">
-              <v-btn icon v-on:click="showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
-                <v-icon>reply</v-icon>
-              </v-btn>
-            </div>
+            <v-btn icon v-on:click="showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
+              <v-icon>reply</v-icon>
+            </v-btn>
           </v-flex>
         </v-layout>
         <v-divider></v-divider>
