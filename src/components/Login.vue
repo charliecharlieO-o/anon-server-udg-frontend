@@ -14,7 +14,6 @@
       <v-flex xs4 md4>
         <v-card>
           <v-card-title>
-            <h3 class="headline mb-0">Login</h3>
           </v-card-title>
           <v-card-text>
             <v-text-field label="Usuario" v-model="user" @keyup.enter="login"/>
@@ -23,9 +22,9 @@
               v-model="pwd" 
               type="password" 
               @keyup.enter="login"/>
-            <v-layout row>
-              <v-btn primary v-on:click="login"> Iniciar </v-btn>
-            </v-layout>
+            <div class="submit-container">
+              <v-btn primary large v-on:click="login"> Iniciar </v-btn>
+            </div>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -131,4 +130,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.submit-container {
+  text-align: center;
+}
+
 </style>
