@@ -14,26 +14,34 @@
             <v-card-text>
               <v-text-field
                 label="Usuario"
-                v-model="username"/>
+                v-model="username"
+                required />
               <v-text-field
                 label="Correo"
                 v-model="email"
-                type="email"/>
+                type="email"
+                required />
               <v-text-field
                 label="Contraseña"
                 v-model="pwd1"
-                type="password"/>
+                type="password"
+                required
+                :rules="[ruleSamePassword]"/>
               <v-text-field
                 label="Confirmar Contraseña"
                 v-model="pwd2"
-                type="password"/>
+                type="password"
+                required
+                :rules="[ruleSamePassword]"/>
               <v-text-field
                 label="Codigo UdeG"
-                v-model="nip" />
+                v-model="nip"
+                required />
               <v-text-field
                 label="Password"
                 v-model="udgpwd"
-                type="password" />
+                type="password"
+                required />
               <div style="text-align: right">
                 <v-btn primary v-on:click="submitAccountDetails">
                   Crear cuenta
@@ -87,6 +95,9 @@ export default {
     }
   },
   methods: {
+    ruleSamePassword (val) {
+      return this.pwd1 === this.pwd2 || 'Las contraseñas no coinciden'
+    },
     checkUserName (val) {
       let result = validateUserName(val)
       switch (result.err) {
