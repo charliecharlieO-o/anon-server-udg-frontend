@@ -1,10 +1,8 @@
 <template>
   <div class="container-fluid">
-    <v-container>
-      <v-layout row>
-        <v-flex xs3>
-        </v-flex>
-        <v-flex xs6>
+    <v-container fuid>
+      <v-layout row wrap justify-center>
+        <v-flex xs12 xl6 lg6 md6>
           <v-card>
             <v-card-title>
               <h4>
@@ -51,7 +49,7 @@
               <div style="text-align: right">
                 <v-btn primary v-on:click="submitAccountDetails">
                   Crear cuenta
-                </v-btn>  
+                </v-btn>
               </div>
             </v-card-text>
           </v-card>
