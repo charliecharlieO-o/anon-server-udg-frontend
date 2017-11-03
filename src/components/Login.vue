@@ -1,5 +1,6 @@
 <template>
   <v-container >
+
     <v-layout row>
       <v-flex xs12 text-xs-center>
         <h2> NetSlap</h2>
@@ -29,6 +30,7 @@
         </v-card>
       </v-flex>
     </v-layout>
+    
     <v-layout row>
       <v-flex xs4>
       </v-flex>
@@ -38,6 +40,7 @@
         </router-link>
       </v-flex>
     </v-layout>
+    
     <v-layout row>
       <v-flex xs4>
       </v-flex>
@@ -47,6 +50,7 @@
         </router-link>
       </v-flex>
     </v-layout>
+    
     <v-layout row>
       <v-flex xs3>
       </v-flex>
