@@ -1,9 +1,9 @@
 <template>
-  <v-container fluid id="commentComponent" style="margin:0px;padding:0px;">
+  <v-container fluid style="margin:0px;padding:0px;">
     <!-- Comment Modal -->
     <commentPostModal :show="showModal" @close="showModal = false" :thread="comment.thread" :reply="comment._id"
-      @posted="addComment"></commentPostModal>
-    <!-- Commnent -->
+      :subreply="subreplyId" @posted="addComment"></commentPostModal>
+    <!-- Commnent First Level -->
     <v-card flat>
       <v-container fluid class="comment-container">
         <v-layout row>
@@ -44,40 +44,44 @@
         <v-divider></v-divider>
       </v-container>
     </v-card>
-    <!-- Reply Box -->
+    <!-- Reply Box Second Level -->
     <div class="reply-box">
-      <v-layout v-for="comment in repliesOnDisplay" :key="comment._id" :id="`s${comment._id}`" row class="subreply-row">
+      <v-layout v-for="reply in repliesOnDisplay" :key="comment._id" :id="`s${comment._id}`" row class="subreply-row">
         <!-- Spacer -->
         <v-flex xs1></v-flex>
         <!-- User Defined Space -->
         <v-flex xs1-2 style="text-align:left;">
-          <img v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
+          <img v-if="reply.poster.anon && reply.poster.poster_name === 'Dr.Jekyll'"
             src="/static/hydeegg.jpg" class="profile-thumbnail">
-          <img v-else-if="comment.poster.anon"
+          <img v-else-if="reply.poster.anon"
             src="/static/incognito.jpg" class="profile-thumbnail">
-          <img v-else :src="comment.poster.poster_thumbnail" class="profile-thumbnail">
+          <img v-else :src="reply.poster.poster_thumbnail" class="profile-thumbnail">
         </v-flex>
         <!-- Comment Data -->
         <v-flex xs11>
           <!-- Header Info -->
           <v-layout row class="user-header">
-            <span v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
+            <!-- USERNAME -->
+            <span v-if="reply.poster.anon && reply.poster.poster_name === 'Dr.Jekyll'"
               class="username-span-easteregg">Mr.Hyde</span>
-            <span v-else-if="comment.poster.anon" class="username-span-anon">{{ comment.poster.poster_name }} [anon]</span>
-            <span v-else class="username-span">{{ comment.poster.poster_name }}</span>
+            <span v-else-if="reply.poster.anon" class="username-span-anon">{{ reply.poster.poster_name }} [anon]</span>
+            <span v-else class="username-span">{{ reply.poster.poster_name }}</span>
+            <!-- ACTION -->
             <span class="replied-span">replied</span>
-            <span class="white grey--text" style="margin-left:5px">{{ comment.created_at }}</span>
+            <span v-if="comment.poster.poster_id !== reply.poster.poster_id">to {{ reply.to.poster_name }}</span>
+            <!-- TIME -->
+            <span class="white grey--text" style="margin-left:5px">{{ reply.created_at }}</span>
           </v-layout>
           <!-- Comment text content -->
           <v-layout row>
-            <p :id="`p${comment._id}`" class="text-xs-left default-p">{{ comment.text }}</p>
+            <p :id="`p${reply._id}`" class="text-xs-left default-p">{{ reply.text }}</p>
           </v-layout>
           <!-- Comment thumbnail content -->
         </v-flex>
         <!-- Reply Button -->
         <v-flex xs1-2>
-          <div v-if="userObj._id !== comment.poster.poster_id && userObj.alias.anonId !== comment.poster.poster_id">
-            <v-btn icon v-on:click="showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
+          <div v-if="userObj._id !== reply.poster.poster_id && userObj.alias.anonId !== reply.poster.poster_id">
+            <v-btn icon v-on:click="subreplyId = reply._id;showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
               <v-icon>reply</v-icon>
             </v-btn>
           </div>
@@ -104,7 +108,6 @@ import {parseComment} from '../../utils/maskmob-api'
 import commentPostModal from './CommentModal'
 import * as moment from 'moment'
 export default {
-  template: '#commentComponent',
   props: ['commentObj'],
   components: {
     commentPostModal: commentPostModal
@@ -116,7 +119,8 @@ export default {
       toReply: null,
       showModal: false,
       userObj: null,
-      onWatch: false
+      onWatch: false,
+      subreplyId: null
     }
   },
   created () {
@@ -133,13 +137,6 @@ export default {
         this.repliesOnDisplay[x] = parseComment(this.repliesOnDisplay[x])
       }
     },
-    addComment (comment) {
-      // Add comment to newComments array
-      comment.created_at = moment().toISOString()
-      this.repliesOnDisplay.push(parseComment(comment))
-      // Scroll to comment asynchronously
-      this.$nextTick(() => document.getElementById(`s${comment._id}`).scrollIntoView())
-    },
     loadMissingComments () {
       const idx = this.repliesOnDisplay.length
       const end = this.comment.replies.length
@@ -149,6 +146,17 @@ export default {
       }
       this.repliesOnDisplay.push.apply(this.repliesOnDisplay, missingReplies)
       this.onWatch = true
+    },
+    addComment (comment) {
+      // Open comments if not openned
+      this.loadMissingComments()
+      // Add comment to newComments array
+      comment.created_at = moment().toISOString()
+      this.repliesOnDisplay.push(parseComment(comment))
+      // Delete  subreplyId in case it was an answer
+      this.subreplyId = null
+      // Scroll to comment asynchronously
+      // this.$nextTick(() => document.getElementById(`s${comment._id}`).scrollIntoView())
     },
     stopWatching () {
       this.onWatch = false

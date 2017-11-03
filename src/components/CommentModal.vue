@@ -58,7 +58,7 @@
 import {standardAuthUpload} from '../../utils/maskmob-api'
 export default {
   template: '#commentPostModal',
-  props: ['show', 'thread', 'reply'],
+  props: ['show', 'thread', 'reply', 'subreply'],
   data () {
     return {
       title: '',
@@ -98,7 +98,10 @@ export default {
         // Prepare data
         this.text.trim()
         this.form.append('text', this.text)
-        const replyURL = (this.reply) ? `/thread/${this.$props['thread']}/replies/${this.$props['reply']}/reply` : `/thread/${this.$props['thread']}/reply`
+        const replyOrSubreply = (thread, reply, sub) => {
+          return (sub) ? `/thread/${thread}/replies/${reply}/${sub}/reply` : `/thread/${thread}/replies/${reply}/reply`
+        }
+        const replyURL = (this.reply) ? replyOrSubreply(this.$props['thread'], this.reply, this.$props['subreply']) : `/thread/${this.$props['thread']}/reply`
         const response = await standardAuthUpload(this.$session.get('JWTOKEN'), replyURL, this.form)
         if (response.status === 200 && response.data.success) {
           this.uploading = false
