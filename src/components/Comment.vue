@@ -55,7 +55,9 @@
             src="/static/hydeegg.jpg" class="profile-thumbnail">
           <img v-else-if="reply.poster.anon"
             src="/static/incognito.jpg" class="profile-thumbnail">
-          <img v-else :src="reply.poster.poster_thumbnail" class="profile-thumbnail">
+          <router-link v-else :to="`/profile/${reply.poster.poster_id}`" style="textDecoration:none;">
+            <img :src="reply.poster.poster_thumbnail" class="profile-thumbnail">
+          </router-link>
         </v-flex>
         <!-- Comment Data -->
         <v-flex xs11>
@@ -65,7 +67,9 @@
             <span v-if="reply.poster.anon && reply.poster.poster_name === 'Dr.Jekyll'"
               class="username-span-easteregg">Mr.Hyde</span>
             <span v-else-if="reply.poster.anon" class="username-span-anon">{{ reply.poster.poster_name }} [anon]</span>
-            <span v-else class="username-span">{{ reply.poster.poster_name }}</span>
+            <router-link v-else :to="`/profile/${comment.poster.poster_id}`" style="textDecoration:none;">
+              <span class="username-span">{{ comment.poster.poster_name }}</span>
+            </router-link>
             <!-- ACTION -->
             <span class="replied-span">replied</span>
             <span v-if="comment.poster.poster_id !== reply.poster.poster_id">to {{ reply.to.poster_name }}</span>
@@ -131,19 +135,17 @@ export default {
     loadCommentContent () {
       // Parse comment
       this.comment = parseComment(this.$props['commentObj'])
-      // Load first 2 subreplies
-      this.repliesOnDisplay = this.comment.replies.slice(0, 1)
-      for (let x in this.repliesOnDisplay) {
-        this.repliesOnDisplay[x] = parseComment(this.repliesOnDisplay[x])
+      // Parse comments
+      for (let x in this.comment.replies) {
+        this.comment.replies[x] = parseComment(this.comment.replies[x])
       }
+      // Load first 2 subreplies
+      this.repliesOnDisplay = this.comment.replies.slice(0, 2)
     },
     loadMissingComments () {
-      const idx = this.repliesOnDisplay.length
-      const end = this.comment.replies.length
+      const idx = this.repliesOnDisplay.length - 1
+      const end = this.comment.replies.length - 1
       let missingReplies = this.comment.replies.slice(idx, end)
-      for (let x in missingReplies) {
-        missingReplies[x] = parseComment(missingReplies[x])
-      }
       this.repliesOnDisplay.push.apply(this.repliesOnDisplay, missingReplies)
       this.onWatch = true
     },
