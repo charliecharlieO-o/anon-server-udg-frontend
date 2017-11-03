@@ -14,33 +14,39 @@
             <v-card-text>
               <v-text-field
                 label="Usuario"
+                @keyup.enter="submitAccountDetails"
                 v-model="username"
                 required />
               <v-text-field
                 label="Correo"
                 v-model="email"
                 type="email"
+                @keyup.enter="submitAccountDetails"
                 required />
               <v-text-field
                 label="Contraseña"
                 v-model="pwd1"
                 type="password"
                 required
+                @keyup.enter="submitAccountDetails"
                 :rules="[ruleSamePassword]"/>
               <v-text-field
                 label="Confirmar Contraseña"
                 v-model="pwd2"
                 type="password"
                 required
+                @keyup.enter="submitAccountDetails"
                 :rules="[ruleSamePassword]"/>
               <v-text-field
                 label="Codigo UdeG"
                 v-model="nip"
+                @keyup.enter="submitAccountDetails"
                 required />
               <v-text-field
                 label="Password"
                 v-model="udgpwd"
                 type="password"
+                @keyup.enter="submitAccountDetails"
                 required />
               <div style="text-align: right">
                 <v-btn primary v-on:click="submitAccountDetails">
@@ -52,14 +58,6 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <div class="row" v-if="creatingAccount">
-      <div class="col-md-5"></div>
-      <div class="col-md-2" style="text-align:center;">
-        <img src="../assets/dubring.svg" /><br />
-        <h4>Estamos Creando tu Cuenta</h4>
-      </div>
-      <div class="col-md-5"></div>
-    </div>
   </div>
 </template>
 
