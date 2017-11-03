@@ -323,8 +323,10 @@ export default {
 </script>
 
 <style scoped>
+/*
 @import '/static/mainapp.css';
 @import '/static/bootstrap.min.css';
+*/
 .signup {
   padding-top: 5%;
   height: 100%;

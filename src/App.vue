@@ -196,9 +196,6 @@ export default {
 </script>
 
 <style scoped>
-@import '/static/vuetify.min.css';
-/* @import '/static/materialicons.css';
-*/
 
 .profile-picture {
   background-color:grey;

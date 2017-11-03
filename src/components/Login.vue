@@ -1,49 +1,62 @@
 <template>
-  <div class="container-fluid">
-    <div>
-      <!-- Main container -->
-      <div class="row" style="margin-bottom:25px;">
-        <div class="col-md-12" style="text-align:center;">
-          <h1 class="AppTitle">NetSlap</h1>
-          <p class="Slogan">{{ slogans  }}</p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12" style="text-align:center;">
-          <input class="text-input" v-model="user" style="margin-top:10px;" type="text" placeholder="Usuario o Email"/>
-          <input class="text-input" @keyup.enter="login" v-model="pwd" style="margin-top:10px;" type="password" placeholder="Password" />
-        </div>
-      </div>
-      <div class="row" style="text-align:center;margin-top:20px;">
-        <div class="col-md-12">
-          <v-progress-circular v-if="loading" indeterminate v-bind:size="50" class="cyan--text"></v-progress-circular>
-        </div>
-      </div>
-      <div class="row" v-if="!loading" style="text-align:center;margin-bottom:25px;">
-        <div class="col-md-12">
-          <button class="app-button" v-on:click="login">Login</button><div class="light-text">O</div>
-        </div>
-        <div class="col-md-12">
-          <router-link to="signup"><button class="app-button">Registrarse</button></router-link>
-        </div>
-      </div>
-      <div class="row" style="text-align:center;">
-        <div class="col-md-12">
-          <a href="">Olvide mi contrasena</a>
-        </div>
-      </div>
-      <div class="row" style="text-align:center;margin-top:100px;">
-        <div class="col-md-12">
-          <p class="poetic-paragraph">
-            NetSlap® es una plataforma de foros/boards hecha para la <br />comunidad de
-            estudiantes de la Universidad de Guadalajara basada <br /> en los
-            imageboards futaballaby o "chans"<i>, Bienvenidos a casa buitres.</i>
-          </p>
-        </div>
-      </div>
-    </div>
+  <v-container >
+    <v-layout row>
+      <v-flex xs12 text-xs-center>
+        <h2> NetSlap</h2>
+        <p>{{ slogans  }}</p>
+      </v-flex>
+    </v-layout>
 
-  </div>
+    <v-layout row>
+      <v-flex xs4 md4>
+      </v-flex>
+      <v-flex xs4 md4>
+        <v-card>
+          <v-card-title>
+            <h3 class="headline mb-0">Login</h3>
+          </v-card-title>
+          <v-card-text>
+            <v-text-field label="Usuario" v-model="user" @keyup.enter="login"/>
+            <v-text-field
+              label="Password" 
+              v-model="pwd" 
+              type="password" 
+              @keyup.enter="login"/>
+            <v-layout row>
+              <v-btn primary v-on:click="login"> Iniciar </v-btn>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex xs4>
+      </v-flex>
+      <v-flex xs4 text-xs-center>
+        <router-link :to="{ name: 'signup' }">
+          <v-btn flat primary> Registrate </v-btn>
+        </router-link>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex xs4>
+      </v-flex>
+      <v-flex xs4 text-xs-center>
+        <router-link to="#">
+          Olvidaste tu contraseña
+        </router-link>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex xs3>
+      </v-flex>
+      <v-flex xs6 text-xs-center>
+          NetSlap® es una plataforma de foros/boards hecha para la comunidad de
+          estudiantes de la Universidad de Guadalajara basada en los
+          imageboards futaballaby o "chans", <i>Bienvenidos a casa buitres.</i>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -69,6 +82,7 @@ export default {
     return {
       user: '',
       pwd: '',
+      username: 'hello',
       loading: false,
       slogans: slogans[Math.floor((Math.random() * 3))]
     }
@@ -113,33 +127,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@import '/static/mainapp.css';
-@import '/static/bootstrap.min.css';
-.box-div {
-  padding-top: 5%;
-  height: 100%;
-  text-align: center;
-}
-
-.AppTitle {
-  font-size: 370%;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: normal;
-  font-style: bold;
-  margin-bottom: 0px;
-}
-
-.Slogan {
-  padding-top: 0px;
-  margin-top: 1px;
-  font-size: medium;
-  font-style: italic;
-  font-size: 150%;
-}
-
-.poetic-paragraph {
-  font-size: 99%;
-  font-family: "Courier New", Courier, monospace;
-  color: #303030;
-}
 </style>
