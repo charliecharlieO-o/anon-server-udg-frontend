@@ -240,7 +240,6 @@ export default {
               this.requestStatus = (!this.requestObj.responded) ? 'select' : (this.requestObj.has_access) ? 'candelete' : 'remreq'
             }
           }
-          console.log(this.requestStatus)
         } catch (e) {
           console.log(e)
         }
