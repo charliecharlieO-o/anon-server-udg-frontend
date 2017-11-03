@@ -1,5 +1,5 @@
 <template>
-  <v-container >
+  <v-container fluid>
 
     <v-layout row>
       <v-flex xs12 text-xs-center>
@@ -8,19 +8,15 @@
       </v-flex>
     </v-layout>
 
-    <v-layout row>
-      <v-flex xs4 md4>
-      </v-flex>
-      <v-flex xs4 md4>
+    <v-layout row wrap justify-center>
+      <v-flex xs12 xl4 lg4 md4>
         <v-card>
-          <v-card-title>
-          </v-card-title>
           <v-card-text>
             <v-text-field label="Usuario" v-model="user" @keyup.enter="login"/>
             <v-text-field
-              label="Password" 
-              v-model="pwd" 
-              type="password" 
+              label="Password"
+              v-model="pwd"
+              type="password"
               @keyup.enter="login"/>
             <div class="submit-container">
               <v-btn primary large v-on:click="login"> Iniciar </v-btn>
@@ -29,31 +25,25 @@
         </v-card>
       </v-flex>
     </v-layout>
-    
+
     <v-layout row>
-      <v-flex xs4>
-      </v-flex>
-      <v-flex xs4 text-xs-center>
+      <v-flex xs12 text-xs-center>
         <router-link :to="{ name: 'signup' }">
-          <v-btn flat primary> Registrate </v-btn>
+          <v-btn flat primary large> Registrate </v-btn>
         </router-link>
       </v-flex>
     </v-layout>
-    
+
     <v-layout row>
-      <v-flex xs4>
-      </v-flex>
-      <v-flex xs4 text-xs-center>
+      <v-flex xs12 text-xs-center>
         <router-link to="#">
-          Olvidaste tu contraseña
+          Olvidaste tu contraseña?
         </router-link>
       </v-flex>
-    </v-layout>
-    
-    <v-layout row>
-      <v-flex xs3>
-      </v-flex>
-      <v-flex xs6 text-xs-center>
+    </v-layout><br />
+
+    <v-layout row justify-center>
+      <v-flex xs12 xl4 lg4 md4 text-xs-center>
           NetSlap® es una plataforma de foros/boards hecha para la comunidad de
           estudiantes de la Universidad de Guadalajara basada en los
           imageboards futaballaby o "chans", <i>Bienvenidos a casa buitres.</i>
@@ -130,8 +120,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 .submit-container {
   text-align: center;
+}
+
+.default-max-width {
+  max-width: 400px;
 }
 
 </style>
