@@ -1,107 +1,63 @@
 <template>
   <div class="container-fluid">
-
-    <!-- Caja de datos basicos de perfil Paso 1 -->
-    <div class="row" v-if="stage===1">
-      <!-- Header -->
-      <div class="container-label">
-        <div class="white-label-big">Paso 1 de 2: Crea tu Cuenta</div>
-      </div>
-      <div class="padded-container">
-
-        <!-- Header de datos basicos -->
-        <div class="row">
-          <div class="col-md-12">
-            <h3>Datos Basicos</h3><hr />
-            <p class="light-text" style="font-size:125%;">
-              Podras cambiar tu imagen de perfil, descripcion y redes sociales en
-              la seccion de 'perfil' una vez que la cuenta sea verificada y creada.
-            </p>
-          </div>
-        </div>
-        <!-- Datos de usuario -->
-        <div class="row" style="margin-top:20px;">
-          <div class="col-md-3"></div>
-          <div class="col-md-3" style="text-align:center;">
-            <label class="light-text">Nombre de Usuario:  </label>
-          </div>
-          <div class="col-md-3" style="text-align:left;">
-            <input v-model="username" class="form-control"/>
-            <p v-if="!usernameError" class="light-text">No lo podras cambiar en el futuro</p>
-            <p class="light-text" style="color:#F00">{{ usernameError }}</p>
-          </div>
-          <div class="col-md-3"></div>
-        </div>
-        <div class="row">
-          <div class="col-md-3"></div>
-          <div class="col-md-3" style="text-align:center;">
-            <label class="light-text">Password:</label>
-          </div>
-          <div class="col-md-3" style="text-align:left;">
-            <input v-model="pwd1" class="form-control" type="password" />
-            <p v-if="!pwdMatchError" class="light-text">Entre mas largo y complejo, mejor.</p>
-            <br v-else />
-            <input v-model="pwd2" class="form-control" type="password" />
-            <p v-if="!pwdMatchError" class="light-text">Por favor repitelo.</p>
-            <p class="light-text" style="color:#F00">{{ pwdMatchError }}</p>
-          </div>
-          <div class="col-md-3"></div>
-        </div>
-        <div class="row">
-          <div class="col-md-3"></div>
-          <div class="col-md-3" style="text-align:center;">
-            <label class="light-text">email:</label>
-          </div>
-          <div class="col-md-3" style="text-align:left;">
-            <input class="form-control" v-model="email"/>
-            <p v-if="!emailError" class="light-text">En el muy raro caso de que olvides tu contrasena ;)</p>
-            <p class="light-text" style="color:#F00">{{ emailError }}</p>
-          </div>
-          <div class="col-md-3"></div>
-        </div>
-        <!-- Header de cuenta udg -->
-        <div class="row">
-          <div class="col-md-12">
-            <h3>Comprueba que perteneces a la UdeG</h3><hr />
-            <p class="light-text" style="font-size:125%;">
-              Por ahora este sitio es exclusivo para estudiantes de la Universidad de Guadalajara,
-              ingresa tu nip y contrasena de SIIAU para verificar.
-              <b>NetSlap no almacenara tus credenciales de estudiante ni tus datos
-              privados</b>
-            </p>
-          </div>
-        </div>
-        <!-- Seccion de UdeG -->
-        <div class="row" style="margin-top:50px;margin-bottom:50px;">
-          <div class="col-md-4"></div>
-          <div class="col-md-2" style="margin-top:5px;">
-            <input v-model="nip" class="form-control" placeholder="NIP" />
-            <p class="light-text" style="color:#F00">{{ nipError }}</p>
-          </div>
-          <div class="col-md-2" style="margin-top:5px;">
-            <input v-model="udgpwd" class="form-control" placeholder="PASSWORD" type="password" />
-            <p class="light-text" style="color:#F00" >{{ udgPwdError }}</p>
-          </div>
-          <div class="col-md-4"></div>
-        </div>
-
-        <!-- Siguiente paso -->
-        <div class="row">
-          <div class="col-md-12" style="text-align:right;padding-right:2%;">
-            <button v-on:click="submitAccountDetails" class="app-button-def">Crear Cuenta ►</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row" v-if="creatingAccount">
-      <div class="col-md-5"></div>
-      <div class="col-md-2" style="text-align:center;">
-        <img src="../assets/dubring.svg" /><br />
-        <h4>Estamos Creando tu Cuenta</h4>
-      </div>
-      <div class="col-md-5"></div>
-    </div>
+    <v-container>
+      <v-layout row>
+        <v-flex xs3>
+        </v-flex>
+        <v-flex xs6>
+          <v-card>
+            <v-card-title>
+              <h4>
+                Registro
+              </h4>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                label="Usuario"
+                @keyup.enter="submitAccountDetails"
+                v-model="username"
+                required />
+              <v-text-field
+                label="Correo"
+                v-model="email"
+                type="email"
+                @keyup.enter="submitAccountDetails"
+                required />
+              <v-text-field
+                label="Contraseña"
+                v-model="pwd1"
+                type="password"
+                required
+                @keyup.enter="submitAccountDetails"
+                :rules="[ruleSamePassword]"/>
+              <v-text-field
+                label="Confirmar Contraseña"
+                v-model="pwd2"
+                type="password"
+                required
+                @keyup.enter="submitAccountDetails"
+                :rules="[ruleSamePassword]"/>
+              <v-text-field
+                label="Codigo UdeG"
+                v-model="nip"
+                @keyup.enter="submitAccountDetails"
+                required />
+              <v-text-field
+                label="Password"
+                v-model="udgpwd"
+                type="password"
+                @keyup.enter="submitAccountDetails"
+                required />
+              <div style="text-align: right">
+                <v-btn primary v-on:click="submitAccountDetails">
+                  Crear cuenta
+                </v-btn>  
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
   </div>
 </template>
 
@@ -137,6 +93,9 @@ export default {
     }
   },
   methods: {
+    ruleSamePassword (val) {
+      return this.pwd1 === this.pwd2 || 'Las contraseñas no coinciden'
+    },
     checkUserName (val) {
       let result = validateUserName(val)
       switch (result.err) {
@@ -203,8 +162,9 @@ export default {
         }
       }
     },
-    login () {
-      standardLogin(this.username, this.pwd1).then((response) => {
+    async login () {
+      try {
+        const response = await standardLogin(this.username, this.pwd1)
         if (response.status === 200 && 'token' in response.data) {
           if (response.data.success) {
             // Destroy session if it already exists
@@ -214,19 +174,24 @@ export default {
             // Start new session with new token
             this.$session.start()
             this.$session.set('JWTOKEN', response.data.token)
+            this.$session.set('USER', response.data.user)
+            this.$store.commit('setJWT', response.data.token)
+            this.$router.push({ name: 'home' })
           }
         }
-      }).catch((err) => {
+      } catch (err) {
         if (err) {
+          console.error(err)
           alert('Error al loggear, verifica el estado de tu conexion')
         }
-      })
+      }
     },
-    submitAccountDetails (e) {
+    async submitAccountDetails (e) {
       let namePass = this.checkUserName(this.username)
       let pwdPass = this.checkPwd(this.pwd2)
       let emlPass = this.checkEmail(this.email)
       let udgCred = this.checkUdeGCreds(this.nip, this.udgpwd)
+
       if (namePass && pwdPass && emlPass && udgCred) {
         // Prepare JSON
         const userAccount = {
@@ -236,47 +201,45 @@ export default {
           'nip': this.nip,
           'udgpwd': this.udgpwd
         }
+
         this.creatingAccount = true
         // Try AJAX account post
-        standardUnauthPost(userAccount, '/user/register').then((response) => {
-          // Process response
-          if (response.status === 200 && response.data) {
-            const obj = response.data
-            if (obj.success === true) {
-              // if it's successfull login user
-              this.login()
-              this.stage = 2
-            } else {
-              // If it's validation Error
-              if (obj.valerr) {
-                alert('error de validacion')
-              } else if (obj.dberr) {
-                obj.dberr = String(obj.dberr.trim())
-                // Process mongoose post save errors
-                if (obj.dberr === 'username already exists') {
-                  this.usernameError = 'El nombre de usuario ya existe'
-                }
-                if (obj.dberr === 'nipCode already exists') {
-                  this.nipError = 'El NIP ya ha sido usado'
-                }
-                if (obj.dberr === 'email already exists') {
-                  this.emailError = 'El email ya ha sido usado'
-                }
-                alert('Hay errores en algunos campos')
-              } else {
-                if (obj.err === 101) {
-                  alert('Tu NIP o Password UdeG son incorrectos, eres estudiante?')
-                }
-              }
+        const response = await standardUnauthPost(userAccount, '/user/register')
+        // Process response
+        if (response.status !== 200 || !response.data) {
+          alert('Error al registrarse, revisa tu conexion.')
+          return
+        }
+
+        const obj = response.data
+        if (obj.success === false) {
+          // If it's validation Error
+          if (obj.valerr) {
+            alert('error de validacion')
+          } else if (obj.dberr) {
+            obj.dberr = String(obj.dberr.trim())
+            // Process mongoose post save errors
+            if (obj.dberr === 'username already exists') {
+              this.usernameError = 'El nombre de usuario ya existe'
             }
+            if (obj.dberr === 'nipCode already exists') {
+              this.nipError = 'El NIP ya ha sido usado'
+            }
+            if (obj.dberr === 'email already exists') {
+              this.emailError = 'El email ya ha sido usado'
+            }
+            alert('Hay errores en algunos campos')
           } else {
-            alert('Error al registrarse, revisa tu conexion.')
+            if (obj.err === 101) {
+              alert('Tu NIP o Password UdeG son incorrectos, eres estudiante?')
+            }
           }
-        }).catch((err) => {
-          if (err) {
-            alert(`Error al registrarse, revisa tu conexion. ${err.code}`)
-          }
-        })
+
+          return
+        }
+        // Success
+        this.login()
+        this.stage = 2
         this.creatingAccount = false
       } else {
         alert('Hay errores en algunos campos')
@@ -323,16 +286,4 @@ export default {
 </script>
 
 <style scoped>
-@import '/static/mainapp.css';
-@import '/static/bootstrap.min.css';
-.signup {
-  padding-top: 5%;
-  height: 100%;
-}
-
-.container-label {
-  background-color: #00acc1;
-  border: 0px;
-}
-
 </style>

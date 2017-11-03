@@ -8,6 +8,7 @@ import VueSession from 'vue-session'
 import Vuetify from 'vuetify'
 
 import 'material-design-icons/iconfont/material-icons.css'
+import 'vuetify/dist/vuetify.min.css'
 
 Vue.config.productionTip = false
 Vue.use(VueSession)

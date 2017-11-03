@@ -161,7 +161,6 @@ export default {
       drawer: true,
       mini: false,
       right: null,
-      loggedIn: false,
       profile: null,
       showNotifications: false
     }
@@ -187,6 +186,9 @@ export default {
   computed: {
     notificationsCount () {
       return this.$store.state.notifications.length
+    },
+    loggedIn () {
+      return this.$store.state.jwt
     }
   },
   components: {
@@ -196,9 +198,6 @@ export default {
 </script>
 
 <style scoped>
-@import '/static/vuetify.min.css';
-/* @import '/static/materialicons.css';
-*/
 
 .profile-picture {
   background-color:grey;
