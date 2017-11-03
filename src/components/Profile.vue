@@ -37,10 +37,26 @@
         <!-- Action Buttons -->
         <div v-if="profileId !== 'me'" class="text-xs-center">
           <br />
-          <v-btn v-if="requestStatus === 'befriend'" v-on:click="sendRequest" round primary dark>agregar contacto<v-icon right>person_add</v-icon></v-btn>
-          <v-btn v-if="requestStatus === 'deny' || requestStatus === 'candelete'" round error dark>eliminar contacto<v-icon right>remove_circle_outline</v-icon></v-btn>
-          <v-btn v-if="requestStatus === 'accept' || requestStatus === 'select'" round success dark>aceptar peticion<v-icon right>check</v-icon></v-btn>
-          <v-btn v-if="requestStatus === 'deny' || requestStatus === 'select'" round warning dark>negar peticion<v-icon right>not_interested</v-icon></v-btn>
+          <v-btn v-if="requestStatus === 'befriend'" v-on:click="sendRequest" round primary dark>
+            agregar contacto
+            <v-icon right>person_add</v-icon>
+          </v-btn>
+          <v-btn v-if="requestStatus === 'candelete' || requestStatus ==='remreq'" v-on:click="removeRelationship" round error dark>
+            <span v-if="requestStatus === 'remreq'">eliminar peticion</span><span v-else>eliminar contacto</span>
+            <v-icon right>remove_circle_outline</v-icon>
+          </v-btn>
+          <v-btn v-if="requestStatus === 'remreq'" v-on:click="acceptRelationship" round success dark>
+            aceptar peticion
+            <v-icon right>check</v-icon>
+          </v-btn>
+          <v-btn v-if="requestStatus === 'select'" v-on:click="respondRequest('friend')" round success dark>
+            aceptar peticion
+            <v-icon right>check</v-icon>
+          </v-btn>
+          <v-btn v-if="requestStatus === 'select'" v-on:click="respondRequest('foe')" round warning dark>
+            negar peticion
+            <v-icon right>not_interested</v-icon>
+          </v-btn>
           <v-chip v-if="requestStatus === 'await'" class="secondary white--text">Peticion enviada...</v-chip>
         </div>
         <br />
@@ -160,7 +176,7 @@ import updatePic from './UpdatePicture'
 import updateBio from './UpdateBio'
 import networkUpdate from './UpdateNetwork'
 import anonUpdate from './AnonimitySetup'
-import {standardAuthGet, standardAuthPost, standardAuthPut} from '../../utils/maskmob-api'
+import {standardAuthGet, standardAuthPost, standardAuthPut, standardAuthDelete} from '../../utils/maskmob-api'
 export default {
   name: 'profile',
   data () {
@@ -214,14 +230,17 @@ export default {
           if (response.data && response.data.success === false) {
             this.requestStatus = 'befriend'
           } else {
+            // Set to internal Object
+            this.requestObj = response.data.doc
             // If I sent it
-            if (response.data.doc.requested_by.id === user._id) {
-              this.requestStatus = (response.data.doc.has_access) ? 'candelete' : 'await'
+            if (this.requestObj.requested_by.id === user._id) {
+              this.requestStatus = (this.requestObj.has_access) ? 'candelete' : 'await'
             } else {
               // can acept or decline
-              this.requestStatus = (!response.data.doc.responded) ? 'select' : (response.data.has_access) ? 'accept' : 'deny'
+              this.requestStatus = (!this.requestObj.responded) ? 'select' : (this.requestObj.has_access) ? 'candelete' : 'remreq'
             }
           }
+          console.log(this.requestStatus)
         } catch (e) {
           console.log(e)
         }
@@ -242,29 +261,49 @@ export default {
     },
     async sendRequest () {
       try {
-        const response = await standardAuthPost({ 'to_userid': this.profileId }, this.$session.get('JWTOKEN'), '/user/request')
+        const response = await standardAuthPost({ 'to_userid': this.profileId }, this.$session.get('JWTOKEN'),
+          '/user/request')
         this.requestStatus = (response.data.success) ? 'await' : 'befriend'
       } catch (err) {
         console.log(err)
       }
     },
-    async denyRequest () {
+    async respondRequest (friendOrFoe) {
       try {
-        // deny request
-      } catch (err) {
-        console.log(err)
-      }
-    },
-    async acceptRequest () {
-      try {
-        // accept requqest
+        const hasAccess = friendOrFoe === 'friend'
+        const response = await standardAuthPut({ 'has_access': hasAccess }, this.$session.get('JWTOKEN'),
+          `/user/request/${this.requestObj._id}/respond`)
+        if (response.status === 200 && response.data.success) {
+          this.loadProfileInfo()
+        } else {
+          console.log('error')
+        }
       } catch (err) {
         console.log(err)
       }
     },
     async removeRelationship () {
       try {
-        // remove friendship
+        const response = await standardAuthDelete({}, this.$session.get('JWTOKEN'),
+          `/user/request/${this.requestObj._id}/remove`)
+        if (response.status === 200 && response.data.success) {
+          this.loadProfileInfo()
+        } else {
+          console.log('error')
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async acceptRelationship () {
+      try {
+        const response = await standardAuthPut({ 'has_access': true }, this.$session.get('JWTOKEN'),
+          `/user/request/${this.requestObj._id}/edit`)
+        if (response.status === 200 && response.data.success) {
+          this.loadProfileInfo()
+        } else {
+          console.log('error')
+        }
       } catch (err) {
         console.log(err)
       }
