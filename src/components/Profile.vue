@@ -68,22 +68,22 @@
           <v-list v-if="accessLevel !== 'limited' || profileId === 'me'">
             <updateNetwork :show="showNetworkEdt" :networkName="networkName" :networkLabel="networkLabel"
               @close="showNetworkEdt = false" @updated="refreshUserProfile"></updateNetwork>
-            <v-list-tile v-on:click="showNetworkEdt=true;networkName='facebook';networkLabel='nombre de usuario'">
+            <v-list-tile v-on:click="editNetworkDialog('facebook', 'nombre de usuario')">
               <img src="../assets/icon-zuckd.svg" class="social-icon" />
               <span><b>perfil de facebook:</b> {{ socialNetworkInfo('facebook') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile v-on:click="showNetworkEdt=true;networkName='instagram';networkLabel='nombre de usuario'">
+            <v-list-tile v-on:click="editNetworkDialog('instagram', 'nombre de usuario')">
               <img src="../assets/icon-instagram.svg" class="social-icon" />
               <span><b>cuenta de instagram:</b> {{ socialNetworkInfo('instagram') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile v-on:click="showNetworkEdt=true;networkName='snapchat';networkLabel='snapchat handle'">
+            <v-list-tile v-on:click="editNetworkDialog('snapchat', 'snapchat handle')">
               <img src="../assets/icon-snapchat.svg" class="social-icon" />
               <span><b>snapchat handle:</b> {{ socialNetworkInfo('snapchat') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
-            <v-list-tile v-on:click="showNetworkEdt=true;networkName='twitter';networkLabel='@tu nombre'">
+            <v-list-tile v-on:click="editNetworkDialog('twitter', '@tu nombre')">
               <img src="../assets/icon-twitter.svg" class="social-icon" />
               <span><b>@ de twitter:</b> {{ socialNetworkInfo('twitter') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
@@ -345,6 +345,14 @@ export default {
           return this.userObj.contact_info[networkIdx].network_contact
         }
       }
+    },
+    editNetworkDialog (networkName, networkLabel) {
+      if (this.$session.get('USER')._id !== this.profileId) {
+        return // Should copy string to clipboard
+      }
+      this.showNetworkEdt = true
+      this.networkName = networkName
+      this.networkLabel = networkLabel
     }
   }
 }
