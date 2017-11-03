@@ -8,7 +8,7 @@ const DEV_URL = envConfig.LOCAL
 
 export {
   getBaseUrl, standardLogin, standardUnauthPost, standardAuthPut, standardAuthPost, standardAuthGet, getDevUrl,
-  parseThreads, standardAuthUpload, parseComment, parseBoards, standardAuthPutUpload
+  parseThreads, standardAuthUpload, parseComment, parseBoards, standardAuthPutUpload, standardAuthDelete
 }
 
 function getBaseUrl() {
@@ -49,6 +49,18 @@ function standardAuthPost(jsonParams, jwtToken, objectUrlPath) {
   const querystring = require('querystring')
   const url = `${BASE_URL}${objectUrlPath}`
   return axios.post(url,
+    querystring.stringify(jsonParams),{
+      'headers': {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'authorization': jwtToken
+      }
+    })
+}
+
+function standardAuthDelete(jsonParams, jwtToken, objectUrlPath) {
+  const querystring = require('querystring')
+  const url = `${BASE_URL}${objectUrlPath}`
+  return axios.delete(url,
     querystring.stringify(jsonParams),{
       'headers': {
         'Content-Type': 'application/x-www-form-urlencoded',
