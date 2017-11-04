@@ -103,6 +103,7 @@ export default {
       try {
         const response = await standardAuthGet(this.$session.get('JWTOKEN'), '/user/friends')
         this.contacts = response.data.doc
+        console.log(this.contacts)
       } catch (e) {
         this.errorContacts = e
       }
@@ -118,7 +119,7 @@ export default {
     async loadSentRequests () {
       try {
         const response = await standardAuthGet(this.$session.get('JWTOKEN'), '/user/sent-requests')
-        this.requests = response.data.doc
+        this.requestsSent = response.data.doc
       } catch (e) {
         this.errorRequestsSent = e
       }
