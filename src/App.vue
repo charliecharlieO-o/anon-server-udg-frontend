@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <snackbar />
     <v-app toolbar>
         <v-navigation-drawer v-if="loggedIn" persistent light :mini-variant.sync="mini" v-model="drawer" overflow>
           <v-toolbar flat class="transparent">
@@ -138,6 +139,7 @@
 
 <script>
 import NotificationsPicker from '@/components/NotificationsPicker'
+import Snackbar from '@/components/Snackbar'
 
 export default {
   name: 'app',
@@ -181,6 +183,12 @@ export default {
     },
     hideNotifications () {
       this.showNotifications = false
+    },
+    showSnackbar () {
+      this.$store.commit('snackbar/push', {
+        text: 'Open google' + new Date(),
+        url: 'https://google.com'
+      })
     }
   },
   computed: {
@@ -192,7 +200,8 @@ export default {
     }
   },
   components: {
-    NotificationsPicker
+    NotificationsPicker,
+    Snackbar
   }
 }
 </script>

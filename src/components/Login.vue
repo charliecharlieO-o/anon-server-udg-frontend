@@ -99,11 +99,18 @@ export default {
             // window.location.href = `${getBaseUrl()}/`
             this.$eventHub.$emit('logged-in')
             this.$router.push({ name: 'home' })
+            this.$store.commit('snackbar/push', {
+              text: 'Bienvenido a NetSlap®'
+            })
           } else {
-            alert('usuario o password incorrecto')
+            this.$store.commit('snackbar/push', {
+              text: 'Usuario o contraseña incorrecto'
+            })
           }
         } else {
-          alert('usuario o password incorrecto')
+          this.$store.commit('snackbar/push', {
+            text: 'Usuario o contraseña incorrecto'
+          })
         }
         this.loading = false
       }).catch((err) => {
