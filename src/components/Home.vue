@@ -176,9 +176,9 @@
     <!-- Disclaimer -->
     <v-layout row>
       <v-layout xs12 class="disclaimer">
-        <h7 style="width:100%;padding:2px;">
+        <span style="width:100%;padding:2px;">
           Solo se muestran los primeros 20
-        </h7>
+        </span>
       </v-layout>
     </v-layout>
   </div>

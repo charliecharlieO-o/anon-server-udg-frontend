@@ -4,17 +4,8 @@
     <v-container fluid style="padding:16px;">
       <!-- Header -->
       <v-layout row wrap>
-        <v-flex xs6 style="text-align:left;">
+        <v-flex xs12 style="text-align:left;">
           <h4>Boards <v-icon medium>public</v-icon></h4>
-        </v-flex>
-        <v-flex xs6 style="text-align:right;">
-          <!-- Search Bar -->
-          <v-toolbar class="white" dense>
-            <v-text-field placeholder="Nombre del Board" hide-details single-line></v-text-field>
-            <v-btn icon>
-              <v-icon>search</v-icon>
-            </v-btn>
-          </v-toolbar>
         </v-flex>
       </v-layout>
       <v-divider style="margin-top:3px;margin-bottom:5px;"></v-divider>

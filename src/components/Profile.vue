@@ -135,30 +135,34 @@
           </v-card-title>
           <v-card-text>
             <v-container fluid>
+              <confirmPassword :show="changeSec" :type="setting" @close="changeSec = false" @updated="refreshUserProfile"></confirmPassword>
               <!-- EMAIL -->
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs10-12>
                   <v-text-field
+                  v-model="newEmail"
                   name="input-1"
                   :label="`cambiar: ${userObj.email}`"
-                  id="testing"
+                  type="email"
+                  required
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs2>
-                  <v-btn right round primary dark class="button-wrapper">actualizar</v-btn>
+                  <v-btn right round primary dark class="button-wrapper" v-on:click="changeSecuritySetting('email')">actualizar</v-btn>
                 </v-flex>
               </v-layout>
               <!-- PASSWORD -->
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs10-12>
                   <v-text-field
+                  v-model="newPwd"
                   name="input-1"
                   label="************"
-                  id="testing"
+                  required
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs2>
-                  <v-btn right round primary dark class="button-wrapper">actualizar</v-btn>
+                  <v-btn right round primary dark class="button-wrapper" v-on:click="changeSecuritySetting('password')">actualizar</v-btn>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -176,7 +180,9 @@ import updatePic from './UpdatePicture'
 import updateBio from './UpdateBio'
 import networkUpdate from './UpdateNetwork'
 import anonUpdate from './AnonimitySetup'
+import confirmPwd from './ConfirmPassword'
 import {standardAuthGet, standardAuthPost, standardAuthPut, standardAuthDelete} from '../../utils/maskmob-api'
+import {validateEmail} from '../../utils/validation'
 export default {
   name: 'profile',
   data () {
@@ -192,9 +198,13 @@ export default {
       showUpdatePic: false,
       showUpdateBio: false,
       showNetworkEdt: false,
+      changeSec: false,
+      setting: null,
       networkName: '',
       networkLabel: '',
       setupAnon: false,
+      newEmail: '',
+      newPwd: '',
       error: ''
     }
   },
@@ -202,7 +212,8 @@ export default {
     updatePicture: updatePic,
     updateBiog: updateBio,
     updateNetwork: networkUpdate,
-    updateAnonimity: anonUpdate
+    updateAnonimity: anonUpdate,
+    confirmPassword: confirmPwd
   },
   created () {
     this.profileId = this.$route.params.profileId
@@ -353,6 +364,24 @@ export default {
       this.showNetworkEdt = true
       this.networkName = networkName
       this.networkLabel = networkLabel
+    },
+    isNotEmptyOrSpaces (str) {
+      return !(str === null || str.match(/^ *$/) !== null)
+    },
+    changeSecuritySetting (setting) {
+      if (setting === 'email') {
+        if (!validateEmail(this.newEmail)) {
+          alert('email invalido')
+          return
+        }
+      } else {
+        if (!this.isNotEmptyOrSpaces(this.newPwd)) {
+          alert('password esta vacio')
+          return
+        }
+      }
+      this.setting = setting
+      this.changeSec = true
     }
   }
 }
