@@ -2,73 +2,105 @@
   <v-card flat id="contactComponent">
     <v-container fluid class="contact-container">
       <v-layout row-sm column child-flex-sm>
-        <v-flex xs3>
+
+        <!-- User header -->
+        <v-flex v-if="$session.get('USER')._id !== contact.requested_by.id" xs9>
           <router-link :to="`/profile/${contact.requested_by.id}`" style="text-decoration:none;">
             <v-list-tile-avatar class="avatar-box">
               <img :src="contact.requested_by.thumbnail_pic" class="profile-picture" />
               <h5 class="username">{{ contact.requested_by.username }}</h5>
+              <span v-if="contact.requested_by.id === userId" class="action-text">you requested access</span>
+              <span v-else class="action-text">requested access</span>
+              <span class="action-text">{{ parseDate(contact.createdAt) }}</span>
             </v-list-tile-avatar>
           </router-link>
         </v-flex>
-        <v-flex xs9 class="button-box">
-          <div v-if="isfriend">
-            <v-btn round error dark>eliminar<v-icon right>remove_circle_outline</v-icon></v-btn>
-            <v-btn round warning dark>bloquear<v-icon right>not_interested</v-icon></v-btn>
-          </div>
-          <div v-else>
-            <v-btn round success dark v-on:click="respondRequest(contact._id, true)" >aceptar<v-icon right>check</v-icon></v-btn>
-            <v-btn round error dark v-on:click="respondRequest(contact._id, false)">negar<v-icon right>not_interested</v-icon></v-btn>
-          </div>
+        <v-flex v-else xs9>
+          <router-link :to="`/profile/${contact.to.id}`" style="text-decoration:none;">
+            <v-list-tile-avatar class="avatar-box">
+              <img :src="contact.to.thumbnail_pic" class="profile-picture" />
+              <h5 class="username">{{ contact.to.username }}</h5>
+              <span v-if="contact.has_access && contact.requested_by.id === userId" class="action-text">gave you access</span>
+              <span v-else-if="!contact.has_access && contact.requested_by.id === userId" class="action-text">you requested access</span>
+              <span class="action-text">{{ parseDate(contact.createdAt) }}</span>
+            </v-list-tile-avatar>
+          </router-link>
         </v-flex>
+
+        <!-- Action Buttons -->
+        <v-flex v-if="contact.has_access" xs4 class="button-box">
+          <v-btn round error dark v-on:click="removeRelationship">eliminar<v-icon right>not_interested</v-icon></v-btn>
+        </v-flex>
+        <v-flex v-else-if="!contact.has_access && contact.responded" xs4 class="button-box">
+          <v-btn round success dark v-on:click="redeemRelationship">aceptar<v-icon right>check</v-icon></v-btn>
+          <v-btn round error dark v-on:click="removeRelationship">eliminar<v-icon right>not_interested</v-icon></v-btn>
+        </v-flex>
+        <v-flex v-else-if="!contact.has_access && contact.requested_by.id !== userId" xs4 class="button-box">
+          <v-btn round success dark v-on:click="respondRequest('friend')">aceptar<v-icon right>check</v-icon></v-btn>
+          <v-btn round error dark v-on:click="respondRequest('foe')">negar<v-icon right>not_interested</v-icon></v-btn>
+        </v-flex>
+        <v-flex v-else xs4 class="button-box">
+          <v-chip class="secondary white--text">Peticion enviada...</v-chip>
+        </v-flex>
+
       </v-layout>
     </v-container>
-    <v-snackbar
-      timeout="1500"
-      :success="success"
-      :error="error"
-      vertical="true"
-      v-model="snackbar"
-    ></v-snackbar>
   </v-card>
 </template>
 
 <script>
-import {getBaseUrl, standardAuthPut} from '../../utils/maskmob-api'
+import {standardAuthPut, standardAuthDelete} from '../../utils/maskmob-api'
+import * as moment from 'moment'
 export default {
-  props: ['isfriend', 'contact'],
-  created () {
-    if (this.$props['contact'].requested_by.profile_pic) {
-      let str = this.$props['contact'].requested_by.profile_pic
-      str = str.substr(str.lastIndexOf('/') + 1)
-      // thread.poster.thumbnail = `/media/${str}` on production
-      this.$props['contact'].requested_by.profile_pic = `${getBaseUrl()}/media/${str}` // for testing
-    }
-  },
+  props: ['contact', 'userId', 'inSearch'],
   data () {
     return {
-      success: true,
-      error: false
     }
   },
   methods: {
-    // Methods will be listed here
-    async respondRequest (requestId, accepted) {
+    parseDate (isodate) {
+      return moment(isodate).fromNow()
+    },
+    async respondRequest (friendOrFoe) {
       try {
-        alert(accepted)
-        const response = await standardAuthPut({ 'has_access': accepted }, this.$session.get('JWTOKEN'), `/user/request/${requestId}/respond`)
-        if (response && response.data.success) {
-          // Show success
-          // Delete record from array
+        const hasAccess = friendOrFoe === 'friend'
+        const response = await standardAuthPut({ 'has_access': hasAccess }, this.$session.get('JWTOKEN'),
+          `/user/request/${this.contact._id}/respond`)
+        if (response.status === 200 && response.data.success) {
+          this.$emit('connectionModified')
         } else {
-          // Show error
+          console.log('error')
         }
-      } catch (e) {
-        // Show error
+      } catch (err) {
+        console.log(err)
       }
     },
-    async blockUser () {},
-    async unblockUser () {},
-    async deleteRel () {}
+    async redeemRelationship () {
+      try {
+        const response = await standardAuthPut({ 'has_access': true }, this.$session.get('JWTOKEN'),
+          `/user/request/${this.contact._id}/edit`)
+        if (response.status === 200 && response.data.success) {
+          this.$emit('connectionModified')
+        } else {
+          console.log('error')
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async removeRelationship () {
+      try {
+        const response = await standardAuthDelete({}, this.$session.get('JWTOKEN'),
+          `/user/request/${this.contact._id}/remove`)
+        if (response.status === 200 && response.data.success) {
+          this.$emit('connectionModified')
+        } else {
+          console.log('error')
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
   }
 }
 </script>
@@ -93,5 +125,11 @@ export default {
 }
 .button-box {
   text-align:right;
+}
+
+.action-text {
+  color: black;
+  margin-left:3px;
+  margin-right:3px;
 }
 </style>
