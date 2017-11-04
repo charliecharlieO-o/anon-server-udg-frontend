@@ -5,62 +5,70 @@
       <!-- Tabs control  -->
       <v-tabs-bar slot="activators" class="cyan">
         <v-tabs-slider class="orange"></v-tabs-slider>
-        <v-tabs-item href="#contacts">contactos</v-tabs-item>
-        <v-tabs-item href="#requests">peticiones</v-tabs-item>
-        <v-tabs-item href="#search">buscar</v-tabs-item>
+        <v-tabs-item href="#contacts"><v-icon>group</v-icon></v-tabs-item>
+        <v-tabs-item href="#requests">solicitudes</v-tabs-item>
+        <v-tabs-item href="#sentreq">en espera</v-tabs-item>
+        <v-tabs-item href="#edit">negadas</v-tabs-item>
       </v-tabs-bar>
       <!-- Contacts -->
       <v-tabs-content id="contacts">
-        <!-- Blocked Unblocked Switch -->
-        <v-container class="no-bottom no-sides">
-          <v-layout row>
-            <v-flex xs2 offset-xs10>
-              <v-switch class="switch-wrapper no-top no-bottom" label="Bloqueados"></v-switch>
-            </v-flex>
-          </v-layout>
-        </v-container>
         <div v-if="!contacts || contacts.length === 0" style="text-align:center">
-          <h2>no tienes contactos</h2>
+          <br /><h2>no tienes contactos</h2>
         </div>
-        <div v-if="errorContacts">
-          <h2>Error</h2>
+        <div v-if="errorContacts" style="text-align:center">
+          <br /><h2>Error</h2>
         </div>
         <v-card v-if="!contacts ||contacts.length !== 0" flat>
           <span v-for="contact in contacts" :key="contact._id">
-            <contact :isfriend="true" :contact="contact"></contact>
+            <contact :contact="contact" :userId="$session.get('USER')._id" @connectionModified="reloadData"></contact>
             <v-divider></v-divider>
           </span>
         </v-card>
       </v-tabs-content>
-      <!-- Requests -->
+      <!-- Requests Received -->
       <v-tabs-content id="requests">
         <div v-if="!requests || requests.length === 0" style="text-align:center">
-          <br /><h2>no tienes peticiones Nuevas</h2>
+          <br /><h2>no tienes solicitudes nuevas</h2>
         </div>
-        <div v-if="errorRequests">
+        <div v-if="errorRequests" style="text-align:center">
           <br /><h2>Error</h2>
         </div>
         <v-card v-if="!requests || requests.length !== 0" flat>
           <span v-for="request in requests" :key="request._id">
-            <contact :isfriend="false" :contact="request"></contact>
+            <contact :contact="request" :userId="$session.get('USER')._id" @connectionModified="reloadData"></contact>
             <v-divider></v-divider>
           </span>
         </v-card>
       </v-tabs-content>
-      <!-- Search -->
-      <v-tabs-content id="search">
-        <!-- Search Bar -->
-        <v-layout row>
-          <v-flex xs12 style="padding-left:20%;padding-right:20%;margin-bottom:10px;margin-top:5px;">
-            <v-toolbar class="white" dense>
-              <v-text-field v-model="usernameQuery" placeholder="nombre de usuario" @keyup.enter="searchUser"
-              hide-details single-line></v-text-field>
-              <v-btn v-on:click="searchUserByName" icon>
-                <v-icon>search</v-icon>
-              </v-btn>
-            </v-toolbar>
-          </v-flex>
-        </v-layout>
+      <!-- Requests Sent -->
+      <v-tabs-content id="sentreq">
+        <div v-if="!requestsSent || requestsSent.length === 0" style="text-align:center">
+          <br /><h2>no haz hecho nuevas solicitudes</h2>
+        </div>
+        <div v-if="errorRequestsSent" style="text-align:center">
+          <br /><h2>Error</h2>
+        </div>
+        <v-card v-if="!requestsSent || requestsSent.length !== 0" flat>
+          <span v-for="request in requestsSent" :key="request._id">
+            <contact :contact="request" :userId="$session.get('USER')._id" @connectionModified="reloadData"></contact>
+            <v-divider></v-divider>
+          </span>
+        </v-card>
+      </v-tabs-content>
+      <!-- Requests Responded -->
+      <v-tabs-content id="edit">
+        <div v-if="!foes || foes.length === 0" style="text-align:center">
+          <br /><h2>no haz negado acceso a nadie</h2>
+        </div>
+        <div v-if="errorFoes" style="text-align:center">
+          <br /><h2>Error</h2>
+        </div>
+        <v-card v-if="!foes || foes.length !== 0" flat>
+          <span v-for="request in foes" :key="request._id">
+            <contact :contact="request" :userId="$session.get('USER')._id" @connectionModified="reloadData"></contact>
+            <v-divider></v-divider>
+          </span>
+        </v-card>
       </v-tabs-content>
     </v-tabs>
   </div>
@@ -75,14 +83,17 @@ export default {
     return {
       contacts: null,
       requests: null,
+      requestsSent: null,
+      foes: null,
       errorContacts: null,
       errorRequests: null,
+      errorRequestsSent: null,
+      errorFoes: null,
       usernameQuery: ''
     }
   },
   created () {
-    this.loadConnections()
-    this.loadMyRequests(true)
+    this.reloadData()
   },
   components: {
     contact: contactComponent
@@ -96,19 +107,36 @@ export default {
         this.errorContacts = e
       }
     },
-    async loadMyRequests (received) {
-      const url = (received === true) ? '/user/my-requests' : '/user/sent-requests'
+    async loadMyRequests () {
       try {
-        const response = await standardAuthGet(this.$session.get('JWTOKEN'), url)
+        const response = await standardAuthGet(this.$session.get('JWTOKEN'), '/user/my-requests')
         this.requests = response.data.doc
       } catch (e) {
         this.errorRequests = e
       }
     },
-    loadBlockedContacts () {},
-    loadSentRequests () {},
-    loadDeniedRequests () {},
-    searchUserByName () {}
+    async loadSentRequests () {
+      try {
+        const response = await standardAuthGet(this.$session.get('JWTOKEN'), '/user/sent-requests')
+        this.requests = response.data.doc
+      } catch (e) {
+        this.errorRequestsSent = e
+      }
+    },
+    async loadFoes () {
+      try {
+        const response = await standardAuthGet(this.$session.get('JWTOKEN'), '/user/foes')
+        this.foes = response.data.doc
+      } catch (e) {
+        this.errorFoes = e
+      }
+    },
+    async reloadData () {
+      this.loadConnections()
+      this.loadMyRequests()
+      this.loadSentRequests()
+      this.loadFoes()
+    }
   }
 }
 </script>
