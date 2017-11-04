@@ -2,7 +2,7 @@
 # Components
 ## Snackbar
 
-Exampel without links:
+Example without links:
 ``` js
 this.$store.commit('snackbar/push', {
   text: 'Hey, I am a snackbar'
