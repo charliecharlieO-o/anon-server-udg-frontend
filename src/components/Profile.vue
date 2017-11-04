@@ -135,7 +135,8 @@
           </v-card-title>
           <v-card-text>
             <v-container fluid>
-              <confirmPassword :show="changeSec" :type="setting" @close="changeSec = false" @updated="refreshUserProfile"></confirmPassword>
+              <confirmPassword :show="changeSec" :type="setting" @close="changeSec = false"
+                :toUpdate="newSetting" @updated="refreshUserProfile"></confirmPassword>
               <!-- EMAIL -->
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs10-12>
@@ -159,6 +160,7 @@
                   name="input-1"
                   label="************"
                   required
+                  type="password"
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs2>
@@ -203,6 +205,7 @@ export default {
       networkName: '',
       networkLabel: '',
       setupAnon: false,
+      newSetting: null,
       newEmail: '',
       newPwd: '',
       error: ''
@@ -370,16 +373,19 @@ export default {
     },
     changeSecuritySetting (setting) {
       if (setting === 'email') {
+        this.newSetting = this.newEmail
         if (!validateEmail(this.newEmail)) {
           alert('email invalido')
           return
         }
       } else {
+        this.newSetting = this.newPwd
         if (!this.isNotEmptyOrSpaces(this.newPwd)) {
           alert('password esta vacio')
           return
         }
       }
+      this.loadProfileInfo()
       this.setting = setting
       this.changeSec = true
     }
