@@ -82,7 +82,6 @@ export default {
   },
   methods: {
     login () {
-      console.log('login button pressed')
       this.loading = true
       standardLogin(this.$data.user, this.$data.pwd).then((response) => {
         if (response.status === 200 && 'token' in response.data) {
