@@ -13,15 +13,12 @@ const mutations = {
   * @params {string} message.url - External link
   */
   push (state, message) {
-    console.log('snackbar-store/push() triggered')
     // If there is a current message add the new message to the queue
     if (state.currentMessage) {
       state.messages.push(message)
-      console.log('pushed to messages', message)
     // Else  add the new message as current message
     } else {
       state.currentMessage = message
-      console.log('new current messages', message)
     }
   },
 
@@ -32,7 +29,6 @@ const mutations = {
     // Are message in the queue?
     if (state.messages.length) {
       state.currentMessage = state.messages.shift()
-
     // We don't have messages in the queue, just hide the snackbar
     } else {
       state.currentMessage = null

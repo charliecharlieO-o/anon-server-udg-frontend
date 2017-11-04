@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <button v-on:click="showSnackbar"> Show snackbar </button>
     <snackbar />
     <v-app toolbar>
         <v-navigation-drawer v-if="loggedIn" persistent light :mini-variant.sync="mini" v-model="drawer" overflow>
@@ -186,9 +185,8 @@ export default {
       this.showNotifications = false
     },
     showSnackbar () {
-      console.log('show snackbar triggered')
       this.$store.commit('snackbar/push', {
-        text: 'Open google',
+        text: 'Open google' + new Date(),
         url: 'https://google.com'
       })
     }
