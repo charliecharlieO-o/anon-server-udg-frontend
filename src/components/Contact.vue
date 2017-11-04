@@ -69,10 +69,15 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.$emit('connectionModified')
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error!'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error!'
+        })
       }
     },
     async redeemRelationship () {
@@ -82,10 +87,15 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.$emit('connectionModified')
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error!'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error!'
+        })
       }
     },
     async removeRelationship () {
@@ -95,10 +105,15 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.$emit('connectionModified')
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error!'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error!'
+        })
       }
     }
   }

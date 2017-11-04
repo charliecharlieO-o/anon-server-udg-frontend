@@ -81,10 +81,14 @@ export default {
           this.$emit('updated')
           this.close()
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error al actualizar'
+          })
         }
       } catch (err) {
-        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error al actualizar'
+        })
       }
     }
   },

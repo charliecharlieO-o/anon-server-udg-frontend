@@ -256,6 +256,9 @@ export default {
           }
         } catch (e) {
           console.log(e)
+          this.$store.commit('snackbar/push', {
+            text: 'Error verifica tu conexion'
+          })
         }
         // Request profile info from server
         try {
@@ -268,7 +271,9 @@ export default {
             this.error = 'NO EXISTE EL USUARIO'
           }
         } catch (e) {
-          console.log(e)
+          this.$store.commit('snackbar/push', {
+            text: 'Error verifica tu conexion'
+          })
         }
       }
     },
@@ -278,7 +283,9 @@ export default {
           '/user/request')
         this.requestStatus = (response.data.success) ? 'await' : 'befriend'
       } catch (err) {
-        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async respondRequest (friendOrFoe) {
@@ -289,10 +296,15 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.loadProfileInfo()
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error 500'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async removeRelationship () {
@@ -302,10 +314,15 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.loadProfileInfo()
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error 500'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async acceptRelationship () {
@@ -315,10 +332,14 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.loadProfileInfo()
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error 500'
+          })
         }
       } catch (err) {
-        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async refreshUserProfile () {
@@ -329,10 +350,14 @@ export default {
           this.$session.set('USER', response.data.doc)
           this.userObj = response.data.doc
         } else {
-          this.error = 'refreshing error'
+          this.$store.commit('snackbar/push', {
+            text: 'Error verifica tu conexion'
+          })
         }
       } catch (error) {
-        this.error = 'refreshing error'
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async removeAnonimity () {
@@ -343,9 +368,15 @@ export default {
           this.refreshUserProfile()
         } else {
           console.log(`error ${response.data}`)
+          this.$store.commit('snackbar/push', {
+            text: 'Error 500'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     socialNetworkInfo (name) {

@@ -103,7 +103,6 @@ export default {
       try {
         const response = await standardAuthGet(this.$session.get('JWTOKEN'), '/user/friends')
         this.contacts = response.data.doc
-        console.log(this.contacts)
       } catch (e) {
         this.errorContacts = e
       }

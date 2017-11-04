@@ -359,6 +359,9 @@ export default {
         }
       }).catch((err) => {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'No se pudo cargar el muro'
+        })
       })
     },
     getPopularThreads (slug) {

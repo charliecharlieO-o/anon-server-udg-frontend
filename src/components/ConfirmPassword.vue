@@ -83,11 +83,16 @@ export default {
           if (response.status === 403) {
             this.badPwd = true
           } else {
-            this.error = 'error'
+            this.$store.commit('snackbar/push', {
+              text: 'Error!'
+            })
           }
         }
       } catch (err) {
-        this.error = err
+        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error!'
+        })
       }
       this.loading = false
     },
@@ -103,11 +108,16 @@ export default {
           if (response.status === 403) {
             this.badPwd = true
           } else {
-            this.error = 'error'
+            this.$store.commit('snackbar/push', {
+              text: 'Error!'
+            })
           }
         }
       } catch (err) {
-        this.error = err
+        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error!'
+        })
       }
       this.loading = false
     },
