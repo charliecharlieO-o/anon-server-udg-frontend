@@ -38,7 +38,7 @@
                   <v-icon>question_answer</v-icon>
                 </v-list-tile-action>
                 <v-list-tile-content>
-                  <v-list-tile-title>Boards</v-list-tile-title>
+                  <v-list-tile-title>Grupos</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
             </router-link>
@@ -59,7 +59,7 @@
             </router-link>
             <!-- END Networking tile -->
             <!-- Notifications tile -->
-            <v-list-tile v-on:click="showNotifications = !showNotifications">
+            <v-list-tile v-on:click="showNotifications = !showNotifications;drawer = !drawer">
               <v-list-tile-action>
                 <v-icon>notifications</v-icon>
               </v-list-tile-action>
