@@ -99,10 +99,18 @@
         <v-divider></v-divider>
         <v-layout row style="padding:5px;">
           <v-flex v-if="!onWatch" xs12 style="text-align:left;">
-            <span class="link-sim" v-on:click="checkForNewComments();listenToReplies()">+ COMENTARIOS ({{ comment.replies.length - repliesOnDisplay.length }})</span>
+            <span class="link-sim" v-on:click="checkForNewComments();listenToReplies()">+COMENTARIOS ({{ comment.replies.length - repliesOnDisplay.length }}) - auto</span>
           </v-flex>
           <v-flex v-else xs12 style="text-align:left;">
             <span class="link-sim" v-on:click="stopListening();stopWatching()">CERRAR (x)</span><i class="awaiting">en escucha...</i>
+          </v-flex>
+        </v-layout>
+      </div>
+      <div v-else>
+        <v-divider></v-divider>
+        <v-layout row style="padding:5px;">
+          <v-flex v-if="comment.replies.length <= 2" xs12 style="text-align:left">
+            <span class="link-sim" v-on:click="checkForNewComments(true)">REFRESCAR COMENTARIOS</span></i>
           </v-flex>
         </v-layout>
       </div>
@@ -173,7 +181,7 @@ export default {
     stopListening () {
       clearInterval(this.timerInterval)
     },
-    async checkForNewComments () {
+    async checkForNewComments (verbose) {
       try {
         // Get last time the comment was updated
         const timeres = await standardAuthGet(this.$session.get('JWTOKEN'), `/thread/replies/${this.comment._id}/get-last-update`)
@@ -183,16 +191,18 @@ export default {
         const dt1 = new Date(timeres.data.doc)
         const dt2 = new Date(this.comment.updated_at)
         // If comment hasnt been updated exit
-        if (dt1.getTime() <= dt2.getTime()) {
+        if (dt1.getTime() < dt2.getTime()) {
           this.loadMissingComments()
           return
+        } else if (verbose) {
+          this.$store.commit('snackbar/push', {
+            text: 'No hay mas comentarios'
+          })
         }
         const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/thread/replies/${this.comment._id}/`)
         if (response.status === 200 && response.data.success) {
           const comment = response.data.doc
           const localLength = this.comment.replies.length
-          console.log(localLength)
-          console.log(comment.replies.length)
           if (comment.replies && comment.replies.length > 0 && comment.replies.length > localLength) {
             let newReplies = comment.replies.slice(localLength)
             // Parse comments
