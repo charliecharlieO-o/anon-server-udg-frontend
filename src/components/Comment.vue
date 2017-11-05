@@ -18,7 +18,7 @@
             </router-link>
           </v-flex>
           <!-- Comment Data -->
-          <v-flex xs10 class="comment-data-dontainer">
+          <v-flex xs8 md10 lg10 xl10 class="comment-data-dontainer">
             <!-- Header Info -->
             <v-layout row class="user-header">
               <span v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
@@ -27,8 +27,8 @@
               <router-link v-else :to="`/profile/${comment.poster.poster_id}`" style="textDecoration:none;">
                 <span class="username-span">{{ comment.poster.poster_name }}</span>
               </router-link>
-              <span class="replied-span">replied</span>
-              <span class="white grey--text" style="margin-left:5px">{{ comment.created_at }}</span>
+              <span class="replied-span hidden-sm-and-down">replied</span>
+              <span class="white grey--text" style="margin-left:1%">{{ comment.created_at }}</span>
             </v-layout>
             <!-- Comment text content -->
             <p :id="`p${comment._id}`" class="text-xs-left default-p">{{ comment.text }}</p>
@@ -60,26 +60,27 @@
           </router-link>
         </v-flex>
         <!-- Comment Data -->
-        <v-flex xs11>
+        <v-flex xs8 md10 lg10 xl10 class="comment-data-dontainer">
           <!-- Header Info -->
           <v-layout row class="user-header">
-            <!-- USERNAME -->
             <span v-if="reply.poster.anon && reply.poster.poster_name === 'Dr.Jekyll'"
               class="username-span-easteregg">Mr.Hyde</span>
             <span v-else-if="reply.poster.anon" class="username-span-anon">{{ reply.poster.poster_name }} [anon]</span>
-            <router-link v-else :to="`/profile/${comment.poster.poster_id}`" style="textDecoration:none;">
-              <span class="username-span">{{ comment.poster.poster_name }}</span>
+            <router-link v-else :to="`/profile/${reply.poster.poster_id}`" style="textDecoration:none;">
+              <span class="username-span">{{ reply.poster.poster_name }}</span>
             </router-link>
             <!-- ACTION -->
-            <span class="replied-span">replied</span>
-            <span v-if="comment.poster.poster_id !== reply.poster.poster_id">to {{ reply.to.poster_name }}</span>
+            <span class="replied-span hidden-sm-and-down">replied</span>
+            <div name="respondedTo" v-if="reply.poster.poster_id !== reply.poster.poster_id">
+              <span class="hidden-sm-and-down" >to</span>
+              <span class="hidden-sm-and-up">→</span>
+              <span>{{ reply.to.poster_name }}</span>
+            </div>
             <!-- TIME -->
-            <span class="white grey--text" style="margin-left:5px">{{ reply.created_at }}</span>
+            <span class="white grey--text" style="margin-left:1%">{{ reply.created_at }}</span>
           </v-layout>
-          <!-- Comment text content -->
-          <v-layout row>
-            <p :id="`p${reply._id}`" class="text-xs-left default-p">{{ reply.text }}</p>
-          </v-layout>
+          <!-- reply text content -->
+          <p :id="`p${reply._id}`" class="text-xs-left default-p">{{ reply.text }}</p>
           <!-- Comment thumbnail content -->
         </v-flex>
         <!-- Reply Button -->
@@ -92,14 +93,14 @@
         </v-flex>
       </v-layout>
 
-      <div v-if="comment.replies.length > 2" name="seeMore">
+      <div v-if="comment.replies.length >= 2" name="seeMore">
         <v-divider></v-divider>
         <v-layout row style="padding:5px;">
           <v-flex v-if="!onWatch" xs12 style="text-align:left;">
-            <span class="link-sim" v-on:click="loadMissingComments">+ COMENTARIOS ({{ comment.replies.length - repliesOnDisplay.length }})</span>
+            <span class="link-sim" v-on:click="checkForNewComments();listenToReplies()">+ COMENTARIOS ({{ comment.replies.length - repliesOnDisplay.length }})</span>
           </v-flex>
           <v-flex v-else xs12 style="text-align:left;">
-            <span class="link-sim" v-on:click="stopWatching">CERRAR (x)</span><i class="awaiting">esperando comentarios...</i>
+            <span class="link-sim" v-on:click="stopListening();stopWatching()">CERRAR (x)</span><i class="awaiting">en escucha...</i>
           </v-flex>
         </v-layout>
       </div>
@@ -108,9 +109,9 @@
 </template>
 
 <script>
-import {parseComment} from '../../utils/maskmob-api'
+import {parseComment, standardAuthGet} from '../../utils/maskmob-api'
 import commentPostModal from './CommentModal'
-import * as moment from 'moment'
+// import * as moment from 'moment'
 export default {
   props: ['commentObj'],
   components: {
@@ -124,12 +125,17 @@ export default {
       showModal: false,
       userObj: null,
       onWatch: false,
-      subreplyId: null
+      subreplyId: null,
+      // Timing data
+      timerInterval: null
     }
   },
   created () {
     this.userObj = this.$session.get('USER')
     this.loadCommentContent()
+  },
+  beforeDestroy () {
+    clearInterval(this.timerInterval)
   },
   methods: {
     loadCommentContent () {
@@ -143,26 +149,69 @@ export default {
       this.repliesOnDisplay = this.comment.replies.slice(0, 2)
     },
     loadMissingComments () {
-      const idx = this.repliesOnDisplay.length - 1
-      const end = this.comment.replies.length - 1
-      let missingReplies = this.comment.replies.slice(idx, end)
+      const idx = this.repliesOnDisplay.length
+      let missingReplies = this.comment.replies.slice(idx)
       this.repliesOnDisplay.push.apply(this.repliesOnDisplay, missingReplies)
       this.onWatch = true
     },
-    addComment (comment) {
+    async addComment (comment) {
       // Open comments if not openned
       this.loadMissingComments()
-      // Add comment to newComments array
-      comment.created_at = moment().toISOString()
-      this.repliesOnDisplay.push(parseComment(comment))
-      // Delete  subreplyId in case it was an answer
-      this.subreplyId = null
-      // Scroll to comment asynchronously
-      // this.$nextTick(() => document.getElementById(`s${comment._id}`).scrollIntoView())
+      // Load new comments (includes user's new comment)
+      await this.checkForNewComments()
     },
     stopWatching () {
       this.onWatch = false
       this.repliesOnDisplay.length = 2
+    },
+    stopListening () {
+      clearInterval(this.timerInterval)
+    },
+    async checkForNewComments () {
+      try {
+        // Get last time the comment was updated
+        const timeres = await standardAuthGet(this.$session.get('JWTOKEN'), `/thread/replies/${this.comment._id}/get-last-update`)
+        if (timeres.status !== 200) {
+          return
+        }
+        const dt1 = new Date(timeres.data.doc)
+        const dt2 = new Date(this.comment.updated_at)
+        // If comment hasnt been updated exit
+        if (dt1.getTime() <= dt2.getTime()) {
+          this.loadMissingComments()
+          return
+        }
+        const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/thread/replies/${this.comment._id}/`)
+        if (response.status === 200 && response.data.success) {
+          const comment = response.data.doc
+          const localLength = this.comment.replies.length
+          console.log(localLength)
+          console.log(comment.replies.length)
+          if (comment.replies && comment.replies.length > 0 && comment.replies.length > localLength) {
+            let newReplies = comment.replies.slice(localLength)
+            // Parse comments
+            for (let x in newReplies) {
+              newReplies[x] = parseComment(newReplies[x])
+            }
+            this.comment.replies.push.apply(this.comment.replies, newReplies)
+          }
+          this.loadMissingComments()
+        } else {
+          this.$store.commit('snackbar/push', {
+            text: 'No existe el contenido'
+          })
+        }
+      } catch (err) {
+        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Revisa tu conexion'
+        })
+      }
+    },
+    listenToReplies () {
+      this.timerInterval = setInterval(() => {
+        this.checkForNewComments()
+      }, 18000)
     }
   }
 }
