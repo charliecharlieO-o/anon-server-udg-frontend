@@ -5,7 +5,7 @@
       <!-- Header -->
       <v-layout row wrap>
         <v-flex xs12 style="text-align:left;">
-          <h4>Boards <v-icon medium>public</v-icon></h4>
+          <h4>Grupos <v-icon medium>public</v-icon></h4>
         </v-flex>
       </v-layout>
       <v-divider style="margin-top:3px;margin-bottom:5px;"></v-divider>
