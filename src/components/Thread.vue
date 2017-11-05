@@ -125,7 +125,7 @@
             <v-layout row style="padding:0px;margin:0px;">
               <v-flex xs12 style="padding:0px;margin:0px;">
                 <h6 class="text-xs-left" style="margin-bottom:2px;">
-                  <v-chip style="margin-left:0px;"><v-icon left small>comment</v-icon>{{ comments.length + newComments.length }} COMENTARIOS</v-chip>
+                  <v-chip style="margin-left:0px;"><v-icon left small>comment</v-icon>{{ allCommentCount }} COMENTARIOS</v-chip>
                 </h6>
               </v-flex>
             </v-layout>
@@ -146,11 +146,12 @@
                 <v-btn block class="grey white--text" v-on:click="loadMoreComments('all')">cargar todos</v-btn>
               </v-flex>
             </v-layout>
+            <!-- New Comments list -->
             <commentComponent v-for="comment in newComments" :key="comment._id" :id="`c${comment._id}`" :commentObj="comment"></commentComponent>
 
           </v-container>
           <!-- Dead Thread Notice -->
-          <div v-if="(comments.length + newComments.length) > 300" style="text-align:center;margin:30px;">
+          <div v-if="maxCommentsReached" style="text-align:center;margin:30px;">
             <h5>ESTE THREAD HA LLEGADO AL LIMITE DE COMENTARIOS</h5>
           </div>
         </v-flex>
@@ -158,7 +159,7 @@
       </v-layout>
     </v-container>
     <v-btn
-    v-if="!((comments.length + newComments.length) > 300)"
+    v-if="maxCommentsReached"
     v-on:click="stopListening();showCommentModal = true"
     style="textDecoration:none;border:0;outline:none;"
     v-tooltip:top="{ html: 'Comentar' }"
@@ -202,6 +203,14 @@ export default {
       commentInterval: null,
       lastLoadedTimestamp: '',
       threadTimestamp: ''
+    }
+  },
+  computed: {
+    maxCommentsReached () {
+      return (this.comments.length + this.newComments.length) >= 500
+    },
+    allCommentCount () {
+      return this.comments.length + this.newComments.length
     }
   },
   components: {

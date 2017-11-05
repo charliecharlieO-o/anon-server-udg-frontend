@@ -10,11 +10,14 @@
           <!-- User Defined Space -->
           <v-flex xs1-2 class="thumbnail-container">
             <img v-if="comment.poster.anon && comment.poster.poster_name === 'Dr.Jekyll'"
-              src="/static/hydeegg.jpg" class="profile-thumbnail">
+              src="../assets/hydeegg.jpg" class="profile-thumbnail">
             <img v-else-if="comment.poster.anon"
-              src="/static/incognito.jpg" class="profile-thumbnail">
-            <router-link v-else :to="`/profile/${comment.poster.poster_id}`" style="textDecoration:none;">
+              src="../assets/incognito.jpg" class="profile-thumbnail">
+            <router-link v-else-if="comment.poster.poster_thumbnail" :to="`/profile/${comment.poster.poster_id}`" style="textDecoration:none;">
               <img :src="comment.poster.poster_thumbnail" class="profile-thumbnail">
+            </router-link>
+            <router-link v-else :to="`/profile/${comment.poster.poster_id}`" style="textDecoration:none;">
+              <img src="../assets/defuser.png" class="profile-thumbnail">
             </router-link>
           </v-flex>
           <!-- Comment Data -->
@@ -53,11 +56,14 @@
         <!-- User Defined Space -->
         <v-flex xs1-2 style="text-align:left;">
           <img v-if="reply.poster.anon && reply.poster.poster_name === 'Dr.Jekyll'"
-            src="/static/hydeegg.jpg" class="profile-thumbnail">
+            src="../assets/hydeegg.jpg" class="profile-thumbnail">
           <img v-else-if="reply.poster.anon"
-            src="/static/incognito.jpg" class="profile-thumbnail">
-          <router-link v-else :to="`/profile/${reply.poster.poster_id}`" style="textDecoration:none;">
+            src="../assets/incognito.jpg" class="profile-thumbnail">
+          <router-link v-else-if="reply.poster.poster_thumbnail" :to="`/profile/${reply.poster.poster_id}`" style="textDecoration:none;">
             <img :src="reply.poster.poster_thumbnail" class="profile-thumbnail">
+          </router-link>
+          <router-link v-else :to="`/profile/${reply.poster.poster_id}`" style="textDecoration:none;">
+            <img src="../assets/defuser.png" class="profile-thumbnail">
           </router-link>
         </v-flex>
         <!-- Comment Data -->
