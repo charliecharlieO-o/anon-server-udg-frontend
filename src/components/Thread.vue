@@ -150,12 +150,17 @@
             <commentComponent v-for="comment in newComments" :key="comment._id" :id="`c${comment._id}`" :commentObj="comment"></commentComponent>
 
           </v-container>
+          <!-- Dead Thread Notice -->
+          <div v-if="(comments.length + newComments.length) > 300" style="text-align:center;margin:30px;">
+            <h5>ESTE THREAD HA LLEGADO AL LIMITE DE COMENTARIOS</h5>
+          </div>
 
         </v-flex>
         <v-flex class="hidden-sm-and-down" xs1-2></v-flex>
       </v-layout>
     </v-container>
     <v-btn
+    v-if="!((comments.length + newComments.length) > 300)"
     v-on:click="stopListening();showCommentModal = true"
     style="textDecoration:none;border:0;outline:none;"
     v-tooltip:top="{ html: 'Comentar' }"
@@ -195,9 +200,10 @@ export default {
       commentsOnDisplay: [],
       comments: [],
       newComments: [],
-      // Comment Timer Refresh
+      // Comment Timer
       commentInterval: null,
-      lastLoadedTimestamp: ''
+      lastLoadedTimestamp: '',
+      threadTimestamp: ''
     }
   },
   components: {
@@ -220,6 +226,8 @@ export default {
         const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/thread/${threadId}`)
         if (response.status === 200) {
           let thread = response.data.doc
+          // Set initial thread timestamp
+          this.threadTimestamp = thread.created_at
           if (thread.poster.thumbnail && thread.poster.thumbnail !== 'anon') {
             // Parse image route
             let str = thread.poster.thumbnail
@@ -297,13 +305,13 @@ export default {
     },
     async checkForNewComments () {
       try {
-        let dt = new Date(this.lastLoadedTimestamp).getTime()
+        let dt = (this.comments.length === 0 && this.newComments.length === 0) ? new Date(this.threadTimestamp).getTime()
+          : new Date(this.lastLoadedTimestamp).getTime()
         const response = await standardAuthPost({ 'date': dt }, this.$session.get('JWTOKEN'),
           `/thread/${this.thread._id}/replies/since`)
         if (response.status === 200 && response.data.success) {
           if (response.data.doc && response.data.doc.length > 0) {
             this.lastLoadedTimestamp = response.data.doc[response.data.doc.length - 1].created_at
-            console.log(this.lastLoadedTimestamp)
             // Notify for new comments
             this.$store.commit('snackbar/push', {
               text: `${response.data.doc.length} nuevos comentarios`
