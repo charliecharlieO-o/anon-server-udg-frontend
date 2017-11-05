@@ -12,9 +12,8 @@
       <h4>ERROR {{ errorCode }} - {{ error }}</h4>
     </div>
     <v-container v-if="!loading && !error" id="threadContainer" style="padding:5px;">
-      <v-layout row>
-        <v-flex class="hidden-sm-and-down" xs1-2></v-flex>
-        <v-flex xs8 style="max-width:800px;">
+      <v-layout row wrap justify-center>
+        <v-flex xs12 xl9 lg9 md9 offset-md2 offset-xl2 offset-lg2>
           <!-- Thread Container -->
           <v-card>
             <!-- Thread Header -->
@@ -154,7 +153,6 @@
           <div v-if="(comments.length + newComments.length) > 300" style="text-align:center;margin:30px;">
             <h5>ESTE THREAD HA LLEGADO AL LIMITE DE COMENTARIOS</h5>
           </div>
-
         </v-flex>
         <v-flex class="hidden-sm-and-down" xs1-2></v-flex>
       </v-layout>
@@ -339,7 +337,7 @@ export default {
     listenToComments () {
       this.commentInterval = setInterval(() => {
         this.checkForNewComments()
-      }, 5000)
+      }, 48000)
     }
   }
 }
