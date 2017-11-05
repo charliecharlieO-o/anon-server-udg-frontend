@@ -158,9 +158,6 @@ function parseComment(comment) {
     str = str.substr(str.lastIndexOf('/') + 1)
     // comment.poster.poster_thumbnail = `/media/${str}` on production
     comment.poster.poster_thumbnail = `${getBaseUrl()}/media/${str}` // for testing
-  } else {
-    // Insert Default Image
-    comment.poster.poster_thumbnail = '/static/thumbnail.jpg'
   }
   // Prepare media
   if (comment.media && comment.media.thumbnail) {
