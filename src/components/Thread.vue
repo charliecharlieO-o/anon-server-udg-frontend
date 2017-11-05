@@ -159,7 +159,7 @@
       </v-layout>
     </v-container>
     <v-btn
-    v-if="maxCommentsReached"
+    v-if="!maxCommentsReached"
     v-on:click="stopListening();showCommentModal = true"
     style="textDecoration:none;border:0;outline:none;"
     v-tooltip:top="{ html: 'Comentar' }"
