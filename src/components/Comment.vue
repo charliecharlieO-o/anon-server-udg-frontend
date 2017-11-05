@@ -31,8 +31,9 @@
               <span class="white grey--text" style="margin-left:1%">{{ comment.created_at }}</span>
             </v-layout>
             <!-- Comment text content -->
-            <p :id="`p${comment._id}`" class="text-xs-left default-p">{{ comment.text }}</p>
-            <!-- Comment thumbnail content -->
+            <paragraph :text="comment.text"></paragraph>
+            <!-- Comment media content -->
+            <media :media="comment.media" :text="comment.text"></media>
           </v-flex>
           <!-- Reply Button -->
           <v-flex xs1-2>
@@ -80,8 +81,9 @@
             <span class="white grey--text" style="margin-left:1%">{{ reply.created_at }}</span>
           </v-layout>
           <!-- reply text content -->
-          <p :id="`p${reply._id}`" class="text-xs-left default-p">{{ reply.text }}</p>
-          <!-- Comment thumbnail content -->
+          <paragraph :text="reply.text"></paragraph>
+          <!-- Comment media content -->
+          <media :media="reply.media" :text="reply.text"></media>
         </v-flex>
         <!-- Reply Button -->
         <v-flex xs1-2>
@@ -111,11 +113,15 @@
 <script>
 import {parseComment, standardAuthGet} from '../../utils/maskmob-api'
 import commentPostModal from './CommentModal'
+import mediaComp from './Media'
+import paragraph from './Paragraph'
 // import * as moment from 'moment'
 export default {
   props: ['commentObj'],
   components: {
-    commentPostModal: commentPostModal
+    commentPostModal: commentPostModal,
+    media: mediaComp,
+    paragraph: paragraph
   },
   data () {
     return {
