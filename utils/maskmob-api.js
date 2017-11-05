@@ -168,6 +168,9 @@ function parseComment(comment) {
     str = str.substr(str.lastIndexOf('/') + 1)
     // comment.media.thumbnail = `/media/${str}` on production
     comment.media.thumbnail = `${getBaseUrl()}/media/${str}` // for testing
+    let str2 = comment.media.location
+    str2 = str2.substr(str2.lastIndexOf('/') + 1)
+    comment.media.location = `${getBaseUrl()}/media/${str2 }` // for testing
   }
   comment.created_at = moment(comment.created_at).fromNow()
   return comment
