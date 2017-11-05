@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar class="teal white--text">
         <v-toolbar-title>
-          Notifications [{{ notifications.length }}]
+          Notificaciones [{{ notifications.length }}]
         </v-toolbar-title>
       </v-toolbar>
       <v-list two-line>
@@ -63,8 +63,6 @@ export default {
           this.lastDate = (new Date(response.data.doc[response.data.doc.length - 1].date_alerted)).getTime()
           this.$store.state.notifications.push.apply(this.$store.state.notifications, response.data.doc)
           // Notify user
-          const audio = new Audio('../assets/notifsound.mp3')
-          audio.play()
           this.$store.commit('snackbar/push', {
             text: `${response.data.doc.length} nuevas notificaciones`
           })
@@ -86,5 +84,4 @@ export default {
 </script>
 
 <style type="css" required>
-
 </style>
