@@ -40,7 +40,7 @@
           </v-flex>
           <!-- Reply Button -->
           <v-flex xs1-2>
-            <v-btn icon v-on:click="showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
+            <v-btn icon v-on:click="openReplyModal" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
               <v-icon>reply</v-icon>
             </v-btn>
           </v-flex>
@@ -78,7 +78,7 @@
             </router-link>
             <!-- ACTION -->
             <span class="replied-span hidden-sm-and-down">replied</span>
-            <div name="respondedTo" v-if="reply.poster.poster_id !== reply.poster.poster_id">
+            <div name="respondedTo" v-if="reply.poster.poster_id !== comment.poster.poster_id">
               <span class="hidden-sm-and-down" >to</span>
               <span class="hidden-sm-and-up">→</span>
               <span>{{ reply.to.poster_name }}</span>
@@ -94,7 +94,7 @@
         <!-- Reply Button -->
         <v-flex xs1-2>
           <div v-if="userObj._id !== reply.poster.poster_id && userObj.alias.anonId !== reply.poster.poster_id">
-            <v-btn icon v-on:click="subreplyId = reply._id;showModal = true" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
+            <v-btn icon v-on:click="subreplyId = reply._id;openReplyModal()" v-tooltip:top="{ html: 'responder' }" style="margin-top:0px;">
               <v-icon>reply</v-icon>
             </v-btn>
           </div>
@@ -116,7 +116,14 @@
         <v-divider></v-divider>
         <v-layout row style="padding:5px;">
           <v-flex v-if="comment.replies.length <= 2" xs12 style="text-align:left">
-            <span class="link-sim" v-on:click="checkForNewComments(true)">REFRESCAR COMENTARIOS</span></i>
+            <span class="link-sim" v-on:click="checkForNewComments(true)">REFRESCAR COMENTARIOS</span>
+          </v-flex>
+        </v-layout>
+      </div>
+      <div v-if="maxRepliesReached">
+        <v-layout row style="padding:5px;">
+          <v-flex xs12 style="text-align:left">
+            <span class="link-error">MAX DE COMENTARIOS</span>
           </v-flex>
         </v-layout>
       </div>
@@ -150,6 +157,11 @@ export default {
       timerInterval: null
     }
   },
+  computed: {
+    maxRepliesReached () {
+      return this.comment.replies.length >= 60
+    }
+  },
   created () {
     this.userObj = this.$session.get('USER')
     this.loadCommentContent()
@@ -173,6 +185,15 @@ export default {
       let missingReplies = this.comment.replies.slice(idx)
       this.repliesOnDisplay.push.apply(this.repliesOnDisplay, missingReplies)
       this.onWatch = true
+    },
+    openReplyModal () {
+      if (this.comment.replies.length >= 65) {
+        this.$store.commit('snackbar/push', {
+          text: 'max de subcomentarios superado'
+        })
+      } else {
+        this.showModal = true
+      }
     },
     async addComment (comment) {
       // Open comments if not openned
@@ -299,6 +320,11 @@ export default {
   color: #0645AD;
   margin:2%;
   cursor: pointer;
+}
+
+.link-error {
+  color: red;
+  margin:2%;
 }
 
 .awaiting {
