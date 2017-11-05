@@ -1,7 +1,7 @@
 <template>
   <div id="threadView">
     <!-- Comment Modal -->
-    <commentPostModal :show="showCommentModal" @close="showCommentModal = false" :thread="threadId" @posted="addComment" ></commentPostModal>
+    <commentPostModal :show="showCommentModal" @close="listenToComments();showCommentModal = false" :thread="threadId" @posted="addComment" ></commentPostModal>
     <!-- Loading Div -->
     <div v-if="loading" style="text-align:center;margin-top:30px;width:100%;">
       <v-progress-circular indeterminate v-bind:size="100" class="cyan--text"></v-progress-circular>
@@ -126,7 +126,7 @@
             <v-layout row style="padding:0px;margin:0px;">
               <v-flex xs12 style="padding:0px;margin:0px;">
                 <h6 class="text-xs-left" style="margin-bottom:2px;">
-                  <v-chip style="margin-left:0px;"><v-icon left small>comment</v-icon>{{ thread.reply_count }} COMENTARIOS</v-chip>
+                  <v-chip style="margin-left:0px;"><v-icon left small>comment</v-icon>{{ comments.length + newComments.length }} COMENTARIOS</v-chip>
                 </h6>
               </v-flex>
             </v-layout>
@@ -156,7 +156,7 @@
       </v-layout>
     </v-container>
     <v-btn
-    v-on:click="showCommentModal = true"
+    v-on:click="stopListening();showCommentModal = true"
     style="textDecoration:none;border:0;outline:none;"
     v-tooltip:top="{ html: 'Comentar' }"
     class="orange"
@@ -172,7 +172,7 @@
 </template>
 
 <script>
-import {standardAuthGet, getBaseUrl} from '../../utils/maskmob-api'
+import {standardAuthGet, getBaseUrl, standardAuthPost} from '../../utils/maskmob-api'
 import commentPostModal from './CommentModal'
 import commentComponent from './Comment'
 import imageModal from './ImageModal'
@@ -194,7 +194,10 @@ export default {
       // Comments
       commentsOnDisplay: [],
       comments: [],
-      newComments: []
+      newComments: [],
+      // Comment Timer Refresh
+      commentInterval: null,
+      lastLoadedTimestamp: ''
     }
   },
   components: {
@@ -206,6 +209,10 @@ export default {
     this.threadId = this.$route.params.id
     this.loadThreadInfo(this.threadId)
     this.loadComments(this.threadId)
+    this.listenToComments()
+  },
+  beforeDestroy () {
+    clearInterval(this.commentInterval)
   },
   methods: {
     async loadThreadInfo (threadId) {
@@ -249,6 +256,8 @@ export default {
         if (response.status === 200) {
           let commentsResponse = response.data.doc
           if (commentsResponse.length > 0) {
+            // Set autoudate timestamp
+            this.lastLoadedTimestamp = response.data.doc[response.data.doc.length - 1].created_at
             // Display first n comments
             this.comments = commentsResponse
             this.commentsOnDisplay = this.comments.slice(0, this.commentsToAdd)
@@ -265,7 +274,6 @@ export default {
     },
     async loadMoreComments (all) {
       const idx = this.commentsOnDisplay.length
-      // 50,100,todos
       if (all === 'all') {
         const idxEnd = this.comments.length
         this.commentsOnDisplay.push.apply(this.commentsOnDisplay, this.comments.slice(idx, idxEnd))
@@ -281,12 +289,49 @@ export default {
         this.commentsOnDisplay.push.apply(this.commentsOnDisplay, this.comments.slice(idx, idx + this.commentsToAdd))
       }
     },
-    addComment (comment) {
-      // Add comment to newComments array
-      this.newComments.push(comment)
-      this.thread.reply_count += 1
+    async addComment (comment) {
+      // Load comments
+      await this.checkForNewComments()
       // Scroll to comment asynchronously
       this.$nextTick(() => document.getElementById(`c${comment._id}`).scrollIntoView())
+    },
+    async checkForNewComments () {
+      try {
+        let dt = new Date(this.lastLoadedTimestamp).getTime()
+        const response = await standardAuthPost({ 'date': dt }, this.$session.get('JWTOKEN'),
+          `/thread/${this.thread._id}/replies/since`)
+        if (response.status === 200 && response.data.success) {
+          if (response.data.doc && response.data.doc.length > 0) {
+            this.lastLoadedTimestamp = response.data.doc[response.data.doc.length - 1].created_at
+            console.log(this.lastLoadedTimestamp)
+            // Notify for new comments
+            this.$store.commit('snackbar/push', {
+              text: `${response.data.doc.length} nuevos comentarios`
+            })
+            // Add New Comments
+            this.newComments.push.apply(this.newComments, response.data.doc)
+            return true
+          }
+        } else {
+          this.$store.commit('snackbar/push', {
+            text: 'Revisa tu conexion'
+          })
+        }
+      } catch (err) {
+        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Revisa tu conexion'
+        })
+      }
+      return false
+    },
+    stopListening () {
+      clearInterval(this.commentInterval)
+    },
+    listenToComments () {
+      this.commentInterval = setInterval(() => {
+        this.checkForNewComments()
+      }, 5000)
     }
   }
 }
