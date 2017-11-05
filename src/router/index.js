@@ -6,7 +6,6 @@ import Home from '@/components/Home'
 import Boards from '@/components/Boards'
 import Contacts from '@/components/Contacts'
 import Credits from '@/components/Credits'
-import Notifications from '@/components/Notifications'
 import Information from '@/components/Info'
 import Rules from '@/components/Rules'
 import Board from '@/components/Board'
@@ -42,11 +41,6 @@ export default new Router({
       path: '/networking',
       name: 'contacts',
       component: Contacts
-    },
-    {
-      path: '/notifications',
-      name: 'notifications',
-      component: Notifications
     },
     {
       path: '/faq',
