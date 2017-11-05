@@ -52,9 +52,6 @@
                 <v-list-tile-content>
                   <v-list-tile-title>Networking</v-list-tile-title>
                 </v-list-tile-content>
-                <v-list-tile-content>
-                  <v-chip label outline class="grey grey--text">0</v-chip>
-                </v-list-tile-content>
               </v-list-tile>
             </router-link>
             <!-- END Networking tile -->
