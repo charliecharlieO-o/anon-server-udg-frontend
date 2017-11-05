@@ -207,7 +207,7 @@ export default {
   },
   computed: {
     maxCommentsReached () {
-      return (this.comments.length + this.newComments.length) >= 500
+      return (this.comments.length + this.newComments.length) >= 490
     },
     allCommentCount () {
       return this.comments.length + this.newComments.length
