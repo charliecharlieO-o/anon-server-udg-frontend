@@ -4,13 +4,13 @@ services:
     container_name: udgfront
     build: .
     volumes:
-      - ./:/app
+      - ./dist:/app/dist
     command: npm run build
   web:
     image: httpd
     volumes:
       - ./dist:/usr/local/apache2/htdocs/
     ports:
-      - 80:80
+      - 82:80
     depends_on:
       - frontend

@@ -25,3 +25,17 @@ npm test
 ```
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+## How to deploy
+Add a new git remote repo using `git remote add production maskmobadmin@192.241.139.19:app.git`.
+
+Available repos:
+Production.
+```
+maskmobadmin@192.241.139.19:app.git
+```
+
+Development:
+```
+maskmobadmin@192.241.139.19:dev.git
+```
