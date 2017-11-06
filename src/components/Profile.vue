@@ -187,6 +187,7 @@ export default {
   name: 'profile',
   data () {
     return {
+      // Component Data
       profileId: null,
       profileData: null,
       userObj: null,

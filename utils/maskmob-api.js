@@ -20,41 +20,22 @@ function getDevUrl() {
 }
 
 function standardLogin(user, password) {
-  const querystring = require('querystring')
   const url = (validateEmail(user))? `${BASE_URL}/user/login/email` : `${BASE_URL}/user/login/standard`
-  return axios.post(url,
-    querystring.stringify({
-      'username': user,
-      'email': user,
-      'password': password
-    }),{
-      'headers': {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+  return axios.post(url,{
+    'username': user,
+    'email': user,
+    'password': password
   })
 }
 
 function standardUnauthPost(jsonParams, objectUrlPath) {
-  const querystring = require('querystring')
   const url = `${BASE_URL}${objectUrlPath}`
-  return axios.post(url,
-    querystring.stringify(jsonParams),{
-      'headers': {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
+  return axios.post(url,jsonParams)
 }
 
 function standardAuthPost(jsonParams, jwtToken, objectUrlPath) {
-  const querystring = require('querystring')
   const url = `${BASE_URL}${objectUrlPath}`
-  return axios.post(url,
-    querystring.stringify(jsonParams),{
-      'headers': {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'authorization': jwtToken
-      }
-    })
+  return axios.post(url,jsonParams)
 }
 
 function standardAuthDelete(jsonParams, jwtToken, objectUrlPath) {
@@ -70,15 +51,14 @@ function standardAuthDelete(jsonParams, jwtToken, objectUrlPath) {
 }
 
 function standardAuthPut(jsonParams, jwtToken, objectUrlPath) {
-  const querystring = require('querystring')
   const url = `${BASE_URL}${objectUrlPath}`
   return axios.put(url,
-  querystring.stringify(jsonParams),{
+    {
+      'data': jsonParams,
       'headers': {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'authorization': jwtToken
+            'authorization': jwtToken
       }
-    })
+  })
 }
 
 function standardAuthGet(jwtToken, objectUrlPath) {
