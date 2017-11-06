@@ -1,7 +1,6 @@
 version: '3'
 services:
   frontend:
-    container_name: udgfront
     build: .
     volumes:
       - ./dist:/app/dist
