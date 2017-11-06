@@ -1,0 +1,16 @@
+version: '3'
+services:
+  frontend:
+    container_name: udgfront
+    build: .
+    volumes:
+      - ./:/app
+    command: npm run build
+  web:
+    image: httpd
+    volumes:
+      - ./dist:/usr/local/apache2/htdocs/
+    ports:
+      - 80:80
+    depends_on:
+      - frontend
