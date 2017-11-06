@@ -11,6 +11,6 @@ services:
     volumes:
       - ./dist:/usr/local/apache2/htdocs/
     ports:
-      - 82:80
+      - 81:80
     depends_on:
       - frontend
