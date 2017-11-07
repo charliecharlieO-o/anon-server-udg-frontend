@@ -40,7 +40,7 @@
               <v-btn class="hidden-md-and-up" error fab small dark>
                 <v-icon>delete</v-icon>
               </v-btn>
-              <v-btn class="hidden-sm-and-down" small error dark><v-icon>delete</v-icon>eliminar</v-btn>
+              <v-btn class="hidden-sm-and-down" small error dark v-on:click="deleteNotification(n._id)"><v-icon>delete</v-icon>eliminar</v-btn>
             </v-button>
           </v-list-tile-action>
           <v-divider></v-divider>
@@ -58,7 +58,7 @@
 </template>
 
 <script type="text/javascript">
-import {standardAuthPost} from '../../utils/maskmob-api'
+import {standardAuthPost, standardAuthDelete} from '../../utils/maskmob-api'
 export default {
   props: ['hide'],
   data () {
@@ -94,7 +94,23 @@ export default {
       this.hide()
       this.$router.push({ name: 'home' })
     },
-    deleteNotification () {},
+    async deleteNotification (notification) {
+      try {
+        const idx = this.$store.state.notifications.findIndex(x => x._id === notification._id)
+        if (idx > -1) {
+          // Delete object from array
+          this.$store.state.notifications.splice(idx, 1)
+          // Delete notification from server
+          const response = await standardAuthDelete({}, this.$session.get('JWTOKEN'), `/user/notification/${notification}/remove`)
+          console.log(response)
+        }
+      } catch (err) {
+        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'error al eliminar'
+        })
+      }
+    },
     async checkForNotifications () {
       try {
         const response = await standardAuthPost({ 'date': this.lastDate }, this.$session.get('JWTOKEN'), '/user/notifications/since')
