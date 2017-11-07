@@ -31,7 +31,7 @@
                 <span class="username-span">{{ comment.poster.poster_name }}</span>
               </router-link>
               <span class="replied-span hidden-sm-and-down">replied</span>
-              <span class="white grey--text" style="margin-left:1%">{{ comment.created_at }}</span>
+              <span class="white grey--text" style="margin-left:1%">{{ comment.momentTime }}</span>
             </v-layout>
             <!-- Comment text content -->
             <paragraph v-if="comment.text" :text="comment.text"></paragraph>
@@ -84,7 +84,7 @@
               <span>{{ reply.to.poster_name }}</span>
             </div>
             <!-- TIME -->
-            <span class="white grey--text" style="margin-left:1%">{{ reply.created_at }}</span>
+            <span class="white grey--text" style="margin-left:1%">{{ reply.momentTime }}</span>
           </v-layout>
           <!-- reply text content -->
           <paragraph v-if="reply.text" :text="reply.text"></paragraph>
@@ -218,13 +218,14 @@ export default {
         const dt1 = new Date(timeres.data.doc)
         const dt2 = new Date(this.comment.updated_at)
         // If comment hasnt been updated exit
-        if (dt1.getTime() < dt2.getTime()) {
+        if (dt1.getTime() > dt2.getTime()) {
+          this.comment.updated_at = timeres.data.doc
           this.loadMissingComments()
-          return
         } else if (verbose) {
           this.$store.commit('snackbar/push', {
             text: 'No hay mas comentarios'
           })
+          return
         }
         const response = await standardAuthGet(this.$session.get('JWTOKEN'), `/thread/replies/${this.comment._id}/`)
         if (response.status === 200 && response.data.success) {

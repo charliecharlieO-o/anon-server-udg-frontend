@@ -242,16 +242,6 @@ export default {
             // thread.poster.thumbnail = `/media/${str}` on production
             thread.poster.thumbnail = `${getBaseUrl()}/media/${str}` // for testing
           }
-          if (thread.media) {
-            // Parse image route
-            let str1 = thread.media.thumbnail
-            str1 = str1.substr(str1.lastIndexOf('/') + 1)
-            let str2 = thread.media.location
-            str2 = str2.substr(str2.lastIndexOf('/') + 1)
-            // thread.thumbnail.location = `/media/${str}` on production
-            thread.media.thumbnail = `${getBaseUrl()}/media/${str1}` // for testing
-            thread.media.location = `${getBaseUrl()}/media/${str2}` // for testing
-          }
           thread.created_at = moment(thread.created_at).fromNow()
           this.thread = thread
           this.loading = false

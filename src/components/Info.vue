@@ -27,6 +27,16 @@
             </v-card-text>
           </v-card>
         </v-expansion-panel-content>
+        <!-- SSL -->
+        <v-expansion-panel-content>
+          <div slot="header">NetSlap aparece como no seguro <b>candado rojo</b></div>
+          <v-card>
+            <v-card-text class="grey lighten-3">
+              NetSlap encripta <b>TODA</b> la informacion de la comunicacion entre tu maquina y las nuestras con
+              SSL. Independientemente del icono.
+            </v-card-text>
+          </v-card>
+        </v-expansion-panel-content>
         <!-- SIIAU -->
         <v-expansion-panel-content>
           <div slot="header">NetSlap <b>almacena mi NIP o datos de SIIAU?</b></b></div>
