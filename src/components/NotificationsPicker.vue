@@ -6,11 +6,37 @@
           Notificaciones [{{ notifications.length }}]
         </v-toolbar-title>
       </v-toolbar>
-      <v-list two-line>
+      <v-list v-if="notifications.length !== 0" two-line>
         <v-list-tile v-for="n in notifications" :key="n._id" v-on:click="openNotification(n)">
           <v-list-tile-content>
-            <v-list-tile-title>{{ n.title }}</v-list-tile-title>
-            <v-list-tile-sub-title>{{ n.description }}</v-list-tile-sub-title>
+            <!-- Friend Request -->
+            <div v-if="n.meta.type === 'request'">
+              <v-list-tile-title>Nueva solicitud de info</v-list-tile-title>
+              <v-list-tile-sub-title>{{ `${n.description.substr(n.description.indexOf(' ') + 1)} te ha enviado una solicitud` }}</v-list-tile-sub-title>
+            </div>
+            <div v-else-if="n.meta.type === 'threadReply'">
+              <v-list-tile-title>Han comentado tu post</v-list-tile-title>
+              <v-list-tile-sub-title>{{ n.description }}</v-list-tile-sub-title>
+            </div>
+            <div v-else-if="n.meta.type === 'reply'">
+              <v-list-tile-title>Han respondido a tu comentario</v-list-tile-title>
+              <v-list-tile-sub-title>{{ n.description }}</v-list-tile-sub-title>
+            </div>
+            <div v-else-if="n.meta.type === 'replyunder'">
+              <v-list-tile-title>Han comentado bajo tu comentario</v-list-tile-title>
+              <v-list-tile-sub-title>{{ n.description }}</v-list-tile-sub-title>
+            </div>
+            <div v-else-if="n.meta.type === 'friendRes'">
+              <v-list-tile-title>Tienes un nuevo contacto</v-list-tile-title>
+              <v-list-tile-sub-title>{{ n.title }}</v-list-tile-sub-title>
+            </div>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+      <v-list v-else>
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title>No hay notificaciones</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
