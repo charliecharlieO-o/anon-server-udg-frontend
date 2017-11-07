@@ -1,49 +1,55 @@
 <template>
-  <div class="container-fluid">
-    <div>
-      <!-- Main container -->
-      <div class="row" style="margin-bottom:25px;">
-        <div class="col-md-12" style="text-align:center;">
-          <h1 class="AppTitle">NetSlap</h1>
-          <p class="Slogan">{{ slogans  }}</p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12" style="text-align:center;">
-          <input class="text-input" v-model="user" style="margin-top:10px;" type="text" placeholder="Usuario o Email"/>
-          <input class="text-input" v-model="pwd" style="margin-top:10px;" type="password" placeholder="Password" />
-        </div>
-      </div>
-      <div class="row" style="text-align:center;margin-top:20px;">
-        <div class="col-md-12">
-          <v-progress-circular v-if="loading" indeterminate v-bind:size="50" class="cyan--text"></v-progress-circular>
-        </div>
-      </div>
-      <div class="row" v-if="!loading" style="text-align:center;margin-bottom:25px;">
-        <div class="col-md-12">
-          <button class="app-button" v-on:click="login">Login</button><div class="light-text">O</div>
-        </div>
-        <div class="col-md-12">
-          <router-link to="signup"><button class="app-button">Registrarse</button></router-link>
-        </div>
-      </div>
-      <div class="row" style="text-align:center;">
-        <div class="col-md-12">
-          <a href="">Olvide mi contrasena</a>
-        </div>
-      </div>
-      <div class="row" style="text-align:center;margin-top:100px;">
-        <div class="col-md-12">
-          <p class="poetic-paragraph">
-            NetSlap® es una plataforma de foros/boards hecha para la <br />comunidad de
-            estudiantes de la Universidad de Guadalajara basada <br /> en los
-            imageboards futaballaby o "chans"<i>, Bienvenidos a casa buitres.</i>
-          </p>
-        </div>
-      </div>
-    </div>
+  <v-container fluid>
 
-  </div>
+    <v-layout row>
+      <v-flex xs12 text-xs-center>
+        <h2> NetSlap</h2>
+        <p>{{ slogans  }}</p>
+      </v-flex>
+    </v-layout>
+
+    <v-layout row wrap justify-center>
+      <v-flex xs12 xl4 lg4 md4>
+        <v-card>
+          <v-card-text>
+            <v-text-field label="Usuario" v-model="user" @keyup.enter="login"/>
+            <v-text-field
+              label="Password"
+              v-model="pwd"
+              type="password"
+              @keyup.enter="login"/>
+            <div class="submit-container">
+              <v-btn primary large v-on:click="login"> Iniciar </v-btn>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+
+    <v-layout row>
+      <v-flex xs12 text-xs-center>
+        <router-link :to="{ name: 'signup' }">
+          <v-btn flat primary large> Registrate </v-btn>
+        </router-link>
+      </v-flex>
+    </v-layout>
+
+    <v-layout row>
+      <v-flex xs12 text-xs-center>
+        <router-link to="#">
+          Olvidaste tu contraseña?
+        </router-link>
+      </v-flex>
+    </v-layout><br />
+
+    <v-layout row justify-center>
+      <v-flex xs12 xl4 lg4 md4 text-xs-center>
+          NetSlap® es una plataforma de foros/boards hecha para la comunidad de
+          estudiantes de la Universidad de Guadalajara basada en los
+          imageboards futaballaby o "chans", <i>Bienvenidos a casa buitres.</i>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -69,6 +75,7 @@ export default {
     return {
       user: '',
       pwd: '',
+      username: 'hello',
       loading: false,
       slogans: slogans[Math.floor((Math.random() * 3))]
     }
@@ -85,17 +92,25 @@ export default {
             }
             // Start new session with new token
             this.$session.start()
+            this.$store.commit('setJWT', response.data.token)
             this.$session.set('JWTOKEN', response.data.token)
+            this.$session.set('USER', response.data.user)
             // Take to main application
             // window.location.href = `${getBaseUrl()}/`
             this.$eventHub.$emit('logged-in')
-            window.location.href = `${getDevUrl()}/#/`
-            location.reload()
+            this.$router.push({ name: 'home' })
+            this.$store.commit('snackbar/push', {
+              text: 'Bienvenido a NetSlap®'
+            })
           } else {
-            alert('usuario o password incorrecto')
+            this.$store.commit('snackbar/push', {
+              text: 'Usuario o contraseña incorrecto'
+            })
           }
         } else {
-          alert('usuario o password incorrecto')
+          this.$store.commit('snackbar/push', {
+            text: 'Usuario o contraseña incorrecto'
+          })
         }
         this.loading = false
       }).catch((err) => {
@@ -111,33 +126,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@import '/static/mainapp.css';
-@import '/static/bootstrap.min.css';
-.box-div {
-  padding-top: 5%;
-  height: 100%;
+
+.submit-container {
   text-align: center;
 }
 
-.AppTitle {
-  font-size: 370%;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: normal;
-  font-style: bold;
-  margin-bottom: 0px;
+.default-max-width {
+  max-width: 400px;
 }
 
-.Slogan {
-  padding-top: 0px;
-  margin-top: 1px;
-  font-size: medium;
-  font-style: italic;
-  font-size: 150%;
-}
-
-.poetic-paragraph {
-  font-size: 99%;
-  font-family: "Courier New", Courier, monospace;
-  color: #303030;
-}
 </style>

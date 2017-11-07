@@ -1,7 +1,10 @@
 <template>
-  <transition name="modal" id="imageModal">
-    <div class="modal-mask" v-on:click="close" v-show="show" @click.stop>
-      <img class="modal-container" src="/static/incognito.jpg" style="width:auto; height:auto;"/>
+  <transition name="modal">
+    <div class="modal-mask" v-on:click="close" v-show="show">
+      <div v-if="source" @click.stop>
+        <img class="modal-container absolute-center" :src="source" style="width:auto; height:auto;"/>
+      </div>
+      <h2 v-else class="white--text center-div">404 - ERR</h2>
     </div>
   </transition>
 </template>
@@ -47,37 +50,29 @@ export default {
 }
 
 .modal-container {
-    max-width:45%;
+    max-width:75%;
     min-width:300px;
     margin: 40px auto 0;
     padding:0px 30px;
     padding-bottom:20px;
-    background-color: #fff;
     border-radius: 2px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     transition: all .3s ease;
     font-family: Helvetica, Arial, sans-serif;
+    max-height: 98%;
 }
 
-.text-right {
-    text-align: right;
+.absolute-center {
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
 }
 
-.form-label {
-    display: block;
-    margin-bottom: 1em;
-}
-
-.form-label > .form-control {
-    margin-top: 0.5em;
-}
-
-.form-control {
-    display: block;
-    width: 100%;
-    padding: 0.5em 1em;
-    line-height: 1.5;
-    border: 1px solid #ddd;
+.center-div {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /*

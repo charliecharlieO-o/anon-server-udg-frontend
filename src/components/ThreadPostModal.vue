@@ -85,6 +85,7 @@ export default {
       this.title = ''
       this.text = ''
       this.uploading = false
+      this.form = null
       this.errorCode = ''
       this.error = ''
     },
@@ -110,7 +111,6 @@ export default {
       this.form.append('title', this.title)
       this.form.append('text', this.text)
       standardAuthUpload(this.$session.get('JWTOKEN'), `/thread/${this.$props['board']}/post`, this.form).then((response) => {
-        console.log(response)
         if (response.status === 200 && response.data.success === true) {
           // Redirect
           this.$router.push(`/thread/${response.data.doc._id}`)

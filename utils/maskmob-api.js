@@ -1,14 +1,14 @@
 import axios from 'axios'
-import {validateEmail} from './validation'
+import { validateEmail } from './validation'
+import envConfig from '@/env-config'
+import * as moment from 'moment'
 
-const moment = require('moment')
-
-const BASE_URL = 'http://192.168.100.11:3000'
-const DEV_URL = 'http://192.168.100.5:8080'
+const BASE_URL = envConfig.API_URL
+const DEV_URL = envConfig.LOCAL
 
 export {
   getBaseUrl, standardLogin, standardUnauthPost, standardAuthPut, standardAuthPost, standardAuthGet, getDevUrl,
-  parseThreads, standardAuthUpload, parseComment
+  parseThreads, standardAuthUpload, parseComment, parseBoards, standardAuthPutUpload, standardAuthDelete
 }
 
 function getBaseUrl() {
@@ -38,6 +38,18 @@ function standardAuthPost(jsonParams, jwtToken, objectUrlPath) {
   return axios.post(url,jsonParams)
 }
 
+function standardAuthDelete(jsonParams, jwtToken, objectUrlPath) {
+  const querystring = require('querystring')
+  const url = `${BASE_URL}${objectUrlPath}`
+  return axios.delete(url,
+    querystring.stringify(jsonParams),{
+      'headers': {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'authorization': jwtToken
+      }
+    })
+}
+
 function standardAuthPut(jsonParams, jwtToken, objectUrlPath) {
   const url = `${BASE_URL}${objectUrlPath}`
   return axios.put(url,
@@ -61,6 +73,16 @@ function standardAuthGet(jwtToken, objectUrlPath) {
 function standardAuthUpload(jwtToken, objectUrlPath, formData) {
   const url = `${BASE_URL}${objectUrlPath}`
   return axios.post(url, formData, {
+    'headers': {
+      'Content-Type': 'multipart/form-data',
+      'authorization': jwtToken
+    }
+  })
+}
+
+function standardAuthPutUpload(jwtToken, objectUrlPath, formData) {
+  const url = `${BASE_URL}${objectUrlPath}`
+  return axios.put(url, formData, {
     'headers': {
       'Content-Type': 'multipart/form-data',
       'authorization': jwtToken
@@ -95,6 +117,20 @@ function parseThreads(threads) {
   return threads
 }
 
+function parseBoards(boards) {
+  for (let i in boards) {
+    // Parse thumbnail route
+    let str = boards[i].image.thumbnail
+    str = str.substr(str.lastIndexOf('/') + 1)
+    // threads[i].media.thumbnail = `/media/${str}` on production
+    boards[i].image.thumbnail = `${getBaseUrl()}/media/${str}` // for testing
+    // Capitalize
+    boards[i].short_name = boards[i].short_name.toUpperCase()
+    boards[i].name = boards[i].name.toUpperCase()
+  }
+  return boards
+}
+
 function parseComment(comment) {
   // Prepare thumbnail
   if (comment.poster.poster_thumbnail) {
@@ -113,10 +149,6 @@ function parseComment(comment) {
     // comment.media.thumbnail = `/media/${str}` on production
     comment.media.thumbnail = `${getBaseUrl()}/media/${str}` // for testing
   }
-  // Remove this if on PRODUCTION
-  if (comment.created_at)
-    comment.created_at = moment(comment.created_at).fromNow()
-  else if (comment.createdAt)
-    comment.createdAt = moment(comment.createdAt).fromNow()
+  comment.created_at = moment(comment.created_at).fromNow()
   return comment
 }

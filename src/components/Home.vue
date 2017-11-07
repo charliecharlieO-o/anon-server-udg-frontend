@@ -117,55 +117,57 @@
         <v-container fluid grid-list-md>
           <v-layout row wrap align-center child-flex-sm>
             <v-flex xs4-12 v-for="thread in newThreads" :key="thread._id">
-              <v-card :id="thread._id"
-              style="margin:5px;min-width:250px;max-width:300px;height:auto;">
-                <!-- Media -->
-                <v-card-media v-if="thread.media && thread.media.thumbnail" :src="thread.media.thumbnail" height="200px">
-                  <v-container fill-height fluid style="padding:10px;">
-                    <v-layout fill-height>
-                      <v-flex xs12 align-end flexbox>
-                        <v-spacer></v-spacer>
-                        <span class="white--text" style="background:rgba(0,0,0,0.6);padding:5px;">
-                          <b>{{ thread.media.mimetype }}</b>
-                        </span>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </v-card-media>
-                <v-card-text style="margin-left:0px;padding:0px;">
-                  <v-container fluid>
-                    <v-layout row>
-                      <v-flex xs12>
-                        <h5 style="margin-top:0px;margin-bottom:5px;"><b>{{ thread.title }}</b></h5>
-                      </v-flex>
-                    </v-layout>
-                    <v-layout row>
-                      <v-flex xs12>
-                        <p style="margin-top:0px;margin-bottom:10px;font-size:85%;">
-                          {{ thread.text }}
-                        </p>
-                      </v-flex>
-                    </v-layout>
-                    <v-divider style="margin-top:0px;margin-bottom:10px;"></v-divider>
-                    <v-layout row>
-                      <v-flex xs7>
-                        <span class="grey--text" style="font-size:85%;"> >> {{ thread.poster.name }}</span>
-                      </v-flex>
-                      <v-flex xs5 class="text-xs-right">
-                        <span class="grey--text" style="margin-right:12px;font-size:85%;">{{ thread.created_at }}</span>
-                      </v-flex>
-                    </v-layout>
-                    <v-divider style="margin-top:5px;margin-bottom:5px;"></v-divider>
-                    <v-layout row>
-                      <v-flex xs12 class="text-xs-right">
-                        <v-chip outline class="blue blue--text">
-                          <v-icon left>question_answer</v-icon>{{ thread.reply_count }}
-                        </v-chip>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </v-card-text>
-              </v-card>
+              <router-link style="text-decoration:none;" :to="{ name: 'thread', params: {id:thread._id} }">
+                <v-card :id="thread._id"
+                style="margin:5px;min-width:250px;max-width:300px;height:auto;">
+                  <!-- Media -->
+                  <v-card-media v-if="thread.media && thread.media.thumbnail" :src="thread.media.thumbnail" height="200px">
+                    <v-container fill-height fluid style="padding:10px;">
+                      <v-layout fill-height>
+                        <v-flex xs12 align-end flexbox>
+                          <v-spacer></v-spacer>
+                          <span class="white--text" style="background:rgba(0,0,0,0.6);padding:5px;">
+                            <b>{{ thread.media.mimetype }}</b>
+                          </span>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card-media>
+                  <v-card-text style="margin-left:0px;padding:0px;">
+                    <v-container fluid>
+                      <v-layout row>
+                        <v-flex xs12>
+                          <h5 style="margin-top:0px;margin-bottom:5px;"><b>{{ thread.title }}</b></h5>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout row>
+                        <v-flex xs12>
+                          <p style="margin-top:0px;margin-bottom:10px;font-size:85%;">
+                            {{ thread.text }}
+                          </p>
+                        </v-flex>
+                      </v-layout>
+                      <v-divider style="margin-top:0px;margin-bottom:10px;"></v-divider>
+                      <v-layout row>
+                        <v-flex xs7>
+                          <span class="grey--text" style="font-size:85%;"> >> {{ thread.poster.name }}</span>
+                        </v-flex>
+                        <v-flex xs5 class="text-xs-right">
+                          <span class="grey--text" style="margin-right:12px;font-size:85%;">{{ thread.created_at }}</span>
+                        </v-flex>
+                      </v-layout>
+                      <v-divider style="margin-top:5px;margin-bottom:5px;"></v-divider>
+                      <v-layout row>
+                        <v-flex xs12 class="text-xs-right">
+                          <v-chip outline class="blue blue--text">
+                            <v-icon left>question_answer</v-icon>{{ thread.reply_count }}
+                          </v-chip>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card-text>
+                </v-card>
+              </router-link>
             </v-flex>
           </v-layout>
         </v-container>
@@ -174,9 +176,9 @@
     <!-- Disclaimer -->
     <v-layout row>
       <v-layout xs12 class="disclaimer">
-        <h7 style="width:100%;padding:2px;">
+        <span style="width:100%;padding:2px;">
           Solo se muestran los primeros 20
-        </h7>
+        </span>
       </v-layout>
     </v-layout>
   </div>

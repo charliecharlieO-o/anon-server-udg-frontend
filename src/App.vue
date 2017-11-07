@@ -1,22 +1,20 @@
 <template>
   <div id="app">
+    <snackbar />
     <v-app toolbar>
         <v-navigation-drawer v-if="loggedIn" persistent light :mini-variant.sync="mini" v-model="drawer" overflow>
           <v-toolbar flat class="transparent">
             <v-list class="pa-0">
-              <v-list-tile avatar tag="div">
-                <v-list-tile-avatar>
-                  <img src="https://randomuser.me/api/portraits/men/85.jpg" />
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title>Tu Perfil</v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-btn icon @click.native.stop="mini = !mini">
-                    <v-icon>chevron_left</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-              </v-list-tile>
+              <router-link to="/profile/me" style="textDecoration:none;">
+                <v-list-tile avatar tag="div">
+                  <v-list-tile-avatar>
+                    <img :src="(this.$session.get('USER')).profile_pic.thumbnail" class="profile-picture" />
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ (this.$session.get('USER')).username }}</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </router-link>
             </v-list>
           </v-toolbar>
           <v-list class="pt-0" dense>
@@ -61,19 +59,20 @@
             </router-link>
             <!-- END Networking tile -->
             <!-- Notifications tile -->
-            <router-link to="/notifications" style="textDecoration:none;">
-              <v-list-tile>
-                <v-list-tile-action>
-                  <v-icon>notifications</v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title>Notificaciones</v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-content>
-                  <v-chip label outline class="grey grey--text">0</v-chip>
-                </v-list-tile-content>
-              </v-list-tile>
-            </router-link>
+            <v-list-tile v-on:click="showNotifications = !showNotifications">
+              <v-list-tile-action>
+                <v-icon>notifications</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>Notificaciones</v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-content>
+                <v-chip label outline class="grey grey--text">{{ notificationsCount }}</v-chip>
+              </v-list-tile-content>
+              <v-dialog v-model="showNotifications">
+                <notifications-picker :hide="hideNotifications"/>
+              </v-dialog>
+            </v-list-tile>
             <!-- END notificatilns tile -->
             <v-divider></v-divider>
             <!-- FAQ tile -->
@@ -114,7 +113,7 @@
             <!-- END Credits tile -->
             <v-divider></v-divider>
             <!-- Logout tile -->
-            <v-list-tile>
+            <v-list-tile v-on:click="logOut" >
               <v-list-tile-action>
                 <v-icon class="red--text red--darken-2">exit_to_app</v-icon>
               </v-list-tile-action>
@@ -139,7 +138,9 @@
 </template>
 
 <script>
-import {getDevUrl} from '../utils/maskmob-api'
+import NotificationsPicker from '@/components/NotificationsPicker'
+import Snackbar from '@/components/Snackbar'
+
 export default {
   name: 'app',
   created () {
@@ -148,9 +149,10 @@ export default {
     // If user isn't logged in, take to login
     if (!this.isLoggedIn()) {
       // window.location.href = `${getBaseUrl()}/login`
-      window.location.href = `${getDevUrl()}/#/login`
+      this.$router.push({ name: 'login' })
     } else {
-      // Save user state data here
+      const jwt = this.$session.get('JWTOKEN')
+      this.$store.commit('setJWT', jwt)
     }
   },
   beforeDestroy () {
@@ -161,20 +163,52 @@ export default {
       drawer: true,
       mini: false,
       right: null,
-      loggedIn: false,
-      profile: null
+      profile: null,
+      showNotifications: false
     }
   },
   methods: {
     isLoggedIn () {
       this.$data.loggedIn = this.$session.exists()
       return this.$data.loggedIn
+    },
+    logOut () {
+      // Destroy session if it already exists
+      if (this.$session.exists()) {
+        this.$session.destroy()
+      }
+      // window.location.href = `${getBaseUrl()}/`
+      this.$router.push({ name: 'login' })
+      location.reload()
+    },
+    hideNotifications () {
+      this.showNotifications = false
+    },
+    showSnackbar () {
+      this.$store.commit('snackbar/push', {
+        text: 'Open google' + new Date(),
+        url: 'https://google.com'
+      })
     }
+  },
+  computed: {
+    notificationsCount () {
+      return this.$store.state.notifications.length
+    },
+    loggedIn () {
+      return this.$store.state.jwt
+    }
+  },
+  components: {
+    NotificationsPicker,
+    Snackbar
   }
 }
 </script>
 
 <style scoped>
-@import '/static/materialicons.css';
-@import '/static/vuetify.min.css';
+
+.profile-picture {
+  background-color:grey;
+}
 </style>

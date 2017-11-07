@@ -1,0 +1,24 @@
+version: '3'
+services:
+  frontend:
+    build: .
+    volumes:
+      - ./dist:/app/dist
+    command: npm run build
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+  web:
+    image: inanimate/httpd-ssl
+    volumes:
+      - ./dist:/usr/local/apache2/htdocs/
+      - ./ssl/server.key:/usr/local/apache2/conf/server.key
+      - ./ssl/server.crt:/usr/local/apache2/conf/server.crt
+    environment:
+      - SERVER_NAME=netslap.com
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - frontend
