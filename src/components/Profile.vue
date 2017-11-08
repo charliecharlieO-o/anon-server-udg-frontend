@@ -75,7 +75,7 @@
               @close="showNetworkEdt = false" @updated="refreshUserProfile"></updateNetwork>
             <v-list-tile v-on:click="editNetworkDialog('facebook', 'nombre de usuario')">
               <img src="../assets/icon-zuckd.svg" class="social-icon" />
-              <span><b>perfil de facebook:</b> {{ socialNetworkInfo('facebook') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
+              <span><b>perfil de facebook:</b> {{ socialNetworkInfo('facebook', 'perfil de fb') }} <span v-if="profileId === 'me'">(click para editar)</span></span>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile v-on:click="editNetworkDialog('instagram', 'nombre de usuario')">
@@ -193,7 +193,7 @@ import updateBio from './UpdateBio'
 import networkUpdate from './UpdateNetwork'
 import anonUpdate from './AnonimitySetup'
 import confirmPwd from './ConfirmPassword'
-import {standardAuthGet, standardAuthPost, standardAuthPut, standardAuthDelete, standardAuthUpload} from '../../utils/maskmob-api'
+import {standardAuthGet, standardAuthPost, standardAuthPut, standardAuthDelete, standardAuthPutUpload} from '../../utils/maskmob-api'
 import {validateEmail} from '../../utils/validation'
 import * as moment from 'moment'
 export default {
@@ -435,26 +435,29 @@ export default {
         const formData = new FormData()
         // Append file
         formData.append('mfile', fileList[0])
-        console.log(fileList[0])
         this.profileImageForm = formData
-        const response = await standardAuthUpload(this.$session.get('JWTOKEN'), this.profileImageForm)
-        if (response.status === 200 && response.data.status) {
+        const response = await standardAuthPutUpload(this.$session.get('JWTOKEN'), '/user/update/profile-pic', this.profileImageForm)
+        if (response.status === 200 && response.data.success) {
+          this.refreshUserProfile()
         } else {
           this.$store.commit('snackbar/push', {
             text: 'Error al subir imagen'
           })
         }
+        this.updatingProfile = false
       } catch (err) {
         console.log(err)
         this.$store.commit('snackbar/push', {
           text: 'Error al subir imagen'
         })
+        this.updatingProfile = false
       }
     },
     editNetworkDialog (networkName, networkLabel) {
-      if (this.$session.get('USER')._id !== this.profileId) {
+      if (this.profileId !== 'me' || this.$session.get('USER')._id === this.profileId) {
         return // Should copy string to clipboard
       }
+      console.log('here')
       this.showNetworkEdt = true
       this.networkName = networkName
       this.networkLabel = networkLabel
