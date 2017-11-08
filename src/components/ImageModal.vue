@@ -2,7 +2,12 @@
   <transition name="modal">
     <div class="modal-mask" v-on:click="close" v-show="show">
       <div v-if="source" @click.stop>
-        <img class="modal-container absolute-center" :src="source" style="width:auto; height:auto;"/>
+        <img v-on:click="close" class="modal-container absolute-center" :src="source" style="width:auto; height:auto;"/>
+        <div class="hidden-sm-and-down modal-container" style="text-align:right;">
+          <v-btn class="" fab dark error v-on:click="close">
+            <v-icon dark>close</v-icon>
+          </v-btn>
+        </div>
       </div>
       <h2 v-else class="white--text center-div">404 - ERR</h2>
     </div>
@@ -53,8 +58,6 @@ export default {
     max-width:75%;
     min-width:300px;
     margin: 40px auto 0;
-    padding:0px 30px;
-    padding-bottom:20px;
     border-radius: 2px;
     transition: all .3s ease;
     font-family: Helvetica, Arial, sans-serif;

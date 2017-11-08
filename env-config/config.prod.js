@@ -1,4 +1,4 @@
 module.exports = {
-  API_URL: 'http://67.205.130.213',
+  API_URL: 'http://api.netslap.me',
   LOCAL: 'http://localhost:8080'
 }

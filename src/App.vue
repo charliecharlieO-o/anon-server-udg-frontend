@@ -38,7 +38,7 @@
                   <v-icon>question_answer</v-icon>
                 </v-list-tile-action>
                 <v-list-tile-content>
-                  <v-list-tile-title>Boards</v-list-tile-title>
+                  <v-list-tile-title>Grupos</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
             </router-link>
@@ -52,14 +52,11 @@
                 <v-list-tile-content>
                   <v-list-tile-title>Networking</v-list-tile-title>
                 </v-list-tile-content>
-                <v-list-tile-content>
-                  <v-chip label outline class="grey grey--text">0</v-chip>
-                </v-list-tile-content>
               </v-list-tile>
             </router-link>
             <!-- END Networking tile -->
             <!-- Notifications tile -->
-            <v-list-tile v-on:click="showNotifications = !showNotifications">
+            <v-list-tile v-on:click="showNotifications = !showNotifications;drawer = !drawer">
               <v-list-tile-action>
                 <v-icon>notifications</v-icon>
               </v-list-tile-action>
@@ -67,9 +64,9 @@
                 <v-list-tile-title>Notificaciones</v-list-tile-title>
               </v-list-tile-content>
               <v-list-tile-content>
-                <v-chip label outline class="grey grey--text">{{ notificationsCount }}</v-chip>
+                <v-chip label outline class="grey grey--text">{{ unseenNotifications }}</v-chip>
               </v-list-tile-content>
-              <v-dialog v-model="showNotifications">
+              <v-dialog v-model="showNotifications" width="600">
                 <notifications-picker :hide="hideNotifications"/>
               </v-dialog>
             </v-list-tile>
@@ -192,8 +189,9 @@ export default {
     }
   },
   computed: {
-    notificationsCount () {
-      return this.$store.state.notifications.length
+    unseenNotifications () {
+      const unotif = this.$store.state.notifications.filter(x => x.seen === false).length
+      return (unotif > 100) ? '99+' : unotif
     },
     loggedIn () {
       return this.$store.state.jwt

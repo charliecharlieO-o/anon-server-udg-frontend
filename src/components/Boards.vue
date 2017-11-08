@@ -5,7 +5,7 @@
       <!-- Header -->
       <v-layout row wrap>
         <v-flex xs12 style="text-align:left;">
-          <h4>Boards <v-icon medium>public</v-icon></h4>
+          <h4>Grupos <v-icon medium>public</v-icon></h4>
         </v-flex>
       </v-layout>
       <v-divider style="margin-top:3px;margin-bottom:5px;"></v-divider>
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import {standardAuthGet, standardAuthPost, parseBoards} from '../../utils/maskmob-api'
+import {standardAuthGet, parseBoards} from '../../utils/maskmob-api'
 export default {
   name: 'boards',
   data () {
@@ -63,9 +63,7 @@ export default {
       loadingBoards: true,
       errorCode: null,
       boards: [],
-      searchQuery: '',
-      errorSearch: '',
-      searchedBoards: []
+      errorSearch: ''
     }
   },
   created () {
@@ -87,22 +85,6 @@ export default {
       }).catch((err) => {
         this.$data.loadingError = true
         console.log(err)
-      })
-    },
-    searchBoards (query) {
-      standardAuthPost({'query': this.searchQuery}, this.$session.get('JWTOKEN'), '/board/search').then((response) => {
-        if (response.status === 200 && response.data.success) {
-          if (response.data.doc instanceof Array && response.data.doc.length > 0) {
-            const boards = parseBoards(response.data.doc)
-            console.log(boards)
-          } else {
-            this.errorSearch = '0 RESULTADOS'
-          }
-        } else {
-          this.errorSearch = `${String(response.status)} ${response.data.error}`
-        }
-      }).catch((err) => {
-        this.errorSearch = err
       })
     }
   }
