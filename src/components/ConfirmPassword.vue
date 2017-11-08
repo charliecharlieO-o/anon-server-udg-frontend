@@ -20,6 +20,7 @@
             </p>
             <v-text-field
               v-model="password"
+              type="password"
               label="Contraseña"
               style="margin-bottom:0px;margin-top:0px;padding-bottom:0px;"
             ></v-text-field>
@@ -70,40 +71,62 @@ export default {
       this.errorCode = ''
       this.error = ''
     },
-    async confirmPassword () {
+    async changeEmail () {
       this.loading = true
       try {
-        if (this.$props['type'] === 'email') {
-          const response = await standardAuthPut({ 'password': this.password, 'email': this.$props['toUpdate'] },
-            this.$session.get('JWTOKEN'), '/user/reset-email')
-          if (response.status === 200 && response.data.success) {
-            this.$emit('updated')
-            this.close()
-          } else {
-            if (response.data.error === 'unauthorized') {
-              this.badPwd = true
-            } else {
-              this.error = 'error'
-            }
-          }
+        const response = await standardAuthPut({ 'password': this.password, 'email': this.$props['toUpdate'] },
+          this.$session.get('JWTOKEN'), '/user/reset-email')
+        if (response.status === 200 && response.data.success) {
+          this.$emit('updated')
+          this.close()
         } else {
-          const response = await standardAuthPut({ 'password': this.password, 'new_password': this.$props['toUpdate'] },
-            this.$session.get('JWTOKEN'), '/user/reset-email')
-          if (response.status === 200 && response.data.success) {
-            this.$emit('updated')
-            this.close()
+          if (response.status === 403) {
+            this.badPwd = true
           } else {
-            if (response.data.error === 'unauthorized') {
-              this.badPwd = true
-            } else {
-              this.error = 'error'
-            }
+            this.$store.commit('snackbar/push', {
+              text: 'Error!'
+            })
           }
         }
       } catch (err) {
-        this.error = err
+        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error!'
+        })
       }
       this.loading = false
+    },
+    async changePassword () {
+      this.loading = true
+      try {
+        const response = await standardAuthPut({ 'password': this.password, 'new_password': this.$props['toUpdate'] },
+          this.$session.get('JWTOKEN'), '/user/password')
+        if (response.status === 200 && response.data.success) {
+          this.$emit('updated')
+          this.close()
+        } else {
+          if (response.status === 403) {
+            this.badPwd = true
+          } else {
+            this.$store.commit('snackbar/push', {
+              text: 'Error!'
+            })
+          }
+        }
+      } catch (err) {
+        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error!'
+        })
+      }
+      this.loading = false
+    },
+    confirmPassword () {
+      if (this.$props['type'] === 'email') {
+        this.changeEmail()
+      } else if (this.$props['type'] === 'password') {
+        this.changePassword()
+      }
     }
   },
   mounted () {

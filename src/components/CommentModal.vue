@@ -79,11 +79,19 @@ export default {
       this.error = ''
     },
     filesChange (fieldName, fileList) {
-      // Create new form data
-      const formData = new FormData()
       // Check if there is an actual file selected
       if (!fileList.length) return
+      // Check it doesn' surpass 8MB
+      if (fileList[0].size > 8000000) {
+        this.$store.commit('snackbar/push', {
+          text: 'El archivo es muy grande! (8mb max)'
+        })
+        return
+      }
       // Check if valid file type
+      console.log(fileList[0])
+      // Create new form data
+      const formData = new FormData()
       // Append file
       formData.append('mfile', fileList[0])
       this.form = formData
@@ -111,10 +119,16 @@ export default {
           this.uploading = false
           this.errorCode = response.status
           this.error = 'error'
+          this.$store.commit('snackbar/push', {
+            text: 'Error al enviar'
+          })
         }
       } catch (error) {
         this.uploading = false
         this.error = 'error'
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
       this.uploading = false
     }

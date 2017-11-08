@@ -44,7 +44,8 @@
 
     <v-layout row justify-center>
       <v-flex xs12 xl4 lg4 md4 text-xs-center>
-          NetSlap® es una plataforma de foros/boards hecha para la comunidad de
+          <h6>(Exclusivo alumnos UdeG)</h6>
+          NetSlap® es una plataforma de foros/muros hecha para la comunidad de
           estudiantes de la Universidad de Guadalajara basada en los
           imageboards futaballaby o "chans", <i>Bienvenidos a casa buitres.</i>
       </v-flex>
@@ -115,7 +116,9 @@ export default {
         this.loading = false
       }).catch((err) => {
         if (err) {
-          alert('Error al loggear, verifica el estado de tu conexion')
+          this.$store.commit('snackbar/push', {
+            text: 'Error, verifica tu conexion'
+          })
         }
         this.loading = false
       })

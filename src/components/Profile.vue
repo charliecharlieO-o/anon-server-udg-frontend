@@ -112,7 +112,7 @@
               <br />
               <!-- Anonimity Status -->
               <v-layout row-sm column child-flex-sm>
-                <v-flex xs12>
+                <v-flex xs6>
                   <updateAnonimity :show="setupAnon" @close="setupAnon = false" @updated="refreshUserProfile"></updateAnonimity>
                   <span class="label-desc">Incognito:</span>
                   <span v-if="userObj.alias.handle" id="activeAnon">
@@ -122,6 +122,12 @@
                   <span v-else id="inactiveAnon">
                     <v-btn round primary v-on:click="setupAnon = true">activar</v-btn>
                   </span>
+                </v-flex>
+                <v-flex xs6 style="text-align:left">
+                  <div name="cooldown" v-if="coolDown">
+                    <span class="label-desc">Cooldown:</span>
+                    <v-chip class="grey white--text">{{ coolDown }}</v-chip>
+                  </div>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -135,7 +141,8 @@
           </v-card-title>
           <v-card-text>
             <v-container fluid>
-              <confirmPassword :show="changeSec" :type="setting" @close="changeSec = false" @updated="refreshUserProfile"></confirmPassword>
+              <confirmPassword :show="changeSec" :type="setting" @close="changeSec = false"
+                :toUpdate="newSetting" @updated="refreshUserProfile"></confirmPassword>
               <!-- EMAIL -->
               <v-layout row-sm column child-flex-sm>
                 <v-flex xs10-12>
@@ -159,6 +166,7 @@
                   name="input-1"
                   label="************"
                   required
+                  type="password"
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs2>
@@ -183,6 +191,7 @@ import anonUpdate from './AnonimitySetup'
 import confirmPwd from './ConfirmPassword'
 import {standardAuthGet, standardAuthPost, standardAuthPut, standardAuthDelete} from '../../utils/maskmob-api'
 import {validateEmail} from '../../utils/validation'
+import * as moment from 'moment'
 export default {
   name: 'profile',
   data () {
@@ -204,6 +213,7 @@ export default {
       networkName: '',
       networkLabel: '',
       setupAnon: false,
+      newSetting: null,
       newEmail: '',
       newPwd: '',
       error: ''
@@ -215,6 +225,21 @@ export default {
     updateNetwork: networkUpdate,
     updateAnonimity: anonUpdate,
     confirmPassword: confirmPwd
+  },
+  computed: {
+    coolDown () {
+      if (!this.userObj.alias || !this.userObj.alias.changed) {
+        return null
+      } else {
+        const thn = moment(this.userObj.alias.changed).add(12, 'hours')
+        const diff = moment().isBefore(thn)
+        if (!diff) {
+          return null
+        } else {
+          return moment().to(thn, true)
+        }
+      }
+    }
   },
   created () {
     this.profileId = this.$route.params.profileId
@@ -254,6 +279,9 @@ export default {
           }
         } catch (e) {
           console.log(e)
+          this.$store.commit('snackbar/push', {
+            text: 'Error verifica tu conexion'
+          })
         }
         // Request profile info from server
         try {
@@ -266,7 +294,9 @@ export default {
             this.error = 'NO EXISTE EL USUARIO'
           }
         } catch (e) {
-          console.log(e)
+          this.$store.commit('snackbar/push', {
+            text: 'Error verifica tu conexion'
+          })
         }
       }
     },
@@ -276,7 +306,9 @@ export default {
           '/user/request')
         this.requestStatus = (response.data.success) ? 'await' : 'befriend'
       } catch (err) {
-        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async respondRequest (friendOrFoe) {
@@ -287,10 +319,15 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.loadProfileInfo()
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error 500'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async removeRelationship () {
@@ -300,10 +337,15 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.loadProfileInfo()
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error 500'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async acceptRelationship () {
@@ -313,10 +355,14 @@ export default {
         if (response.status === 200 && response.data.success) {
           this.loadProfileInfo()
         } else {
-          console.log('error')
+          this.$store.commit('snackbar/push', {
+            text: 'Error 500'
+          })
         }
       } catch (err) {
-        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async refreshUserProfile () {
@@ -327,10 +373,14 @@ export default {
           this.$session.set('USER', response.data.doc)
           this.userObj = response.data.doc
         } else {
-          this.error = 'refreshing error'
+          this.$store.commit('snackbar/push', {
+            text: 'Error verifica tu conexion'
+          })
         }
       } catch (error) {
-        this.error = 'refreshing error'
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     async removeAnonimity () {
@@ -341,9 +391,15 @@ export default {
           this.refreshUserProfile()
         } else {
           console.log(`error ${response.data}`)
+          this.$store.commit('snackbar/push', {
+            text: 'Error 500'
+          })
         }
       } catch (err) {
         console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error verifica tu conexion'
+        })
       }
     },
     socialNetworkInfo (name) {
@@ -371,16 +427,19 @@ export default {
     },
     changeSecuritySetting (setting) {
       if (setting === 'email') {
+        this.newSetting = this.newEmail
         if (!validateEmail(this.newEmail)) {
           alert('email invalido')
           return
         }
       } else {
+        this.newSetting = this.newPwd
         if (!this.isNotEmptyOrSpaces(this.newPwd)) {
           alert('password esta vacio')
           return
         }
       }
+      this.loadProfileInfo()
       this.setting = setting
       this.changeSec = true
     }
