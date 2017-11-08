@@ -297,7 +297,7 @@
 </template>
 
 <script>
-import {standardAuthGet, getBaseUrl, parseThreads, standardAuthPost} from '../../utils/maskmob-api'
+import {standardAuthGet, parseThreads, standardAuthPost} from '../../utils/maskmob-api'
 import threadPostModal from './ThreadPostModal'
 const threadsToLoad = 5 // Controls how many threads are loaded per scroll
 export default {
@@ -347,13 +347,7 @@ export default {
       this.errorCode = null
       standardAuthGet(this.$session.get('JWTOKEN'), `/board/${slug}`).then((response) => {
         if (response.status === 200) {
-          let board = response.data.doc
-          // Parse image route
-          let str = board.image.location
-          str = str.substr(str.lastIndexOf('/') + 1)
-          // threads[i].media.thumbnail = `/media/${str}` on production
-          board.image.location = `${getBaseUrl()}/media/${str}` // for testing
-          this.board = board
+          this.board = response.data.doc
         } else {
           this.errorCode = response.status
         }
