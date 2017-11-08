@@ -17,15 +17,6 @@
           Este sitio existe con el propósito de crear un espacio de discurso único para todos los alumnos de la Universidad de
           Guadalajara, sin censura y donde todos puedan expresar su opinión (buena o mala) sobre lo que quieran.
         </p>
-        <br />
-        <h6>
-          Agradecimientos especiales a:
-        </h6>
-        <ul>
-          <li>
-            Victor Agustín Diaz Mendez (cofundador y colaborador de UI)
-          </li>
-        </ul>
       </v-flex>
     </v-layout>
     <v-layout row style="margin-bottom:10%;margin-top:5%;">

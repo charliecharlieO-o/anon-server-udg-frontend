@@ -159,7 +159,7 @@ export default {
   },
   computed: {
     maxRepliesReached () {
-      return this.comment.replies.length >= 60
+      return this.comment.replies.length >= 65
     }
   },
   created () {
@@ -185,6 +185,7 @@ export default {
       let missingReplies = this.comment.replies.slice(idx)
       this.repliesOnDisplay.push.apply(this.repliesOnDisplay, missingReplies)
       this.onWatch = true
+      this.listenToReplies()
     },
     openReplyModal () {
       if (this.comment.replies.length >= 65) {
@@ -207,6 +208,7 @@ export default {
     },
     stopListening () {
       clearInterval(this.timerInterval)
+      this.timerInterval = null
     },
     async checkForNewComments (verbose) {
       try {
@@ -253,9 +255,11 @@ export default {
       }
     },
     listenToReplies () {
-      this.timerInterval = setInterval(() => {
-        this.checkForNewComments()
-      }, 18000)
+      if (!this.timerInterval) {
+        this.timerInterval = setInterval(() => {
+          this.checkForNewComments()
+        }, 18000)
+      }
     }
   }
 }

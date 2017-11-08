@@ -224,6 +224,11 @@ export default {
     this.loadComments(this.threadId)
     this.listenToComments()
   },
+  beforeRouteUpdate (to, from, next) {
+    console.log(to)
+    console.log(from)
+    next()
+  },
   beforeDestroy () {
     clearInterval(this.commentInterval)
   },

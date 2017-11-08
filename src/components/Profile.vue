@@ -112,7 +112,7 @@
               <br />
               <!-- Anonimity Status -->
               <v-layout row-sm column child-flex-sm>
-                <v-flex xs12>
+                <v-flex xs6>
                   <updateAnonimity :show="setupAnon" @close="setupAnon = false" @updated="refreshUserProfile"></updateAnonimity>
                   <span class="label-desc">Incognito:</span>
                   <span v-if="userObj.alias.handle" id="activeAnon">
@@ -122,6 +122,12 @@
                   <span v-else id="inactiveAnon">
                     <v-btn round primary v-on:click="setupAnon = true">activar</v-btn>
                   </span>
+                </v-flex>
+                <v-flex xs6 style="text-align:left">
+                  <div name="cooldown" v-if="coolDown">
+                    <span class="label-desc">Cooldown:</span>
+                    <v-chip class="grey white--text">{{ coolDown }}</v-chip>
+                  </div>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -185,6 +191,7 @@ import anonUpdate from './AnonimitySetup'
 import confirmPwd from './ConfirmPassword'
 import {standardAuthGet, standardAuthPost, standardAuthPut, standardAuthDelete} from '../../utils/maskmob-api'
 import {validateEmail} from '../../utils/validation'
+import * as moment from 'moment'
 export default {
   name: 'profile',
   data () {
@@ -217,6 +224,21 @@ export default {
     updateNetwork: networkUpdate,
     updateAnonimity: anonUpdate,
     confirmPassword: confirmPwd
+  },
+  computed: {
+    coolDown () {
+      if (!this.userObj.alias || !this.userObj.alias.changed) {
+        return null
+      } else {
+        const thn = moment(this.userObj.alias.changed).add(12, 'hours')
+        const diff = moment().isBefore(thn)
+        if (!diff) {
+          return null
+        } else {
+          return moment().to(thn, true)
+        }
+      }
+    }
   },
   created () {
     this.profileId = this.$route.params.profileId

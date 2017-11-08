@@ -16,10 +16,10 @@
           <div class="modal-body" style="margin-top:0px;margin-bottom:0px;">
             <h4 class="network-title">Modo Incognito</h4>
             <p class="text-box">
-              <b>Modo incognito</b> crea un perfil temporal que puede ser destruido despues de <i>24 horas</i>.
-              Todo post o comentario realizado <b>durante y hasta</b> que modo incognito sea desativado,
-              <i><b>NO estara</b></i> relacionado a tu perfil original. Este modo puede ser desactivado en cualquier
-              momento. Para mas informacion  visita la seccion FAQ.
+              <b>Modo incognito</b> crea un perfil temporal que puede ser destruido <u><b>SOLO despues de 12 horas</b></u>
+              .Todo post o comentario realizado durante y hasta que modo incognito sea desativado,
+              <u><b>NO estara</b></u> relacionado a tu perfil original. Este modo no puede ser desactivado hasta
+              despues de 12 horas (por seguridad). Para mas informacion  visita la seccion FAQ.
             </p>
             <v-text-field
               v-model="alias"

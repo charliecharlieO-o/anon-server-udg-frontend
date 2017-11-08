@@ -22,15 +22,10 @@ function getDevUrl() {
 function standardLogin(user, password) {
   const querystring = require('querystring')
   const url = (validateEmail(user))? `${BASE_URL}/user/login/email` : `${BASE_URL}/user/login/standard`
-  return axios.post(url,
-    querystring.stringify({
-      'username': user,
-      'email': user,
-      'password': password
-    }),{
-      'headers': {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+  return axios.post(url,{
+    'username': user,
+    'email': user,
+    'password': password
   })
 }
 
@@ -115,7 +110,7 @@ function standardAuthPutUpload(jwtToken, objectUrlPath, formData) {
 function parseThreads(threads) {
   for (let i = 0; i < threads.length; i++) {
     // Parse Time
-    threads[i].created_at = moment(threads[i].created_at).fromNow()
+    threads[i].created_at = moment(threads[i].created_at).fromNow(true)
     // Trim title
     if (threads[i].title.length > 43) {
       threads[i].title = `${threads[i].title.substr(0, 40)}...`
@@ -140,6 +135,6 @@ function parseBoards(boards) {
 }
 
 function parseComment(comment) {
-  comment.momentTime = moment(comment.created_at).fromNow()
+  comment.momentTime = moment(comment.created_at).fromNow(true)
   return comment
 }

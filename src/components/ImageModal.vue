@@ -58,8 +58,6 @@ export default {
     max-width:75%;
     min-width:300px;
     margin: 40px auto 0;
-    padding:0px 30px;
-    padding-bottom:20px;
     border-radius: 2px;
     transition: all .3s ease;
     font-family: Helvetica, Arial, sans-serif;

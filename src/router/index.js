@@ -71,7 +71,11 @@ export default new Router({
     {
       path: '/thread/:id',
       name: 'thread',
-      component: Thread
+      component: Thread,
+      children: [{
+        path: 'comment/:commentId/:sb',
+        component: Thread
+      }]
     }
   ]
 })

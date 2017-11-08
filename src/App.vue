@@ -64,7 +64,7 @@
                 <v-list-tile-title>Notificaciones</v-list-tile-title>
               </v-list-tile-content>
               <v-list-tile-content>
-                <v-chip label outline class="grey grey--text">{{ notificationsCount }}</v-chip>
+                <v-chip label outline class="grey grey--text">{{ unseenNotifications }}</v-chip>
               </v-list-tile-content>
               <v-dialog v-model="showNotifications" width="600">
                 <notifications-picker :hide="hideNotifications"/>
@@ -189,8 +189,9 @@ export default {
     }
   },
   computed: {
-    notificationsCount () {
-      return this.$store.state.notifications.length
+    unseenNotifications () {
+      const unotif = this.$store.state.notifications.filter(x => x.seen === false).length
+      return (unotif > 100) ? '99+' : unotif
     },
     loggedIn () {
       return this.$store.state.jwt
