@@ -84,7 +84,10 @@ export default {
       // Check if valid file type
       // Append file
       formData.append('mfile', fileList[0])
+      console.log(typeof fileList[0])
+      console.log(fileList[0])
       this.form = formData
+      console.log(this.form)
     },
     async updateProfile () {
       this.updating = true
