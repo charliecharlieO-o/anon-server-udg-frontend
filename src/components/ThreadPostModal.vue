@@ -34,7 +34,7 @@
           <div container fluid style="margin-top:0px;margin-bottom:0px;">
             <v-layout row wrap align-center>
               <v-flex xs12 style="text-align:left;margin-bottom:5px;">
-                <input type="file" :disabled="isSaving" name="postFile" accept="video/*|image/x-png,image/gif,image/jpeg"
+                <input type="file" :disabled="isSaving" name="postFile" accept="audio/*|video/*|image/*"
                 @change="filesChange($event.target.name, $event.target.files)" />
               </v-flex>
             </v-layout>

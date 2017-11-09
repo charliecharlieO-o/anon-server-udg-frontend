@@ -189,9 +189,6 @@ export default {
     }
   },
   computed: {
-    userProfileThumbnail () {
-      return this.$session.get('USER').profile_pic.thumbnail
-    },
     unseenNotifications () {
       const unotif = this.$store.state.notifications.filter(x => x.seen === false).length
       return (unotif > 100) ? '99+' : unotif

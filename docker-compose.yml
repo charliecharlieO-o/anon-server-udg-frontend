@@ -1,6 +1,7 @@
 version: '3'
 services:
   frontend:
+    container_name: udgfront
     build: .
     volumes:
       - ./dist:/app/dist
@@ -10,15 +11,10 @@ services:
         limits:
           memory: 200M
   web:
-    image: inanimate/httpd-ssl
+    image: httpd
     volumes:
       - ./dist:/usr/local/apache2/htdocs/
-      - ./ssl/server.key:/usr/local/apache2/conf/server.key
-      - ./ssl/server.crt:/usr/local/apache2/conf/server.crt
-    environment:
-      - SERVER_NAME=netslap.com
     ports:
       - 80:80
-      - 443:443
     depends_on:
       - frontend
