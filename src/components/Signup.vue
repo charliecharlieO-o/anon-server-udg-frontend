@@ -43,12 +43,12 @@
                 :rules="[ruleSamePassword]"/>
               <span v-if="nipError" style="color:red">{{nipError}}</span>
               <v-text-field
-                label="Codigo UdeG"
+                label="Codigo UDG"
                 v-model="nip"
                 @keyup.enter="submitAccountDetails"
                 required />
               <v-text-field
-                label="Password"
+                label="UDG Password"
                 v-model="udgpwd"
                 type="password"
                 @keyup.enter="submitAccountDetails"
