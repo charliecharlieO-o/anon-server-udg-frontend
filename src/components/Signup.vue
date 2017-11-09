@@ -2,6 +2,8 @@
   <div class="container-fluid">
     <v-container fuid>
       <v-layout row wrap justify-center>
+        <!-- Loading thing -->
+        <!-- SignUp stuff -->
         <v-flex xs12 xl6 lg6 md6>
           <v-card>
             <v-card-title>
@@ -10,15 +12,19 @@
               </h4>
             </v-card-title>
             <v-card-text>
+              <span v-if="usernameError" style="color:red">{{usernameError}}</span>
               <v-text-field
                 label="Usuario"
                 @keyup.enter="submitAccountDetails"
                 v-model="username"
+                :rules="[checkUserName]"
                 required />
+              <span v-if="emailError" style="color:red">{{emailError}}</span>
               <v-text-field
                 label="Correo"
                 v-model="email"
                 type="email"
+                :rules="[checkEmail]"
                 @keyup.enter="submitAccountDetails"
                 required />
               <v-text-field
@@ -35,6 +41,7 @@
                 required
                 @keyup.enter="submitAccountDetails"
                 :rules="[ruleSamePassword]"/>
+              <span v-if="nipError" style="color:red">{{nipError}}</span>
               <v-text-field
                 label="Codigo UdeG"
                 v-model="nip"
@@ -61,7 +68,7 @@
 
 <script>
 import {validateUserName, validateEmail} from '../../utils/validation'
-import {standardLogin, standardUnauthPost, standardAuthPut} from '../../utils/maskmob-api'
+import {standardLogin, standardUnauthPost} from '../../utils/maskmob-api'
 
 export default {
   name: 'signup',
@@ -73,21 +80,16 @@ export default {
   },
   data () {
     return {
-      stage: 1,
       username: '',
-      usernameError: '',
       pwd1: '',
       pwd2: '',
-      pwdMatchError: '',
       email: '',
-      emailError: '',
       nip: '',
       udgpwd: '',
-      nipError: '',
-      udgPwdError: '',
       creatingAccount: false,
-      alias: '',
-      settingAlias: false
+      usernameError: '',
+      emailError: '',
+      nipError: ''
     }
   },
   methods: {
@@ -98,16 +100,12 @@ export default {
       let result = validateUserName(val)
       switch (result.err) {
         case 'empty':
-          this.usernameError = 'El nombre de usuario no debe estar vacio'
-          return false
+          return 'El nombre de usuario no debe estar vacio'
         case 'length':
-          this.usernameError = 'Debe de contener mas de 2 caracteres'
-          return false
+          return 'Debe de contener mas de 2 caracteres'
         case 'badchars':
-          this.usernameError = 'No debe de contener los caracteres: \' " < > &'
-          return false
+          return 'No debe de contener los caracteres: \' " < > &'
         default:
-          this.usernameError = null
           return true
       }
     },
@@ -125,39 +123,9 @@ export default {
     },
     checkEmail (val) {
       if (!validateEmail(this.email)) {
-        this.emailError = 'Email Invalido'
-        return false
+        return 'Email Invalido'
       } else {
-        this.emailError = ''
         return true
-      }
-    },
-    checkUdeGCreds (nip, pwd) {
-      if (nip !== '' && pwd !== '') {
-        this.nipError = ''
-        this.udgPwdError = ''
-        return true
-      } else {
-        if (nip === '') {
-          this.nipError = 'Este campo es necesario'
-        }
-        if (pwd === '') {
-          this.udgPwdError = 'Este campo es necesario'
-        }
-        return false
-      }
-    },
-    displayValidationErrors (errors) {
-      for (let key in errors) {
-        if (key === 'username') {
-          this.usernameError = 'Nombre de usuario invalido'
-        }
-        if (key === 'email') {
-          this.emailError = 'Email invalido'
-        }
-        if (key === 'password') {
-          this.pwdMatchError = 'Necesitas incluir un password'
-        }
       }
     },
     async login () {
@@ -180,17 +148,23 @@ export default {
       } catch (err) {
         if (err) {
           console.error(err)
-          alert('Error al loggear, verifica el estado de tu conexion')
+          this.$store.commit('snackbar/push', {
+            text: 'Error, verifica tu conexion'
+          })
         }
       }
     },
     async submitAccountDetails (e) {
+      // Reset errores
+      this.usernameError = ''
+      this.emailError = ''
+      this.nipError = ''
+
       let namePass = this.checkUserName(this.username)
       let pwdPass = this.checkPwd(this.pwd2)
       let emlPass = this.checkEmail(this.email)
-      let udgCred = this.checkUdeGCreds(this.nip, this.udgpwd)
 
-      if (namePass && pwdPass && emlPass && udgCred) {
+      if (namePass && pwdPass && emlPass) {
         // Prepare JSON
         const userAccount = {
           'username': this.username.trim(),
@@ -226,13 +200,16 @@ export default {
             if (obj.dberr === 'email already exists') {
               this.emailError = 'El email ya ha sido usado'
             }
-            alert('Hay errores en algunos campos')
+            this.$store.commit('snackbar/push', {
+              text: 'Hay errores en algunos campos'
+            })
           } else {
             if (obj.err === 101) {
-              alert('Tu NIP o Password UdeG son incorrectos, eres estudiante?')
+              this.$store.commit('snackbar/push', {
+                text: 'Tu NIP o Password UdeG son incorrectos, eres estudiante?'
+              })
             }
           }
-
           return
         }
         // Success
@@ -242,42 +219,6 @@ export default {
       } else {
         alert('Hay errores en algunos campos')
       }
-    },
-    changeAccountAlias (e) {
-      this.settingAlias = true
-      // Welp change logged in user's alias
-      standardAuthPut({'alias': this.alias}, this.$session.get('JWTOKEN'), '/user/alias').then((response) => {
-        console.log(response)
-        if (response.status === 200 && response.data) {
-          // Notify through event hub
-          this.$eventHub.$emit('logged-in')
-          // warm welcome
-          this.stage = 3
-        } else {
-          alert('Error: verifica que el campo sea valido')
-        }
-        this.settingAlias = false
-      }).catch((err) => {
-        alert(err)
-        this.settingAlias = false
-      })
-    }
-  },
-  watch: {
-    username (val, oldVal) {
-      this.checkUserName(val)
-    },
-    pwd2 (val, oldVal) {
-      this.checkPwd(val)
-    },
-    email (val, oldVal) {
-      this.checkEmail(val)
-    },
-    nip (val, oldVal) {
-      this.checkUdeGCreds(this.nip, this.udgpwd)
-    },
-    udgpwd (val, oldVal) {
-      this.checkUdeGCreds(this.nip, this.udgpwd)
     }
   }
 }

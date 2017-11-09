@@ -11,14 +11,6 @@ export {
   parseThreads, standardAuthUpload, parseComment, parseBoards, standardAuthPutUpload, standardAuthDelete
 }
 
-function getBaseUrl() {
-  return BASE_URL
-}
-
-function getDevUrl() {
-  return DEV_URL
-}
-
 function standardLogin(user, password) {
   const querystring = require('querystring')
   const url = (validateEmail(user))? `${BASE_URL}/user/login/email` : `${BASE_URL}/user/login/standard`
