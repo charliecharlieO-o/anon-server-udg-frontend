@@ -103,6 +103,11 @@ export default {
         if (!this.form) {
           this.form = new FormData()
         }
+        if (!this.form.get('mfile') && !this.text) {
+          alert('Un comentario debe contener texto o media')
+          this.uploading = false
+          return
+        }
         // Prepare data
         this.text.trim()
         this.form.append('text', this.text)

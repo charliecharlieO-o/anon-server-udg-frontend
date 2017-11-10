@@ -7,7 +7,7 @@
           <h4>Enviando...</h4>
         </div>
         <div v-if="!uploading && errorCode" style="text-align:center;width:inherit;display:block;margin:auto;">
-          <h4>ERROR {{ errorCode }} - {{ error }}</h4>
+          <h4>ERROR {{ errorCode }}</h4>
         </div>
         <div v-if="!uploading && !errorCode">
           <div class="modal-body" style="margin-top:0px;margin-bottom:0px;">
@@ -34,7 +34,7 @@
           <div container fluid style="margin-top:0px;margin-bottom:0px;">
             <v-layout row wrap align-center>
               <v-flex xs12 style="text-align:left;margin-bottom:5px;">
-                <input type="file" :disabled="isSaving" name="postFile" accept="video/*|image/x-png,image/gif,image/jpeg"
+                <input type="file" :disabled="uploading" name="postFile" accept="video/*|image/x-png,image/gif,image/jpeg"
                 @change="filesChange($event.target.name, $event.target.files)" />
               </v-flex>
             </v-layout>
@@ -99,26 +99,37 @@ export default {
         })
         return
       }
-      // Check if valid file type
-      console.log(fileList[0])
       // Create new form data
       const formData = new FormData()
       // Append file
       formData.append('mfile', fileList[0])
       this.form = formData
     },
-    sendPost () {
-      // Check if form has been created
-      if (!this.form) {
-        this.form = new FormData()
-      }
-      this.uploading = true
-      // Prepare data
-      this.title.trim()
-      this.text.trim()
-      this.form.append('title', this.title)
-      this.form.append('text', this.text)
-      standardAuthUpload(this.$session.get('JWTOKEN'), `/thread/${this.$props['board']}/post`, this.form).then((response) => {
+    async sendPost () {
+      try {
+        this.uploading = true
+        // Check title is there
+        if (!this.title) {
+          alert('El titulo no es opcional')
+          this.uploading = false
+          return
+        }
+        // Check if form has been created
+        if (!this.form) {
+          this.form = new FormData()
+        }
+        if (!this.form.get('mfile') && !this.text) {
+          alert('Un post debe contener texto o media')
+          this.uploading = false
+          return
+        }
+        this.uploading = true
+        // Prepare data
+        this.title.trim()
+        this.text.trim()
+        this.form.append('title', this.title)
+        this.form.append('text', this.text)
+        const response = await standardAuthUpload(this.$session.get('JWTOKEN'), `/thread/${this.$props['board']}/post`, this.form)
         if (response.status === 200 && response.data.success === true) {
           // Redirect
           this.$router.push(`/thread/${response.data.doc._id}`)
@@ -127,12 +138,13 @@ export default {
           this.errorCode = response.status
         }
         this.uploading = false
-        this.close()
-      }).catch((err) => {
-        this.error = err
+      } catch (err) {
+        console.log(err)
+        this.$store.commit('snackbar/push', {
+          text: 'Error, revisa tu conexion'
+        })
         this.uploading = false
-        this.close()
-      })
+      }
     }
   },
   mounted () {
