@@ -34,6 +34,13 @@
       </v-flex>
     </v-layout>
 
+    <v-layout row>
+      <v-flex xs12 text-xs-center>
+        Para mas informacion <a href="https://www.facebook.com/NetSlapme-375883582851505/" target="_blank">visitanos en facebook</a>
+        <br /><br />
+      </v-flex>
+    </v-layout>
+
     <!--
     <v-layout row>
       <v-flex xs12 text-xs-center>
@@ -43,7 +50,7 @@
       </v-flex>
     </v-layout><br />
   -->
-  
+
     <v-layout row justify-center>
       <v-flex xs12 xl4 lg4 md4 text-xs-center>
           <h6>(Exclusivo alumnos UdeG)</h6>
