@@ -48,7 +48,7 @@
                 @keyup.enter="submitAccountDetails"
                 required />
               <v-text-field
-                label="Password"
+                label="Password UdeG"
                 v-model="udgpwd"
                 type="password"
                 @keyup.enter="submitAccountDetails"
@@ -179,7 +179,9 @@ export default {
         const response = await standardUnauthPost(userAccount, '/user/register')
         // Process response
         if (response.status !== 200 || !response.data) {
-          alert('Error al registrarse, revisa tu conexion.')
+          this.$store.commit('snackbar/push', {
+            text: 'Error al registrarse, revisa tu conexion.'
+          })
           return
         }
 
@@ -214,10 +216,11 @@ export default {
         }
         // Success
         this.login()
-        this.stage = 2
         this.creatingAccount = false
       } else {
-        alert('Hay errores en algunos campos')
+        this.$store.commit('snackbar/push', {
+          text: 'Hay errores en algunos campos'
+        })
       }
     }
   }

@@ -9,7 +9,7 @@
     </div>
     <!-- Error Div -->
     <div v-if="error && !loading" style="text-align:center;margin-top:30px;">
-      <h4>ERROR {{ errorCode }} - {{ error }}</h4>
+      <h4>ERROR {{ errorCode }}</h4>
     </div>
     <v-container v-if="!loading && !error" id="threadContainer" style="padding:5px;">
       <v-layout row wrap justify-center>
