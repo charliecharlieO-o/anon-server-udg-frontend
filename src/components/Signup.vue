@@ -48,7 +48,7 @@
                 @keyup.enter="submitAccountDetails"
                 required />
               <v-text-field
-                label="NIP"
+                label="Password UdeG"
                 v-model="udgpwd"
                 type="password"
                 @keyup.enter="submitAccountDetails"
