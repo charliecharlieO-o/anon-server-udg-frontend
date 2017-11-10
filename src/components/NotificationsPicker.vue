@@ -59,7 +59,7 @@
 
 <script type="text/javascript">
 const audioPath = require('../assets/notifsound.mp3')
-import {standardAuthPost, standardAuthDelete, standardAuthPut} from '../../utils/maskmob-api'
+import {standardAuthPost, standardAuthDelete} from '../../utils/maskmob-api'
 export default {
   props: ['hide'],
   data () {
@@ -117,7 +117,6 @@ export default {
         console.log(notification.meta.type)
       }
       // mark as seen
-      standardAuthPut({}, this.$session.get('JWTOKEN'), `/user/notification/${notification._id}/set-seen`)
     },
     async deleteNotification (notificationId) {
       try {
@@ -165,7 +164,7 @@ export default {
     listenToNotifications () {
       this.timerInterval = setInterval(() => {
         this.checkForNotifications()
-      }, 25000)
+      }, 45000)
     }
   }
 }

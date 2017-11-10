@@ -25,14 +25,14 @@
                     <!-- Easter Egg -->
                     <v-chip v-if="thread.poster.anon && thread.poster.name === 'Dr.Jekyll'">
                       <v-avatar>
-                        <img src="../assets/hydeegg.jpg">
+                        <img src="/static/hydeegg.jpg">
                       </v-avatar>
                       <span style="color:DarkRed;">Mr.Hyde</span>
                     </v-chip>
                     <!-- Render for anonymous user -->
                     <v-chip v-else-if="thread.poster.anon">
                       <v-avatar>
-                        <img src="../assets/incognito.jpg">
+                        <img src="/static/incognito.jpg">
                       </v-avatar>
                       <span style="color:purple;">{{ thread.poster.name }} [anon]</span>
                     </v-chip>
@@ -176,7 +176,7 @@
 </template>
 
 <script>
-import {standardAuthGet, standardAuthPost} from '../../utils/maskmob-api'
+import {standardAuthGet, getBaseUrl, standardAuthPost} from '../../utils/maskmob-api'
 import commentPostModal from './CommentModal'
 import commentComponent from './Comment'
 import imageModal from './ImageModal'
@@ -240,6 +240,13 @@ export default {
           let thread = response.data.doc
           // Set initial thread timestamp
           this.threadTimestamp = thread.created_at
+          if (thread.poster.thumbnail && thread.poster.thumbnail !== 'anon') {
+            // Parse image route
+            let str = thread.poster.thumbnail
+            str = str.substr(str.lastIndexOf('/') + 1)
+            // thread.poster.thumbnail = `/media/${str}` on production
+            thread.poster.thumbnail = `${getBaseUrl()}/media/${str}` // for testing
+          }
           thread.created_at = moment(thread.created_at).fromNow()
           this.thread = thread
           this.loading = false
