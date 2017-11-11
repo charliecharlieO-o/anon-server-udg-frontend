@@ -15,7 +15,7 @@
             </v-list-tile-avatar>
           </router-link>
         </v-flex>
-        <v-flex v-else xs9>
+        <v-flex v-else xs4 md9 lg9>
           <router-link :to="`/profile/${contact.to.id}`" style="text-decoration:none;">
             <v-list-tile-avatar class="avatar-box">
               <img :src="contact.to.thumbnail_pic" class="profile-picture" />
