@@ -3,15 +3,15 @@
 
     <v-layout row>
       <v-flex xs12 text-xs-center>
-        <h3> Proceso de Recuperacion </h3>
+        <h3> Proceso de Recuperación </h3>
         <p>
-          Escribe el <b>email</b> con el cual te registraste y enviaremos un email<br />
-          con el token que deberas introducir para recuperar tu cuenta.
+          Escribe el <b>email</b> con el cual te registraste y te enviaremos un mensaje<br />
+          con el codigo que deberas introducir para recuperar tu contraseña.
         </p>
       </v-flex>
     </v-layout>
 
-    <div v-if="loadingMsg" style="text-align:center;margin-top:30px;width:100%;">
+    <div v-if="loadingMsg" class="default-loading">
       <v-progress-circular indeterminate v-bind:size="100" class="cyan--text"></v-progress-circular>
       <h4>{{ loadingMsg }}</h4>
     </div>
@@ -23,32 +23,32 @@
             <v-btn v-if="!status" class="default-button" primary v-on:click="status = 'requestingToken'">generar token</v-btn>
             <v-btn v-if="!status" class="default-button" success v-on:click="status = 'checkingToken'">ya tengo un token</v-btn>
             <v-text-field
-            v-if="status === 'requestingToken'"
-            v-model="email"
-            label="email"
-            required
-            :rules="[checkEmail]"
+              v-if="status === 'requestingToken'"
+              v-model="email"
+              label="email"
+              required
+              :rules="[checkEmail]"
             ></v-text-field>
             <v-text-field
-            v-if="status === 'checkingToken'"
-            v-model="token"
-            label="TOKEN"
-            required
+              v-if="status === 'checkingToken'"
+              v-model="token"
+              label="TOKEN"
+              required
             ></v-text-field>
             <v-text-field
-            v-if="status === 'checkingToken'"
-            v-model="pwd"
-            label="Password"
-            type="password"
-            required
-            :rules="[ruleSamePassword]"/>
+              v-if="status === 'checkingToken'"
+              v-model="pwd"
+              label="Password"
+              type="password"
+              required
+              :rules="[ruleSamePassword]"/>
             <v-text-field
-            v-if="status === 'checkingToken'"
-            v-model="pwd1"
-            label="Password"
-            type="password"
-            required
-            :rules="[ruleSamePassword]"/>
+              v-if="status === 'checkingToken'"
+              v-model="pwd1"
+              label="Password"
+              type="password"
+              required
+              :rules="[ruleSamePassword]"/>
             <v-btn v-if="status === 'requestingToken'" primary v-on:click="requestToken">enviar</v-btn>
             <v-btn v-if="status === 'checkingToken'" primary v-on:click="changePwd">confirmar</v-btn>
             <v-btn v-if="awaiting && count < 5" primary v-on:click="requestToken">reenviar</v-btn>
@@ -136,9 +136,9 @@ export default {
         this.loadingMsg = ''
       } catch (err) {
         this.loadingMsg = ''
-        console.log(err)
+        console.error(err)
         this.$store.commit('snackbar/push', {
-          text: 'Error, verifica tu conexion'
+          text: 'Error, verifica tu conexión'
         })
       }
     }
@@ -152,5 +152,10 @@ export default {
 }
 .default-button {
   width: 80%;
+}
+.default-loading {
+  text-align:center;
+  margin-top:30px;
+  width:100%;
 }
 </style>

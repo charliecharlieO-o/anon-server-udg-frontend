@@ -37,7 +37,7 @@
     <v-layout row>
       <v-flex xs12 text-xs-center>
         <router-link :to="{ name: 'recovery' }">
-          <v-btn flat primary large> no recuerdo mi contraseña...</v-btn>
+          <v-btn flat primary large>No recuerdo mi contraseña...</v-btn>
         </router-link>
       </v-flex>
     </v-layout>
