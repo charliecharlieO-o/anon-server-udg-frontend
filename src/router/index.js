@@ -11,6 +11,7 @@ import Rules from '@/components/Rules'
 import Board from '@/components/Board'
 import Profile from '@/components/Profile'
 import Thread from '@/components/Thread'
+import Recovery from '@/components/ResetPassword'
 
 Vue.use(Router)
 
@@ -26,6 +27,11 @@ export default new Router({
       path: '/signup',
       name: 'signup',
       component: Signup
+    },
+    {
+      path: '/recovery',
+      name: 'recovery',
+      component: Recovery
     },
     {
       path: '/',
