@@ -36,6 +36,14 @@
 
     <v-layout row>
       <v-flex xs12 text-xs-center>
+        <router-link :to="{ name: 'recovery' }">
+          <v-btn flat primary large>No recuerdo mi contraseña...</v-btn>
+        </router-link>
+      </v-flex>
+    </v-layout>
+
+    <v-layout row>
+      <v-flex xs12 text-xs-center>
         Para mas informacion <a href="https://www.facebook.com/NetSlapme-375883582851505/" target="_blank">visitanos en facebook</a>
         <br /><br />
       </v-flex>
